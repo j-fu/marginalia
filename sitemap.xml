@@ -2,6 +2,12 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
+    <loc>https://j-fu.github.io/marginalia/julia/julia-registry/index.html</loc>
+    <lastmod>2021-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
     <loc>https://j-fu.github.io/marginalia/older-posts/2014-10-01-rbtest/index.html</loc>
     <lastmod>2021-11-13</lastmod>
     <changefreq>monthly</changefreq>
@@ -26,13 +32,13 @@
     <priority>0.5</priority>
 </url>
 <url>
-    <loc>https://j-fu.github.io/marginalia/older-posts/2014-11-13-polyglossia/index.html</loc>
+    <loc>https://j-fu.github.io/marginalia/julia/julia-performance/index.html</loc>
     <lastmod>2021-11-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
 <url>
-    <loc>https://j-fu.github.io/marginalia/julia-workflow/index.html</loc>
+    <loc>https://j-fu.github.io/marginalia/older-posts/2014-11-13-polyglossia/index.html</loc>
     <lastmod>2021-11-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -68,18 +74,6 @@
     <priority>0.5</priority>
 </url>
 <url>
-    <loc>https://j-fu.github.io/marginalia/julia-performance/index.html</loc>
-    <lastmod>2021-11-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-</url>
-<url>
-    <loc>https://j-fu.github.io/marginalia/julia-registry/index.html</loc>
-    <lastmod>2021-11-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-</url>
-<url>
     <loc>https://j-fu.github.io/marginalia/older-posts/2014-12-14-remotehg/index.html</loc>
     <lastmod>2021-11-13</lastmod>
     <changefreq>monthly</changefreq>
@@ -93,6 +87,12 @@
 </url>
 <url>
     <loc>https://j-fu.github.io/marginalia/older-posts/2014-10-02-fieldtest/index.html</loc>
+    <lastmod>2021-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://j-fu.github.io/marginalia/julia/julia-workflow/index.html</loc>
     <lastmod>2021-11-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
