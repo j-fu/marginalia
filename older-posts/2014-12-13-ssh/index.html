@@ -1,0 +1,92 @@
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/marginalia/libs/highlight/github.min.css"> <link rel=stylesheet  href="/marginalia/css/franklin.css"> <link rel=stylesheet  href="/marginalia/css/poole_lanyon.css"> <link rel=stylesheet  href="/marginalia/css/adjust.css"> <link rel=icon  href="/marginalia/assets/favicon.png"> <title>Secure Shell ssh - the Swiss Army Knife of Remote Access</title> <input type=checkbox  class=sidebar-checkbox  id=sidebar-checkbox > <div class=sidebar  id=sidebar > <div class=sidebar-item > <p>Marginalia</p> </div> <nav class=sidebar-nav > <a class="sidebar-nav-item " href="/marginalia/">Home</a> <a class="sidebar-nav-item " href="/marginalia/julia/">Julia</a> <a class="sidebar-nav-item " href="/marginalia/older-posts/">Older posts</a> </nav> <div class=sidebar-item > <p>&copy; Jürgen Fuhrmann.</p> </div> </div> <!-- Wrap is the content to shift when toggling the sidebar. We wrap the content to avoid any CSS collisions with our real content. --> <div class=wrap > <div class=masthead > <div class=container > <h3 class=masthead-title > <a href="/marginalia/" title=Home >Marginalia</a> </h3> </div> </div> </div> <div class="container content"> <div class=franklin-content ><h1 id=secure_shell_ssh_-_the_swiss_army_knife_of_remote_access ><a href="#secure_shell_ssh_-_the_swiss_army_knife_of_remote_access" class=header-anchor >Secure Shell ssh - the Swiss Army Knife of Remote Access</a></h1> <p>&#40;2014-12-13&#41;</p> <p>Survival in the wild is no problem if you carry your Swiss Army Knife. So is survival in the internet – provided you know ssh.</p> <img src="http://upload.wikimedia.org/wikipedia/en/thumb/a/a5/Victorinox_Cybertool.JPG/800px-Victorinox_Cybertool.JPG" width=400px class=centered> <center> Swiss Army Cyber Tool (c) F. Flinch, public domain </center> <h1 id=resources ><a href="#resources" class=header-anchor >Resources</a></h1> <ul> <li><p><a href="http://www.cheat-sheets.org/saved-copy/OpenSSH_quickref.pdf">Cheat Sheet</a></p> <li><p><a href="http://en.wikipedia.org/wiki/Secure_Shell">Wikipedia Entry</a></p> <li><p>Man pages &#40;Linux, MacOSX&#41;: <a href="http://unixhelp.ed.ac.uk/CGI/man-cgi?ssh">ssh</a>,<a href="http://unixhelp.ed.ac.uk/CGI/man-cgi?scp">scp</a>,<a href="http://unixhelp.ed.ac.uk/CGI/man-cgi?ssh-agent">ssh-agent</a>,<a href="http://unixhelp.ed.ac.uk/CGI/man-cgi?ssh-agent">ssh-keygen</a>,<a href="http://unixhelp.ed.ac.uk/CGI/man-cgi?ssh_config">ssh-config</a></p> <li><p>ssh on Microsoft Windows: <a href="http://www.putty.org/">putty</a>, <a href="http://winscp.net">WinSCP</a></p> <li><p>ssh on <a href="https://play.google.com/store/apps/details?id&#61;com.sonelli.juicessh">Android</a>, <a href="https://itunes.apple.com/de/app/serverauditor-ssh-shell-console/id549039908">iOS</a></p> <li><p><a href="https://www.drupal.org/node/1070130">Public-private key pair on MacOSX</a></p> </ul> <h1 id=usage_patterns ><a href="#usage_patterns" class=header-anchor >Usage patterns</a></h1> <p>Secure shell is a tool for remote access to computers connected to the internet.</p> <h2 id=remote_access_with_password_authentication ><a href="#remote_access_with_password_authentication" class=header-anchor >Remote access with password authentication</a></h2> <p>Assume your your sysadmin told you &quot;Just use ssh to gate in order to log in to the institute&quot;. Then your institute which has the internet domain <code>institute.com</code> probably has a host <code>gate.institute.com</code>. Then this should work:</p> <pre><code class="julia hljs">mylaptop$ ssh user<span class=hljs-meta >@gate</span>.institute.com
+user<span class=hljs-meta >@gate</span>.institute.com&#x27;s password: 
+Last login: Thu Dec <span class=hljs-number >11</span> <span class=hljs-number >17</span>:<span class=hljs-number >46</span>:<span class=hljs-number >16</span> <span class=hljs-number >2014</span> from dslb-<span class=hljs-number >188</span>-<span class=hljs-number >103</span>-<span class=hljs-number >172</span>-<span class=hljs-number >167.188</span><span class=hljs-number >.103</span>.pools.vodafone-ip.de</code></pre> <p>As a result you will see the shell prompt of the remote system.</p> <p>If this is the first connection from the computer you are working on to the institute, you will be asked if you really trust the identity &#40;which you probably do at this point - if you don&#39;t, you can e.g. phone the sysadmin and ask her to read the fingerprint for comparison&#41;:</p> <pre><code class="julia hljs">mylaptop$ ssh user<span class=hljs-meta >@gate</span>.institute.com
+The authenticity of host &#x27;gate.institute.com (<span class=hljs-number >180.95</span><span class=hljs-number >.11</span><span class=hljs-number >.140</span>)&#x27; 
+can&#x27;t be established.
+RSA1 key fingerprint is ce:e0:<span class=hljs-number >70</span>:ea:<span class=hljs-number >7</span>c:d4:e1:<span class=hljs-number >99</span>:<span class=hljs-number >09</span>:<span class=hljs-number >61</span>:bd:<span class=hljs-number >0</span>b:<span class=hljs-number >28</span>:<span class=hljs-number >46</span>:<span class=hljs-number >08</span>:<span class=hljs-number >6</span>b.
+Are you sure you want to <span class=hljs-keyword >continue</span> connecting (yes/no)?</code></pre> <p>After answering <code>yes</code>, you get</p> <pre><code class="julia hljs">Warning: Permanently added &#x27;gate.institute.de,<span class=hljs-number >180.95</span><span class=hljs-number >.11</span><span class=hljs-number >.140</span>&#x27; 
+(RSA1) to the list of known hosts.</code></pre> <p>Similarly, this authentication check may be issued after a re-install of the remote system. If nothing of this is the case, this might be a warning sign for a man-in-the middle attack.</p> <p>After setting up this communication channel, all communication will be encrypted using a temporary symmetric session key which is automatically negotiated after authentication.</p> <h2 id=copying_data ><a href="#copying_data" class=header-anchor >Copying data</a></h2> <p>Along with the secure shell suite comes the command <code>scp</code> which allows you to copy data between computers. Fetching a file from the remote host using an absolute path goes like that:</p> <pre><code class="julia hljs">scp user<span class=hljs-meta >@gate</span>.institute.com:/home/user/daten.dat daten.dat .</code></pre>
+<p>Fetching a file  from your home directory on the remote host goes like</p>
+<pre><code class="julia hljs">scp user<span class=hljs-meta >@gate</span>.institute.com:daten.dat .</code></pre>
+<p>Likewise, you can copy data from your computer to the remote host:</p>
+<pre><code class="julia hljs">scp daten.dat user<span class=hljs-meta >@gate</span>.institute.com:/home/user/daten.dat
+scp daten.dat user<span class=hljs-meta >@gate</span>.institute.com:</code></pre>
+<p>Of course, every time you will be asked for your password...</p>
+<h2 id=executing_commands_on_the_remote_host ><a href="#executing_commands_on_the_remote_host" class=header-anchor >Executing commands on the remote host</a></h2>
+<p>As an example,</p>
+<pre><code class="julia hljs">ssh user<span class=hljs-meta >@gate</span>.institute.com ls</code></pre>
+<p>executes the command ls on the remote host. For interactive commands, you should use the <code>-t</code> switch:</p>
+<pre><code class="julia hljs">ssh -t user<span class=hljs-meta >@gate</span>.institute.com  emacs -nw</code></pre>
+<p>If it is an X11 program, you can get encrypted transport to X11 windows by adding <code>-X</code> to  the command line:</p>
+<pre><code class="julia hljs">ssh -X user<span class=hljs-meta >@gate</span>.institute.com  emacs</code></pre>
+<p>Of course, every time you will be asked for your password...</p>
+<h2 id=public_key_authentication ><a href="#public_key_authentication" class=header-anchor >Public key authentication</a></h2>
+<p>Now, we want to get rid of these annoying password requests. In order to prepare this, you need to generate a private-public key pair. The secure shell suite provides the command <code>ssh-keygen</code> which does this job:</p>
+<pre><code class="julia hljs">mylaptop$ ssh-keygen
+Generating public/private rsa1 key pair.
+Enter file <span class=hljs-keyword >in</span> which to save the key (/home/user/.ssh/id_rsa):
+Enter passphrase (empty <span class=hljs-keyword >for</span> no passphrase):*************** 
+Enter same passphrase again:***************
+Your identification has been saved <span class=hljs-keyword >in</span> /home/user/.ssh/id_rsa
+Your public key has been saved <span class=hljs-keyword >in</span> /home/user/.ssh/id_rsa.pub
+The key fingerprint is:
+<span class=hljs-number >5</span>c:<span class=hljs-number >23</span>:da:<span class=hljs-number >14</span>:<span class=hljs-number >00</span>:c6:<span class=hljs-number >6</span>f:<span class=hljs-number >3</span>f:<span class=hljs-number >6</span>e:<span class=hljs-number >2</span>d:<span class=hljs-number >69</span>:<span class=hljs-number >26</span>:e2:<span class=hljs-number >9</span>c:<span class=hljs-number >60</span>:b0 user<span class=hljs-meta >@nmnb2</span></code></pre>
+<p>The private key is protected by the passphrase and marks your identity if  activated.   **Both private  key  and  passphrase should  be  kept safe. They are not meant to be given to others. **</p>
+<p>The public key is  used to check this identity. You  give it to anyone &#40;computer or person&#41; whom you want to enable to do this check.</p>
+<p>In particular, you can add this public  key to the contents of the file <code>.ssh/authorized_keys</code>  in  your home  directory  on  the remote  host &#40;e.g. <code>gate.institute.com</code>&#41;.  To do this, use <code>scp</code> to copy the key and <code>ssh</code> to log in to the remote and to edit the file. In the result, the contents of that file will look like</p>
+<pre><code class="julia hljs">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCvyyza7e8tFrBhNMRd/<span class=hljs-number >3</span>w+XL9PIeSNTUC+PcHOQI7kcfk4oTDnfysTkPleM3fM+r588sDRWKa7eivLoZ7NCF3EgMd0HUUVHjWbWZgF7KXylu4dcsDMvANH5BlgWysFqxzaTzy8CX8E03NYSkn5kqzgtnkIm+Z/QzLd4mq48oG9Ns3uPlhU4Wf2XGEqV/<span class=hljs-number >6</span>EtLvHgAG/PtUP1kofO74oit2d8BH3fkU0UCMBlZqVCAoefFnR4qg3c18McK3dGhM741dpopeD3E+zaJ55AS9nIZFdbkOZNsrQR+FbzmwkqQDwQ060De5XijqdU3VD64xxHeQeFtgHG/LqAOCaUTzVtKzx fuhrmann<span class=hljs-meta >@jfzbook</span>.wias-berlin.de</code></pre>
+<p>Be  sure, that  the  whole  subdirectory <code>.ssh</code>  is  readable only  by yourself. To ensure this, issue</p>
+<pre><code class="julia hljs">chmod -R go-rwx .ssh</code></pre>
+<p>from the home directory on the remote host.</p>
+<p>Then you can login using</p>
+<pre><code class="julia hljs">mylaptop$ ssh -i .ssh/id_rsa gate.institute.com
+Enter passphrase <span class=hljs-keyword >for</span> RSA key &#x27;user<span class=hljs-meta >@nmnb2</span>&#x27;:</code></pre>
+<p>So, now  you authenticate  with the passphrase  instead of  the remote password.</p>
+<p>You can  store as  many public keys  in <code>.ssh/authorized_keys</code>  as you like, thus giving access to your  account to other identities of yours &#40;e.g. form  other computers&#41;  or to other  people &#40;wich  you should&#39;nt do&#41;.  Just add the line by line.   Be careful not to break the keys by accidental insertion of a line break. Each key uses exactly one line.</p>
+<p>Nice...  but...</p>
+<h2 id=password-less_login_identity_management_by_ssh-agent ><a href="#password-less_login_identity_management_by_ssh-agent" class=header-anchor >Password-less login: identity management by ssh-agent</a></h2>
+<p>Communicating with <code>ssh-agent</code>, the command <code>ssh-add</code>  activates your <em>private  key</em>  for  automatic  use  by <code>ssh</code>  after  verifying  your passphrase:</p>
+<pre><code class="julia hljs">mylaptop$ ssh-add
+Need passphrase <span class=hljs-keyword >for</span> .ssh/id_rsa
+Enter passphrase <span class=hljs-keyword >for</span> user<span class=hljs-meta >@nmnb2</span> 
+Identity added: .ssh/id_rsa (user<span class=hljs-meta >@nmnb2</span>)</code></pre>
+<p>The identity is then activated throughout your desktop session. Now try to issue</p>
+<pre><code class="julia hljs">ssh user<span class=hljs-meta >@gate</span>.institute.com</code></pre>
+<p>If  everything  works, you  will  be  logged  in without  password  or passphrase request.   The <code>ssh-agent</code> provides the  activated identity to the remote host, which uses the public key to check for the match.</p>
+<p>As long  as you keep  your passphrase and  your private key  safe, the connection is  encrypted and the procedure  is as safe as  you can get using  current  technology  &#40;provided all  participating  systems  are regularly updated&#41;.   You can increase security  by specifying higher key lengths and more sophisticated cipher schemes when generating your key pair,  and by specifying  a more  advanced cipher for  the session keys using the <code>-c</code> flag of ssh.</p>
+<p>Modern  desktop  systems  automatically   start  the <code>ssh-agent</code>,  so probably you do not have to care  about this. In times long passed you would have done this yourself by issuing e.g. one of</p>
+<pre><code class="julia hljs">$ ssh-agent xterm
+$ ssh-agent bash
+$ ssh-agent twm</code></pre>
+<h1 id=more ><a href="#more" class=header-anchor >More</a></h1>
+<p>Every decent Swiss Army Knife has a couple of strange tools whose purpose seems to be beyond your imagination. Same with  ssh:</p>
+<ul>
+<li><p>Tunneling</p>
+
+<li><p>Config file</p>
+
+<li><p>Host name aliasing in config file</p>
+
+<li><p>Single command execution during public key access</p>
+
+<li><p>Virtual Private Network &#40;VPN&#41; support</p>
+
+<li><p>ssh daemon</p>
+
+</ul>
+<p>About some of these later...</p>
+<div class=page-foot >
+  <div class=copyright >
+    &copy; Jürgen Fuhrmann. Last modified: November 13, 2021. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
+  </div>
+</div>
+</div>
+      </div>  
+    </div> 
+    
+    
+        
+
+
+    
+    <label for=sidebar-checkbox  class=sidebar-toggle ></label>

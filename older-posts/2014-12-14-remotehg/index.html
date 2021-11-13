@@ -1,0 +1,50 @@
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/marginalia/libs/highlight/github.min.css"> <link rel=stylesheet  href="/marginalia/css/franklin.css"> <link rel=stylesheet  href="/marginalia/css/poole_lanyon.css"> <link rel=stylesheet  href="/marginalia/css/adjust.css"> <link rel=icon  href="/marginalia/assets/favicon.png"> <title>Remote access to mercurial repository</title> <input type=checkbox  class=sidebar-checkbox  id=sidebar-checkbox > <div class=sidebar  id=sidebar > <div class=sidebar-item > <p>Marginalia</p> </div> <nav class=sidebar-nav > <a class="sidebar-nav-item " href="/marginalia/">Home</a> <a class="sidebar-nav-item " href="/marginalia/julia/">Julia</a> <a class="sidebar-nav-item " href="/marginalia/older-posts/">Older posts</a> </nav> <div class=sidebar-item > <p>&copy; Jürgen Fuhrmann.</p> </div> </div> <!-- Wrap is the content to shift when toggling the sidebar. We wrap the content to avoid any CSS collisions with our real content. --> <div class=wrap > <div class=masthead > <div class=container > <h3 class=masthead-title > <a href="/marginalia/" title=Home >Marginalia</a> </h3> </div> </div> </div> <div class="container content"> <div class=franklin-content ><h1 id=remote_access_to_mercurial_repository ><a href="#remote_access_to_mercurial_repository" class=header-anchor >Remote access to mercurial repository</a></h1> <p>&#40;2014-12-14&#41;</p> <p>When allowing others to clone a mercurial repository, it is important to organize easy and stable access, which works as well from behind a firewall. We discuss two methods from our daily pratice which allow to organize this.</p> <h2 id=resources ><a href="#resources" class=header-anchor >Resources</a></h2> <ul> <li><p><a href="http://mercurial.selenic.com/wiki/PublishingRepositories">Mercurial homepage on publishing repositories</a></p> <li><p><a href="http://mercurial.selenic.com/wiki/MultipleCommitters">&#40;Outdated&#41; mercurial homepage on multiple committers</a></p> <li><p><a href="http://binblog.info/2008/10/20/openssh-going-flexible-with-forced-commands/">ssh forced command</a></p> <li><p><a href="https://sites.google.com/site/ucdcsssg/announcements/howtocollaborateusingmercurialwithhg-ssh">hg-ssh description</a></p> </ul> <h2 id=intranet_access_via_hg_serve ><a href="#intranet_access_via_hg_serve" class=header-anchor >Intranet access via <code>hg serve</code></a></h2> <p>Mercurial has a built-in web server which allows to easily set up remote access to a repository. It is just like this &#40;issued on <code>myhost.institute.com</code>&#41;:</p> <pre><code class="julia hljs">myhost$ hg serve --daemon --port <span class=hljs-number >8100</span></code></pre>
+<p>This command starts the server and makes it available under the URLS</p>
+<pre><code class="julia hljs">http://myhost.institute.com:<span class=hljs-number >8100</span></code></pre>
+<p>and &#40;being logged into system <code>myhost</code>&#41;</p>
+<pre><code class="julia hljs">http://localhost:<span class=hljs-number >8100</span></code></pre>
+<p>The URL can be used  to browse the repository and to clone it.</p>
+<p>By  default  it is  not  possible  to  push  changes to  a  repository published  this way.  Pushing has  to  be explicitely  allowed in  the config file by setting</p>
+<pre><code class="julia hljs">[web]
+push_ssl=<span class=hljs-literal >false</span>
+allow_push=*</code></pre>
+<p>A  repository published  this way  can be  <strong>read by  everyone who  is allowed to  access port  8100 on host  myhost.institute.com</strong> Moreover, this connection  is unencrypted. As  a consequence, this  method makes sense only  in an intranet  with trusted  users behind a  firewall. It should be  noted, that  instead of <code>*</code>,  a list of  user names  can be written, but this authentication would not be very safe.</p>
+<h2 id=remote_access_via_hg_serve_and_ssh_tunnel ><a href="#remote_access_via_hg_serve_and_ssh_tunnel" class=header-anchor >Remote  access via <code>hg serve</code> and ssh tunnel</a></h2>
+<p>From  behind  a  firewall,  there  is the  option  to  access  such  a repository from outside  for any user who can access  the intranet via <a href=2014-12-13-ssh.html ><code>ssh</code></a>. Let us assume, that  the host <code>gate.institute.com</code> is the system which allows ssh login from outside  and <code>sees</code> <code>myhost</code>.  Log in from your laptop <code>mylaptop</code> to <code>gate.institute.com</code> using the command</p>
+<pre><code class="julia hljs">mylaptop$ ssh  <span class=hljs-number >5000</span>:myhost:<span class=hljs-number >8100</span> gate.institute.com</code></pre>
+<p>This forwards port 8100 from <code>myhost</code> to <code>mylaptop</code> and can be accessed under the URL</p>
+<pre><code class="julia hljs">http://localhost:<span class=hljs-number >5000</span></code></pre>
+<p>It is worth to note, that, being tunneled by <code>ssh</code>, this connection is encrypted and can be assumed to be a safe way to access the repository from outside.</p>
+<h2 id=remote_access_via_ssh ><a href="#remote_access_via_ssh" class=header-anchor >Remote access via ssh</a></h2>
+<p>If the repository you want to publish resides at <code>gate.institute.com</code> in the subdirectory <code>myrepo</code>, you can access it via <code>ssh</code>:</p>
+<pre><code class="julia hljs">hg clone ssh://gate.institute.com/myrepo</code></pre>
+<p>For decent handling it is advisable to set up <a href="2014-12-13-ssh.html#public-key-authentication">public key authentication</a> and <a href="2014-12-13-ssh.html#password-less-login-identity-management-by-ssh-agent">password free login</a>.</p>
+<p>Through this approach it is possible to grant remote repository access to  others. If  you  add the  public  key of  your  colleague to  your <code>.ssh/authorized_keys</code> file, she can clone you repository via</p>
+<pre><code class="julia hljs">hg clone ssh://yourusername<span class=hljs-meta >@gate</span>.institute.com/myrepo</code></pre>
+<p>However <strong>this would allow your colleague  to access all of your data</strong>.</p>
+<p>SSH and mercurial  provide the  following mechanism  to fix  this situation:</p>
+<ul>
+<li><p>In the <code>.ssh/authorized_keys</code> file, it is possible            to             specify    along with the public key of another person                one  single <a href="http://binblog.info/2008/10/20/openssh-going-flexible-with-forced-commands/">forced command</a> which can be remotely executed by this person.</p>
+
+<li><p>With mercurial, there comes the <a href="https://sites.google.com/site/ucdcsssg/announcements/howtocollaborateusingmercurialwithhg-ssh">hg-ssh</a> command which provides the possibility to dispatch mercurial access.</p>
+
+</ul>
+<p>Together this can be configured in <code>.ssh/authorized_keys</code> by prefixing the the public key of your  colleague by specifying the forced command along with further security relevant access options:</p>
+<pre><code class="julia hljs">command=<span class=hljs-string >&quot;/path/to/hg-ssh myrepo&quot;</span>,no-port-forwarding,no-X11-forwarding,no-pty ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCvyyza7e8tFrBhNMRd/<span class=hljs-number >3</span>w+XL9PIeSNTUC+PcHOQI7kcfk4oTDnfysTkPleM3fM+r588sDRWKa7eivLoZ7NCF3EgMd0HUUVHjWbWZgF7KXylu4dcsDMvANH5BlgWysFqxzaTzy8CX8E03NYSkn5kqzgtnkIm+Z/QzLd4mq48oG9Ns3uPlhU4Wf2XGEqV/<span class=hljs-number >6</span>EtLvHgAG/PtUP1kofO74oit2d8BH3fkU0UCMBlZqVCAoefFnR4qg3c18McK3dGhM741dpopeD3E+zaJ55AS9nIZFdbkOZNsrQR+FbzmwkqQDwQ060De5XijqdU3VD64xxHeQeFtgHG/LqAOCaUTzVtKzx fuhrmann<span class=hljs-meta >@jfzbook</span>.wias-berlin.de</code></pre>
+<p>Using the same  command as above, your college now  has full mercurial access to the <code>myrepo</code> repository. No  other access to your account is possible for her.  Please be aware  that she accesses all files in the repository  under  your  username.   When  committing,  the  name  she specivies in her <code>.hgrc</code> file is recorded.</p>
+<p>For general usage  it is advisable to use a  special account dedicated only  to repository  access  which differs  from  your normal  working account.</p>
+<div class=page-foot >
+  <div class=copyright >
+    &copy; Jürgen Fuhrmann. Last modified: November 13, 2021. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
+  </div>
+</div>
+</div>
+      </div>  
+    </div> 
+    
+    
+        
+
+
+    
+    <label for=sidebar-checkbox  class=sidebar-toggle ></label>

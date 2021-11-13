@@ -1,0 +1,4 @@
+Sitemap: https://j-fu.github.io/marginalia/sitemap.xml
+
+User-agent: *
+Disallow:

@@ -1,0 +1,158 @@
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/marginalia/libs/highlight/github.min.css"> <link rel=stylesheet  href="/marginalia/css/franklin.css"> <link rel=stylesheet  href="/marginalia/css/poole_lanyon.css"> <link rel=stylesheet  href="/marginalia/css/adjust.css"> <link rel=icon  href="/marginalia/assets/favicon.png"> <title>Basic workflow</title> <input type=checkbox  class=sidebar-checkbox  id=sidebar-checkbox > <div class=sidebar  id=sidebar > <div class=sidebar-item > <p>Marginalia</p> </div> <nav class=sidebar-nav > <a class="sidebar-nav-item " href="/marginalia/">Home</a> <a class="sidebar-nav-item " href="/marginalia/julia/">Julia</a> <a class="sidebar-nav-item " href="/marginalia/older-posts/">Older posts</a> </nav> <div class=sidebar-item > <p>&copy; Jürgen Fuhrmann.</p> </div> </div> <!-- Wrap is the content to shift when toggling the sidebar. We wrap the content to avoid any CSS collisions with our real content. --> <div class=wrap > <div class=masthead > <div class=container > <h3 class=masthead-title > <a href="/marginalia/" title=Home >Marginalia</a> </h3> </div> </div> </div> <div class="container content"> <div class=franklin-content ><h1>Julia Workflow</h1> <p><div class=franklin-toc ><ol><li><a href="#basic_workflow">Basic workflow</a><li><a href="#revisejl">Revise.jl</a><li><a href="#environments">Environments</a><li><a href="#an_idea_for_structuring_a_julia_project">An idea for structuring a Julia project</a></ol></div> </p> <p>These hints are focused on editing the code in a favorite editor and runing it from the command line. Pluto notebooks and Julia&#39;s Visual Studio Code extensions provide several more possibilities.</p> <h2 id=basic_workflow ><a href="#basic_workflow" class=header-anchor >Basic workflow</a></h2> <p>Many available Julia examples and the mindset influenced by Matlab or Python suggest that one just starts to perform everything in the global context of a script &#40;e.g. <code>MyScript.jl</code>&#41;</p> <pre><code class="julia hljs"><span class=hljs-keyword >using</span> Package1
+<span class=hljs-keyword >using</span> Package2
+
+<span class=hljs-comment ># action here</span></code></pre> <p>and running the script via</p> <pre><code class="julia hljs">$ julia MyScript.jl</code></pre>
+<p>However, for Julia this is a bad idea for at  least two reasons:</p>
+<ul>
+<li><p><a href="https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-global-variables">Type-stable action</a> of Julia&#39;s just-in-time compiler is possible only for functions, so this code does not optimize well</p>
+
+<li><p>One encounters precompilation time hiatus when running after each modified  version</p>
+
+</ul>
+<p>Suggestions:</p>
+<ul>
+<li><p>Develop any code in functions. E.g. <code>MyScript.jl</code> could look like:</p>
+
+</ul>
+<pre><code class="julia hljs"><span class=hljs-keyword >using</span> Package1
+<span class=hljs-keyword >using</span> Package2
+
+<span class=hljs-keyword >function</span> main(; kwarg1=<span class=hljs-number >1</span>, kwarg2=<span class=hljs-number >2</span>)
+ <span class=hljs-comment ># action here </span>
+<span class=hljs-keyword >end</span></code></pre>
+<ul>
+<li><p>Invoke the code  from a running julia instance. In this   case you encounter the Read-Eval-Print-Loop &#40;REPL&#41; of Julia. You don&#39;t need to leave julia for restarting modified code &#40;except in the case when you re-define a constant or a struct&#41;. Just reload the code by repeating the <code>include</code> statement:</p>
+
+</ul>
+<pre><code class="julia hljs">$ julia
+julia&gt; include(<span class=hljs-string >&quot;MyScript.jl&quot;</span>)
+julia&gt; main(kwarg1=<span class=hljs-number >5</span>)</code></pre>
+<ul>
+<li><p>Think about wrapping code into modules. The previous example can be enhanced by wrapping the code of the script into a module.  This has the advantage that you can load different scripts into the same session without name clashes.</p>
+
+</ul>
+<pre><code class="julia hljs"><span class=hljs-built_in >Module</span> MyScript
+
+<span class=hljs-keyword >using</span> Package1
+<span class=hljs-keyword >using</span> PackageN
+
+<span class=hljs-keyword >function</span> main(; kwarg1=<span class=hljs-number >1</span>, kwarg2=<span class=hljs-number >2</span>)
+ <span class=hljs-comment ># action here </span>
+<span class=hljs-keyword >end</span>
+
+<span class=hljs-keyword >end</span></code></pre>
+<pre><code class="julia hljs">$ julia
+julia&gt; include(<span class=hljs-string >&quot;MyScript.jl&quot;</span>)
+julia&gt; MyScript.main(kwarg1=<span class=hljs-number >5</span>)</code></pre>
+<h2 id=revisejl ><a href="#revisejl" class=header-anchor >Revise.jl</a></h2>
+<p>In the previous examples, re-loading the code after modifications required to re-run the include statement. The package  <a href="https://github.com/timholy/Revise.jl">Revise.jl</a> adds a command <code>includet</code> which triggers automatic recompilation of modified code if the source code of the script file and of packages  used therein changes.</p>
+<p>In order to set this up, place the following into the Julia startup file <code>.julia/config/startup.jl</code> in your home directory:</p>
+<pre><code class="julia hljs"><span class=hljs-keyword >using</span> Revise</code></pre>
+<p>You would then run:</p>
+<pre><code class="julia hljs">$ julia -i
+julia&gt; includet(<span class=hljs-string >&quot;MyScript.jl&quot;</span>)
+julia&gt; MyScript.main(kwarg1=<span class=hljs-number >5</span>)</code></pre>
+<p>After changing <code>MyScript.jl</code>, just another  invocation of <code>MyScript.main</code>  would see the changes.</p>
+<p>In addition, <code>Revise.jl</code> also tracks source code of packages added via <code>using</code>, and it also works for <a href="https://github.com/fonsp/Pluto.jl">Pluto notebooks</a>.</p>
+<h2 id=environments ><a href="#environments" class=header-anchor >Environments</a></h2>
+<p>By default, packages added to the Julia installation are recorded in the default <em>global environment</em>:</p>
+<pre><code class="julia hljs">$ julia
+julia&gt;]
+pkg&gt; add Package1</code></pre>
+<p>results in a corresponding entries in <code>.julia/environments/v1.x/Project.toml</code>  and <code>.julia/environments/v1.x/Manifest.toml</code> . Sharing this global  environment between all your different projects is risky because of possible conflicts in package version requirements.</p>
+<p><em>Local environments</em> provide a remedy.</p>
+<p>Assume that a <em>project</em> is Julia code residing in a given directory <code>project_dir</code>, uses one or several other Julia packages and is not intended to be invoked from other projects. An environment is described by a <code>Project.toml</code> file in the project directory . One can set up an environment in the following way:</p>
+<pre><code class="julia hljs">$ cd project_dir
+$ julia
+$ pkg&gt; activate .
+$ pkg&gt; add Package1
+$ pkg&gt; add PackageN
+$ exit()</code></pre>
+<p>After setting up the environment like this, you can  perform</p>
+<pre><code class="julia hljs">$ cd project_dir
+$ julia --project=@.</code></pre>
+<p>and work in the environment. All packages added in this case affect only this enviroment. All packages added to the global environment still will be visible.</p>
+<p>When it comes to versioning, the <code>Project.toml</code> file should be checked in along with the source code, so another project collaborator can easily establish a similar environment via</p>
+<pre><code class="julia hljs">$ cd project_dir
+$ julia --project=.
+$ pkg&gt; instantiate</code></pre>
+<p>When instantiated, a <code>Manifest.toml</code> file appears which holds the information about the exact versions of all Julia packages used by the project.  Putting this under version control would allow to establish the exact versions of Julia packages necessary to establish a given result. </p>
+<p>See also the corresponding <a href="https://pkgdocs.julialang.org/v1.2/environments/">documentation</a></p>
+<h2 id=an_idea_for_structuring_a_julia_project ><a href="#an_idea_for_structuring_a_julia_project" class=header-anchor >An idea for structuring a Julia project</a></h2>
+<p>Up to now, it was assumed that one works with a couple of scripts. For a larger project, more structure of the code is needed. In particular, different project scripts may share some parts of the code, and may be  some of this code slowly turns into a package. The following recommendations are partially inspired by B. Kaminski&#39;s <a href="https://bkamins.github.io/julialang/2020/05/18/project-workflow.html">post on project workflow</a> and  by the  <a href="https://github.com/JuliaDynamics/DrWatson.jl">DrWatson.jl</a> package of G. Datseris.</p>
+<ul>
+<li><p>Generate the project directory itself as a package &#40;named e.g. <code>MyProject</code>&#41; using <a href="https://pkgdocs.julialang.org/v1/creating-packages/"><code>Pkg.generate</code></a> or <a href="https://github.com/invenia/PkgTemplates.jl">PkgTemplates.jl</a>. This has the following advantages:</p>
+<ul>
+<li><p>easy way to share  the code in the <code>src</code> folder among different project scripts via <code>using MyProject</code></p>
+
+<li><p>availability of Julia&#39;s  test and documentation functionality for the project</p>
+
+</ul>
+
+<li><p>Optionally have a folder <code>packages</code> which contains other sub-packages. As <a href="https://github.com/JuliaLang/Pkg.jl/issues/1214">relative paths are recorded in Manifest.toml</a>, these can be made available the project via <code>Pkg.develop&#40;path&#61;&quot;packages/MySubPackage&quot;&#41;</code>. In this case, the whole project  tree will stay relocateable.</p>
+<ul>
+<li><p>This allows for easy start of low key package development. At a later stage, <code>MySubPackage</code> could be registered as a Julia package and removed from the project tree without affecting  scripts depending on it. </p>
+
+</ul>
+
+<li><p>When working with the project, always run julia from the package root with the package environment activated: <code>julia --project&#61;.</code> </p>
+
+<li><p>Assume Pluto notebooks to be in <code>notebooks</code> and call <code>Pkg.activate&#40;joinpath&#40;@__DIR__,&quot;..&quot;&#41;&#41;</code> in their Pkg cell to activate the project environment.  As a consequence, the Pluto notebooks will share the project environment, and they can&#39;t be redistributed independent of the project.</p>
+
+<li><p>You may use <a href="https://github.com/JuliaDynamics/DrWatson.jl">DrWatson.jl</a> for managing subdirectory access and simulation results. By explicitely activating the project environment at the start of Julia or in the notebook Pkg cell, you can avoid <code>@quickactivate</code> and  avoid putting <code>using DrWatson</code> into script files and notebooks. See also <a href="https://github.com/JuliaDynamics/DrWatson.jl/issues/261">this discussion</a>.</p>
+
+</ul>
+<p>A sample project tree could e.g. look like this</p>
+<pre><code class="julia hljs">MyProject
+├── LICENSE
+├── Manifest.toml
+├── notebooks
+│   └── demo-notebook.jl
+├── packages
+│   └── MySubPackage
+│       ├── Manifest.toml
+│       ├── Project.toml
+│       ├── src
+│       │   └── MySubPackage.jl
+│       └── test
+│           └── runtests.jl
+├── papers
+├── Project.toml
+├── README.md
+├── scripts
+│   └── demo-script.jl
+├── src
+│   └── MyProject.jl
+└── test
+    └── runtests.jl</code></pre>
+<p>You can download the Julia script <a href="/marginalia/assets/genproject.jl">genproject.jl</a> and generate this structure a subdirectory via</p>
+<pre><code class="julia hljs">julia --compile=min genproject.jl name_of_your_project</code></pre>
+<p>Adapt it to your needs.</p>
+<p><strong>Project strucure summary</strong></p>
+<ul>
+<li><p>Shared code among scripts or  notebooks is either placed in <code>src</code> as part of the <code>MyProject</code> package, or in package in <code>packages</code></p>
+
+<li><p>Script functionality should be developed in functions, avoiding global variables</p>
+
+<li><p>Scripts can contain modules in order to separate their namespaces.</p>
+
+<li><p>Pluto notebooks should activate the enviromnent in the root directory of <code>MyProject</code></p>
+
+<li><p>Write tests </p>
+
+</ul>
+<div class=page-foot >
+  <div class=copyright >
+    &copy; Jürgen Fuhrmann. Last modified: November 13, 2021. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
+  </div>
+</div>
+</div>
+      </div>  
+    </div> 
+    
+    
+        
+
+
+    
+    <label for=sidebar-checkbox  class=sidebar-toggle ></label>
