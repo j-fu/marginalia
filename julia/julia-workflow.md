@@ -200,7 +200,7 @@ julia --compile=min genproject.jl name_of_your_project
 ```
 Adapt it to your needs.
 
-__Project strucure summary__
+__Project structure summary__
 - Shared code among scripts or  notebooks is either placed in `src` as part of the `MyProject` package, or in package in `packages`
 - Script functionality should be developed in functions, avoiding global variables
 - Scripts can contain modules in order to separate their namespaces.

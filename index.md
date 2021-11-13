@@ -2,6 +2,12 @@
 @def tags = ["code"]
 
 
+# Posts
+  - [Julia](julia)
+  - [Older posts](older-posts)
 
-- [WIAS Berlin](https://www.wias-berlin.de/people/fuhrmann)
-- [GitHub](https://github.com/j-fu)
+# Where to find me 
+  - [WIAS Berlin](https://www.wias-berlin.de/people/fuhrmann)
+  - [GitHub](https://github.com/j-fu)
+
+
