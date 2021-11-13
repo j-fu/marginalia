@@ -40,3 +40,6 @@
 # time: 2021-11-13 23:41:00 CET
 # mode: julia
 	serve(port=8000)
+# time: 2021-11-14 00:16:10 CET
+# mode: julia
+	publish()
