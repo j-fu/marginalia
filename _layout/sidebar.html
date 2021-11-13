@@ -1,0 +1,30 @@
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Marginalia</p>
+  </div>
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item {{ispage index.html}}active{{end}}" href="/">Home</a>
+    <a class="sidebar-nav-item {{ispage menu1/*}}active{{end}}" href="/julia/">Julia</a>
+    <a class="sidebar-nav-item {{ispage menu1/*}}active{{end}}" href="/older-posts/">Older posts</a>
+  </nav>
+  <div class="sidebar-item">
+    <p>&copy; {{fill author}}.</p>
+  </div>
+</div>
+
+<!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+content to avoid any CSS collisions with our real content. -->
+
+<div class="wrap">
+  <div class="masthead">
+    <div class="container">
+      <h3 class="masthead-title">
+        <a href="/" title="Home">Marginalia</a>
+      </h3>
+    </div>
+  </div>
+</div>
+<div class="container content">
