@@ -49,3 +49,51 @@
 # time: 2021-11-14 00:25:23 CET
 # mode: julia
 	publish()
+# time: 2021-11-14 00:27:34 CET
+# mode: julia
+	serve(port=8000)
+# time: 2021-11-14 00:34:30 CET
+# mode: shell
+	rg built
+# time: 2021-11-14 00:34:44 CET
+# mode: shell
+	rg built -tmd
+# time: 2021-11-14 00:35:09 CET
+# mode: shell
+	cd layout
+# time: 2021-11-14 00:35:19 CET
+# mode: shell
+	cd _layout/
+# time: 2021-11-14 00:35:22 CET
+# mode: shell
+	rg built -tmd
+# time: 2021-11-14 00:35:23 CET
+# mode: shell
+	rg built
+# time: 2021-11-14 00:42:50 CET
+# mode: shell
+	ls
+# time: 2021-11-14 00:42:54 CET
+# mode: shell
+	cd ..
+# time: 2021-11-14 00:42:55 CET
+# mode: shell
+	ls
+# time: 2021-11-14 00:43:02 CET
+# mode: shell
+	git add README.md
+# time: 2021-11-14 00:43:04 CET
+# mode: shell
+	git push
+# time: 2021-11-14 00:43:13 CET
+# mode: shell
+	git commit -m "readme"
+# time: 2021-11-14 00:43:15 CET
+# mode: shell
+	git push
+# time: 2021-11-14 00:44:12 CET
+# mode: julia
+	serve(port=8000)
+# time: 2021-11-14 00:49:55 CET
+# mode: julia
+	publish()
