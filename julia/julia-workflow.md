@@ -169,7 +169,7 @@ The following recommendations are partially inspired by B. Kaminski's post on  [
    - availability of Julia's  test and documentation functionality for the project
 - Optionally have a folder `packages` which contains other sub-packages.
   As [relative paths are recorded in Manifest.toml](https://github.com/JuliaLang/Pkg.jl/issues/1214), these can be made available the project via `Pkg.develop(path="packages/MySubPackage")`. In this case, the whole project  tree will stay relocateable.
-   - This allows for easy start of low key package development. At a later stage, `MySubPackage` could be registered as a Julia package and removed from the project tree without affecting  scripts depending on it. 
+   - This allows for easy start of low key package development. At a later stage, `MySubPackage` could be registered as a Julia package while still residing in the project teee, or even removed from the project tree without affecting  scripts depending on it. 
 - When working with the project, always run julia from the package root with the package environment activated: `julia --project=.` 
 - Assume project specific Pluto notebooks to reside in a  `notebooks` subdirectory  and call  `Pkg.activate(joinpath(@__DIR__,".."))` in their respective Pkg cell to activate the `MyProject` environment.  As a consequence, Pluto's in-built package manager will be disabled and the project specific notebooks will share the `MyProject` environment and _cannot be shared independent from the `MyProject` tree_ (If independent sharing is desired, common project code can be collected into a package residing in `packages` and registered in a registry; registering `MyProject` itself as a package is not recommended.  -- More about this in another post).
 
