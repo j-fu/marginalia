@@ -5,25 +5,22 @@ Julia Workflow
 
 \toc 
 
-
-These hints are focused on editing the code in a favorite editor and runing it from the command line. 
-Pluto notebooks and Julia's Visual Studio Code extensions provide several more possibilities.
+These workflow hints have been developed from my own experience and are essentially an illustration of the [workflow tips](https://docs.julialang.org/en/v1/manual/workflow-tips)  found in the Julia documentation. The ideas on project structuring are partially inspired by B. Kaminski's post on  [project workflow](https://bkamins.github.io/julialang/2020/05/18/project-workflow.html) and  the  [DrWatson.jl](https://github.com/JuliaDynamics/DrWatson.jl) package by G. Datseris.
 
 
+## Never leave Julia and  write code in functions
 
-
-## Basic workflow
-
-Many available Julia examples and  the mindset influenced by Matlab or Python suggest  that one just  starts to  perform everything  in the global context of a script (e.g. `MyScript.jl`)
+Many available Julia examples and  the mindset influenced by Matlab or Python suggest  that code is written in scripts where  computations are performed in the global context. E.g.  a script `MyScript.jl` would look like:
 
 ```
 using Package1
 using Package2
 
-# action here
+# computations here
+...
 ```
 
-and running the script via
+and executed like
 
 ```
 $ julia MyScript.jl
@@ -32,13 +29,12 @@ $ julia MyScript.jl
 
 However, for Julia this is a bad idea for at  least two reasons:
 
--  [Type-stable action](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-global-variables) of Julia's just-in-time compiler is possible only for functions, so this code does not optimize well
+-  Type-stable action of Julia's just-in-time compiler is possible only for functions, so this code does not optimize well
 - One encounters precompilation time hiatus when running after each modified  version
 
 Suggestions:
 
-- Develop any code in functions. E.g. `MyScript.jl` could look like:
-
+- [Avoid global variables](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-global-variables) and develop any code in functions. E.g. `MyScript.jl` could look like:
 ```
 using Package1
 using Package2
@@ -48,7 +44,7 @@ function main(; kwarg1=1, kwarg2=2)
 end
 ```
 
-- Invoke the code  from a running julia instance. In this   case you encounter the Read-Eval-Print-Loop (REPL) of Julia. You don't need to leave julia for restarting modified code (except in the case when you re-define a constant or a struct). Just reload the code by repeating the `include` statement:
+- Always invoke the code from within a running julia instance. In this   case you encounter the [Read-Eval-Print-Loop (REPL)](https://docs.julialang.org/en/v1/manual/workflow-tips/#REPL-based-workflow) of Julia. You don't need to leave julia for restarting modified code (except in the case when you re-define a constant or a struct). Just reload the code by repeating the `include` statement:
 
 
 ```
@@ -83,10 +79,10 @@ julia> MyScript.main(kwarg1=5)
 ```
 
 
-##  Revise.jl
+## Use Revise.jl to reload modified code
 
-In the previous examples, re-loading the code after modifications required to re-run the include statement. The package 
-[Revise.jl](https://github.com/timholy/Revise.jl) adds a command `includet` which triggers automatic recompilation of modified code if the source code of the script file and of packages  used therein changes.
+In the previous examples, re-loading the code after modifications required to re-run the include statement. The package [Revise.jl](https://github.com/timholy/Revise.jl) exports a function `includet` which triggers automatic recompilation  if the source code of the script file or of packages used therein has been modified.
+
 
 In order to set this up, place the following into the Julia startup file `.julia/config/startup.jl` in your home directory:
 
@@ -100,12 +96,13 @@ $ julia -i
 julia> includet("MyScript.jl")
 julia> MyScript.main(kwarg1=5)
 ```
-After changing `MyScript.jl`, just another  invocation of `MyScript.main`  would see the changes.
+After having modified `MyScript.jl`, just another  invocation of `MyScript.main()`  would see the changes. See also the corresponding hints in the [Julia documentation](https://docs.julialang.org/en/v1/manual/workflow-tips/#Revise-based-workflows).
 
+Besides of tracking scripts loaded into the REPL, `Revise.jl` 
+- tracks changes in packages under development loaded into the script via `using` or `import`.
+- works in [Pluto notebooks](https://github.com/fonsp/Pluto.jl)
 
-In addition, `Revise.jl` also tracks source code of packages added via `using`, and it also works for [Pluto notebooks](https://github.com/fonsp/Pluto.jl).
-
-## Environments
+## Record your project dependencies in reproducible environments
 
 By default, packages added to the Julia installation are recorded in the default _global environment_:
 ```
@@ -113,18 +110,18 @@ $ julia
 julia>]
 pkg> add Package1
 ```
-results in a corresponding entries in  `.julia/environments/v1.x/Project.toml`  and `.julia/environments/v1.x/Manifest.toml` .
-Sharing this global  environment between all your different projects is risky because of possible conflicts in package version requirements.
+This results in  corresponding entries in  `.julia/environments/vx.y/Project.toml`  and `.julia/environments/vy.y/Manifest.toml`  (where `x.y` stands for your installed Julia version).
+Sharing this global  environment between all your different projects is risky because of possible conflicts in package version requirements. In addition, relying on the global environment makes it hard to share your code with others, as you would have to find a way to communicate the packages (with versions) which they need to install to run your code.
 
 
 
 _Local environments_ provide a remedy.
 
-Assume that a _project_ is Julia code residing in a given directory `project_dir`, uses one or several other Julia packages and is not intended to be invoked from other projects. An environment is described by a `Project.toml` file in the project directory . One can set up an environment
-in the following way:
+Assume that a _project_ is Julia code residing in a given directory `MyProject`, uses one or several other Julia packages and is not intended to be invoked from other projects. An environment is described by the two files in the `MyProject` directory:  `Project.toml` and `Manifest.toml`.
+Set up an environment in the following way:
 
 ```
-$ cd project_dir
+$ cd MyProject
 $ julia
 $ pkg> activate .
 $ pkg> add Package1
@@ -134,28 +131,37 @@ $ exit()
 After setting up the environment like this, you can  perform
 
 ```
-$ cd project_dir
-$ julia --project=@.
+$ cd MyProject
+$ julia --project=.
 ```
-and work in the environment. All packages added in this case affect only this enviroment. All packages added to the global environment still will be visible.
+and work in the environment. All packages added  to Julia in this case are recorded in `MyProject` instead of `.julia/environments/vx.y/`. Packages in the global environment still will be visible to your project.
 
-When it comes to versioning, the `Project.toml` file should be checked in along with the source code, so another project collaborator can easily establish a similar environment via
+
+The  `Project.toml` file lists the packages added to the environment. In addition, a `Manifest.toml` file appears which holds the information about the exact versions of all Julia packages used by the project. Both  should be checked into version control along with the source code.
+If you took care about adding all necessary dependencies to the local environment, after checking out your code, another project collaborator can easily install all dependencies via
 
 ```
-$ cd project_dir
+$ cd MyProject
 $ julia --project=.
 $ pkg> instantiate
 ```
-When instantiated, a `Manifest.toml` file appears which holds the information about the exact versions of all Julia packages used by the project.  Putting this under version control would allow to establish the exact versions of Julia packages necessary to establish a given result. 
 
-See also the corresponding [documentation](https://pkgdocs.julialang.org/v1.2/environments/)
+See also the corresponding documentation on [environments](https://pkgdocs.julialang.org/v1/environments/) and [`Project.toml` and 
+`Manifest.toml`](https://pkgdocs.julialang.org/v1/toml-files/).
 
 
+Pluto notebooks have their own [built-in package management](https://github.com/fonsp/Pluto.jl/wiki/%F0%9F%8E%81-Package-management) and by default     contain a `Project.toml` and a `Manifest.toml` file to ensure portability.
 
-## An idea for structuring a Julia project
+## Take advantage of Julia's package management to structure larger projects
 
-Up to now, it was assumed that one works with a couple of scripts. For a larger project, more structure of the code is needed. In particular, different project scripts may share some parts of the code, and may be  some of this code slowly turns into a package.
-The following recommendations are partially inspired by B. Kaminski's [post on project workflow](https://bkamins.github.io/julialang/2020/05/18/project-workflow.html) and  by the  [DrWatson.jl](https://github.com/JuliaDynamics/DrWatson.jl) package of G. Datseris.
+Up to now, it was assumed that one works with a couple of scripts in a subdirectory. For a larger project, more structure of the code is needed:
+- different project scripts and Pluto notebooks may share some parts of the code, and you want to avoid [repeating yourself](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)
+- modularization of the project code can facilitate maintenance and extendability
+- may be some of the code slowly turns into a package
+- you want to have unit testing available in the project
+- the whole project directory _still_ shall be shareable with collaborators in a reproducible way
+
+The following recommendations are partially inspired by B. Kaminski's post on  [project workflow](https://bkamins.github.io/julialang/2020/05/18/project-workflow.html) and  the  [DrWatson.jl](https://github.com/JuliaDynamics/DrWatson.jl) package by G. Datseris.
 
 
 - Generate the project directory itself as a package (named e.g. `MyProject`) using [`Pkg.generate`](https://pkgdocs.julialang.org/v1/creating-packages/) or [PkgTemplates.jl](https://github.com/invenia/PkgTemplates.jl). This has the following advantages:
@@ -165,8 +171,9 @@ The following recommendations are partially inspired by B. Kaminski's [post on p
   As [relative paths are recorded in Manifest.toml](https://github.com/JuliaLang/Pkg.jl/issues/1214), these can be made available the project via `Pkg.develop(path="packages/MySubPackage")`. In this case, the whole project  tree will stay relocateable.
    - This allows for easy start of low key package development. At a later stage, `MySubPackage` could be registered as a Julia package and removed from the project tree without affecting  scripts depending on it. 
 - When working with the project, always run julia from the package root with the package environment activated: `julia --project=.` 
-- Assume Pluto notebooks to be in `notebooks` and call  `Pkg.activate(joinpath(@__DIR__,".."))` in their Pkg cell to activate the project environment.  As a consequence, the Pluto notebooks will share the project environment, and they can't be redistributed independent of the project.
-- You may use [DrWatson.jl](https://github.com/JuliaDynamics/DrWatson.jl) for managing subdirectory access and simulation results. By explicitely activating the project environment at the start of Julia or in the notebook Pkg cell, you can avoid  `@quickactivate` and  avoid putting `using DrWatson` into script files and notebooks. See also [this discussion](https://github.com/JuliaDynamics/DrWatson.jl/issues/261).
+- Assume project specific Pluto notebooks to reside in a  `notebooks` subdirectory  and call  `Pkg.activate(joinpath(@__DIR__,".."))` in their respective Pkg cell to activate the `MyProject` environment.  As a consequence, Pluto's in-built package manager will be disabled and the project specific notebooks will share the `MyProject` environment and _cannot be shared independent from the `MyProject` tree_ (If independent sharing is desired, common project code can be collected into a package residing in `packages` and registered in a registry; registering `MyProject` itself as a package is not recommended.  -- More about this in another post).
+
+- You may use [DrWatson.jl](https://github.com/JuliaDynamics/DrWatson.jl) for managing subdirectory access, simulation results and version tagging. By explicitely activating the project environment at the start of Julia or in the notebook Pkg cell, you can avoid  `@quickactivate` and  avoid putting `using DrWatson` into script files and notebooks for the sole purpose of activating the common environment. See also [this discussion](https://github.com/JuliaDynamics/DrWatson.jl/issues/261).
 
 
 A sample project tree could e.g. look like this
@@ -194,15 +201,24 @@ MyProject
 └── test
     └── runtests.jl
 ```
-You can download the Julia script [genproject.jl](/assets/genproject.jl) and generate this structure a subdirectory via
+You can download the Julia script [genproject.jl](/assets/genproject.jl) and generate this structure a subdirectory on your computer via
 ```
 julia --compile=min genproject.jl name_of_your_project
 ```
-Adapt it to your needs.
+Feel free to adapt the generated directory tree to your needs and don't forget to make a git repository out of it as early as possible.
 
-__Project structure summary__
-- Shared code among scripts or  notebooks is either placed in `src` as part of the `MyProject` package, or in package in `packages`
+## TL;DR
 - Script functionality should be developed in functions, avoiding global variables
-- Scripts can contain modules in order to separate their namespaces.
-- Pluto notebooks should activate the enviromnent in the root directory of `MyProject`
-- Write tests 
+- Create a project specific environment as a project-package
+- Use the REPL and  Revise.jl, start julia in the activated project environment
+- Place shared code among project specific  scripts or  notebooks either in the `src` subdirectory as part of the project-package, or in a  sub-package in a subdirectory of the project-package
+- Separate namespaces of scripts by using  modules
+- Activate the shared project environment of the project-package in project specific Pluto notebooks. 
+- Write tests and examples
+
+By taking advantage of Julia's best-in-class package management facilities, the proposed approach goes a long way in the direction of maintaining sustainable research software. From a [talk by A. Zeller](https://de.slideshare.net/andreas.zeller/sustainable-research-software):
+1. Have a repo ✓
+2. Anyone can build ✓
+3. Have tests ✓
+4. Be open for extensions ✓
+5. Have examples ✓
