@@ -1,6 +1,6 @@
 
 
-Julia Workflow
+Julia Workflow Hints
 ====================
 
 \toc 

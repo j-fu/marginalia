@@ -7,7 +7,7 @@
   - [Older posts](older-posts)
 
 # Where to find me 
-  - [WIAS Berlin](https://www.wias-berlin.de/people/fuhrmann)
+  - [Weierstrass Institute](https://www.wias-berlin.de/people/fuhrmann)
   - [GitHub](https://github.com/j-fu)
 
 
