@@ -111,7 +111,7 @@ julia>]
 pkg> add Package1
 ```
 This results in  corresponding entries in  `.julia/environments/vx.y/Project.toml`  and `.julia/environments/vy.y/Manifest.toml`  (where `x.y` stands for your installed Julia version).
-Sharing this global  environment between all your different projects is risky because of possible conflicts in package version requirements. In addition, relying on the global environment makes it hard to share your code with others, as you would have to find a way to communicate the packages (with versions) which they need to install to run your code.
+Sharing this global  environment between all your different projects is risky because of possible conflicts in package version requirements. In addition, relying on the global environment makes it hard to share your code with others, as you would have to find a way to communicate the names of the  packages (with versions) which they need to install to run your code.
 
 
 
