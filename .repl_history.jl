@@ -97,3 +97,15 @@
 # time: 2021-11-14 00:49:55 CET
 # mode: julia
 	publish()
+# time: 2021-11-14 00:57:09 CET
+# mode: julia
+	serve(port=8000)
+# time: 2021-11-14 00:57:45 CET
+# mode: julia
+	serve(port=8001)
+# time: 2021-11-14 00:57:47 CET
+# mode: julia
+	serve(port=8002)
+# time: 2021-11-14 01:09:45 CET
+# mode: julia
+	publish()
