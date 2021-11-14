@@ -2,12 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
-    <loc>https://j-fu.github.io/marginalia/julia/julia-registry/index.html</loc>
-    <lastmod>2021-11-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-</url>
-<url>
     <loc>https://j-fu.github.io/marginalia/older-posts/2014-10-01-rbtest/index.html</loc>
     <lastmod>2021-11-14</lastmod>
     <changefreq>monthly</changefreq>
@@ -15,6 +9,12 @@
 </url>
 <url>
     <loc>https://j-fu.github.io/marginalia/julia/index.html</loc>
+    <lastmod>2021-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://j-fu.github.io/marginalia/julia/project-workflow/index.html</loc>
     <lastmod>2021-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -32,7 +32,7 @@
     <priority>0.5</priority>
 </url>
 <url>
-    <loc>https://j-fu.github.io/marginalia/julia/julia-performance/index.html</loc>
+    <loc>https://j-fu.github.io/marginalia/julia/package-workflow/index.html</loc>
     <lastmod>2021-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -62,6 +62,12 @@
     <priority>0.5</priority>
 </url>
 <url>
+    <loc>https://j-fu.github.io/marginalia/julia/basic-workflow/index.html</loc>
+    <lastmod>2021-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
     <loc>https://j-fu.github.io/marginalia/older-posts/2014-10-30-mercurial/index.html</loc>
     <lastmod>2021-11-14</lastmod>
     <changefreq>monthly</changefreq>
@@ -80,6 +86,12 @@
     <priority>0.5</priority>
 </url>
 <url>
+    <loc>https://j-fu.github.io/marginalia/julia/achieving-performance/index.html</loc>
+    <lastmod>2021-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
     <loc>https://j-fu.github.io/marginalia/older-posts/2014-11-10-numdiff/index.html</loc>
     <lastmod>2021-11-14</lastmod>
     <changefreq>monthly</changefreq>
@@ -87,12 +99,6 @@
 </url>
 <url>
     <loc>https://j-fu.github.io/marginalia/older-posts/2014-10-02-fieldtest/index.html</loc>
-    <lastmod>2021-11-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-</url>
-<url>
-    <loc>https://j-fu.github.io/marginalia/julia/julia-workflow/index.html</loc>
     <lastmod>2021-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
