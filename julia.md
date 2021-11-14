@@ -3,6 +3,7 @@
 
 # Julia
 
-- [Julia Workflow Hints](julia-workflow)
-- [Achieving Performance in Julia](julia-performance)
+- [Basic workflow](basic-workflow)
+- [Project workflow](project-workflow)
+- [Achieving Performance](achieving-performance)
 

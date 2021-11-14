@@ -1,6 +1,7 @@
 @def maxtoclevel=3
+@def tags = ["julia"]
 
-# Achieving performance in Julia
+# Julia: Achieving Performance 
 
 \toc
 

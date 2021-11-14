@@ -5,11 +5,13 @@ PkgTemplates.jl
 Here we assume that a _package_ is Julia code which resides in a given `package_dir` and is supposed to be used by other projects or packages. 
 When developing Julia packages it is advisable to set the environment variable `JULIA_PKG_DEVDIR` to reasonable path. All Julia packages under development should  reside there.
 
+
+??? Local packages relative to manifest, with fixed paths, urls
 ### Starting a package
 
 Create empty repo `NewPackageName.jl` on server with `git_url`
 ```
-$ cd JULIA_PKG_DEVDIR
+$ cd JULIA_PKG_DEVDIR ???
 $ julia
 pkg> generate NewPackageName
 julia> exit()
@@ -101,7 +103,18 @@ Registring packages in the general registry assumes full compliance to a number 
 - Must wait $\approx$ 1 hour for new version
 
 All of this is automatically handeled by the [JuliaRegistrator](https://github.com/JuliaRegistries/Registrator.jl)
-
-<img src="https://raw.githubusercontent.com/JuliaRegistries/Registrator.jl/master/graphics/logo.png" width=200>
+ 
+~~~
+<div class="img-small">
+<img src="https://raw.githubusercontent.com/JuliaRegistries/Registrator.jl/master/graphics/logo.png">
+</div>
+~~~
 
 It needs to be installed as a github app in for the package repository.
+
+
+## Naming and versioning
+- Registration in the general registry starts with version 0.1.0, all deviations from this will create extra work
+  upon registration in the general registry.
+- Either name a "budding package" (e.g. Ants.jl) accordingly: AntsPrototype.jl, Ants0.jl 
+  have a version number conventiom.
