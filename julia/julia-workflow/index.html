@@ -111,7 +111,7 @@ $ pkg&gt; instantiate</code></pre>
 
 <li><p>Optionally have a folder <code>packages</code> which contains other sub-packages. As <a href="https://github.com/JuliaLang/Pkg.jl/issues/1214">relative paths are recorded in Manifest.toml</a>, these can be made available the project via <code>Pkg.develop&#40;path&#61;&quot;packages/MySubPackage&quot;&#41;</code>. In this case, the whole project  tree will stay relocateable.</p>
 <ul>
-<li><p>This allows for easy start of low key package development. At a later stage, <code>MySubPackage</code> could be registered as a Julia package and removed from the project tree without affecting  scripts depending on it. </p>
+<li><p>This allows for easy start of low key package development. At a later stage, <code>MySubPackage</code> could be registered as a Julia package while still residing in the project teee, or even removed from the project tree without affecting  scripts depending on it. </p>
 
 </ul>
 
