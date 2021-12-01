@@ -3,6 +3,8 @@
 
 # Julia: Achieving Performance 
 
+Initial version: 2021-11-15
+
 \toc
 
 In  order  to  let  newcomers  to the  language  experience  the  real
@@ -15,18 +17,15 @@ colleague new  to Julia. It   describes the steps  taken  to  get runtime
 down from 13s to 0.07s and allocations form 763.08 M allocations to 86.
 
 
-It turned out that all necessary information is described on the 
-[Julia performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/#man-performance-tips)
-page, this text should be understood as  an additional  explanation
- from a bit different angle and a bit more in layman's terms.
-The corresponding links to the documentation
-sections are provided.
+## Other resources on this topic
 
-Also, the [7 Julia Gotchas](https://www.stochasticlifestyle.com/7-julia-gotchas-handle/) still are worth to read in this context.
+- It turned out that all necessary information is described on the [Julia performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/#man-performance-tips) page, this text should be understood as an additional explanation from a bit different angle and a bit more in layman's terms.  The corresponding links to the documentation sections are provided.
 
+- Also, the [7 Julia Gotchas](https://www.stochasticlifestyle.com/7-julia-gotchas-handle/) still are worth to read in this context.
 
+- UPDATE 2021-12-01: [Writing type-stable Julia code](https://blog.sintef.com/industry-en/writing-type-stable-julia-code/)
 
-
+ 
 
 ##   "Measure performance with @time and pay attention to memory allocations"
 [Julia docs 🔗](https://docs.julialang.org/en/v1/manual/performance-tips/#Measure-performance-with-[@time](@ref)-and-pay-attention-to-memory-allocatioan)

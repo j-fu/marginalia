@@ -2,6 +2,9 @@
 
 # Julia: Project Workflow
 
+Initial version: 2021-11-15
+
+
 Some ideas on basic julia workflow  are given  [here](/julia/basic-workflow).
 For a larger project, structuring of the project code is essential for many reasons, some of them are:
 - Different project scripts and Pluto notebooks may share some parts of the code, and you want to avoid [repeating yourself](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
