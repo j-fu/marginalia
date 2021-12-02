@@ -107,7 +107,7 @@ Besides of tracking scripts loaded into the REPL, `Revise.jl`
 ## Record your project dependencies in reproducible environments
 
 
-Update 2021-12-02: Modified terminology according to the [Pkg Glossary](https://pkgdocs.julialang.org/v1/glossary/#Glossary): replaced "project" by "application".
+Update 2021-12-02: Modified terminology according to the [Pkg Glossary](https://pkgdocs.julialang.org/v1/glossary/#Glossary)
 
 
 
@@ -124,11 +124,11 @@ Sharing this global  environment between all your different projects is risky be
 
 _Local environments_ provide a remedy.
 
-Assume that an  _application_ is Julia code residing in a given directory `MyApp`, uses one or several other Julia packages and is not intended to be invoked from other packages or applications. An environment is described by the two files in the `MyApp` directory:  `Project.toml` and `Manifest.toml`.
+Assume that a _project_ is Julia code residing in a given directory `MyProject`, uses one or several other Julia packages and is not intended to be invoked from other projects. An environment is described by the two files in the `MyProject` directory:  `Project.toml` and `Manifest.toml`.
 Set up an environment in the following way:
 
 ```
-$ cd MyApp
+$ cd MyProject
 $ julia
 $ pkg> activate .
 $ pkg> add Package1
@@ -138,17 +138,17 @@ $ exit()
 After setting up the environment like this, you can  perform
 
 ```
-$ cd MyApp
+$ cd MyProject
 $ julia --project=.
 ```
-and work in the environment. All packages added  to Julia in this case are recorded in `MyApp` instead of `.julia/environments/vx.y/`. Packages in the global environment still will be visible to your project.
+and work in the environment. All packages added  to Julia in this case are recorded in `MyProject` instead of `.julia/environments/vx.y/`. Packages in the global environment still will be visible to your project.
 
 
 The  `Project.toml` file lists the packages added to the environment. In addition, a `Manifest.toml` file appears which holds the information about the exact versions of all Julia packages used by the project. Both  should be checked into version control along with the source code.
 If you took care about adding all necessary dependencies to the local environment, after checking out your code, another project collaborator can easily install all dependencies via
 
 ```
-$ cd MyApp
+$ cd MyProject
 $ julia --project=.
 $ pkg> instantiate
 ```

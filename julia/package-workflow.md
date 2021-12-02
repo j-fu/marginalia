@@ -1,17 +1,27 @@
-Example.jl
-PkgTemplates.jl
 
 ## Package development
-Here we assume that a _package_ is Julia code which resides in a given `package_dir` and is supposed to be used by other projects or packages. 
-When developing Julia packages it is advisable to set the environment variable `JULIA_PKG_DEVDIR` to reasonable path. All Julia packages under development should  reside there.
+For general terminology, see the [package manager glossary](https://pkgdocs.julialang.org/v1/glossary/#Glossary). According to this, here, we assume that a  _package_ is Julia which is supposed to be used by other projects or packages.
+
+https://medium.com/coffee-in-a-klein-bottle/developing-your-julia-package-682c1d309507
+https://jaantollander.com/post/how-to-create-software-packages-with-julia-language/
+https://www.stochasticlifestyle.com/developing-julia-packages/
+
+When developing Julia packages it is advisable to set the environment variable [`JULIA_PKG_DEVDIR`](https://pkgdocs.julialang.org/v1/api/#Pkg.develop) to reasonable path. All Julia packages under development will reside there, and for a particular package, we refer to its corresponding `package_dir`  during this post.
 
 
-??? Local packages relative to manifest, with fixed paths, urls
-### Starting a package
 
-Create empty repo `NewPackageName.jl` on server with `git_url`
+### Starting a package as part of an application project
+Often, packages evolve during the development of larger application, when it becomes clear that some part of it provided some well defined functionality which can be formulated with its own API.  Local packages within an application project allow to start the package development process.  For this structure, see [my previous post](/julia/project-workflow).
+
+
+### Starting a package repository
+
+
+
+
+Create and  empty repo `NewPackageName.jl` on a server with `git_url`
 ```
-$ cd JULIA_PKG_DEVDIR ???
+$ cd $JULIA_PKG_DEVDIR
 $ julia
 pkg> generate NewPackageName
 julia> exit()
@@ -25,14 +35,24 @@ git add .
 Julia packages have a fixed structure which includes
 - `Project.toml`: description of dependencies. This also provides the packages with its own environment during development.
   Furthermore, it contains the uuid used to identify the package and its name, author and version number.
+  More [here](https://pkgdocs.julialang.org/v1/toml-files/).
+- `Manifest.toml` full metadata of dependency. This file should not be tracked by git.
 - `src`: subdirectory containing code
-   - `src/NewPackageName.jl`: Julia source file which must contain a module `NewPackageName`
+   - `src/NewPackageName.jl`: Julia source file which must contain a module `NewPackageName` where all package code resides.
 - `test`: subdirectory containing test code
    - `test/runtests.jl`: script for running tests
 - `docs`: subdirectory containing documentation 
    - `docs/make.jl`: script for builidng documentation based on Documenter.jl
 
+Instead of invoking `pkg> generate NewPackageName`, a more comprehensive initial package structure can be be created
+with [PkgTemplates.jl](https://github.com/invenia/PkgTemplates.jl) and [Example.jl](https://github.com/JuliaLang/Example.jl).
+These also create the necessary files for controlling automatic CI tests on github/gitlab.
+
+
 ### Using  a package under development
+
+
+
 
 While the package is unregistered you can add it to the
 environment of a project:

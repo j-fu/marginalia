@@ -4,6 +4,8 @@
 
 Initial version: 2021-11-15
 
+Update 2021-12-02: The term "project" in this post corresponds to the term "application" in [package manager glossary](https://pkgdocs.julialang.org/v1/glossary/#Glossary).
+
 
 Some ideas on basic julia workflow  are given  [here](/julia/basic-workflow).
 For a larger project, structuring of the project code is essential for many reasons, some of them are:
