@@ -133,3 +133,9 @@
 # time: 2021-12-01 22:49:00 CET
 # mode: julia
 	publish()
+# time: 2021-12-01 23:17:53 CET
+# mode: julia
+	serve()
+# time: 2021-12-02 09:52:42 CET
+# mode: julia
+	publish()
