@@ -145,3 +145,12 @@
 # time: 2022-02-08 16:56:41 CET
 # mode: julia
 	publish()
+# time: 2022-02-08 16:57:49 CET
+# mode: shell
+	e
+# time: 2022-02-08 16:59:28 CET
+# mode: julia
+	serve()
+# time: 2022-02-08 17:01:11 CET
+# mode: julia
+	publish()
