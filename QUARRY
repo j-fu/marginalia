@@ -1,0 +1,7 @@
+- Unionize your collections!
+When working e.g with agent based models or finite elements with varying element geometries 
+a common pattern is the occurence of collections of objects of different types on which one
+wants to perform certain actions depending on their type. Likewise 
+
+- useul packages: LaTeXDatax
+
