@@ -139,3 +139,6 @@
 # time: 2021-12-02 09:52:42 CET
 # mode: julia
 	publish()
+# time: 2022-02-08 16:56:13 CET
+# mode: julia
+	upload()
