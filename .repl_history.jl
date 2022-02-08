@@ -142,3 +142,6 @@
 # time: 2022-02-08 16:56:13 CET
 # mode: julia
 	upload()
+# time: 2022-02-08 16:56:41 CET
+# mode: julia
+	publish()
