@@ -393,6 +393,8 @@ At that time, union splitting was limited to "small" unions. Up to now, the [man
 However it seems  that with  [#37378](https://github.com/JuliaLang/julia/pull/37378)  the "small union" constraint of union splitting is gone, which kind of has been confirmed [here](https://discourse.julialang.org/t/union-splitting-vs-c/61772/16).
 
 In fact, the same tests as above can be performed with much larger unions, which has not been done in this notebook for convenience, and it appears that this pattern can be applied safely on many occasions.
+
+I think I have first noticed this pattern in a Discourse thread on [avoiding vectors of abstract types](https://discourse.julialang.org/t/avoiding-vectors-of-abstract-types/61883/8).
 """
 
 # ╔═╡ 494722e6-7753-42dc-b10a-68c8ab97aed4
