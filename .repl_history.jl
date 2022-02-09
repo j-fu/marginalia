@@ -160,3 +160,6 @@
 # time: 2022-02-09 14:11:33 CET
 # mode: shell
 	git commit -am "fix rss"
+# time: 2022-02-09 14:11:39 CET
+# mode: julia
+	publish()
