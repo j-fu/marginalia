@@ -17,7 +17,9 @@ TableOfContents(title="",aside=false)
 md"""
 # Unionize your collections!
 
-J. Fuhrmann, Draft, 2022-02-08
+J. Fuhrmann, Draft
+- v0.2, 2022-02-09: incresed union size to 10, made code a bit more elegant
+- v0.1, 2022-02-08: started with union size 5
 """
 
 # ╔═╡ d49a26dd-c503-44aa-982a-ad3dedbec613
@@ -44,17 +46,25 @@ md"""
 
 # ╔═╡ ba62da3e-723b-4595-b423-ae371f0c01d8
 md"""
-Let us define five different structs which we well use as mock incarnations of e.g. agent models:
+Let us define ten different structs which we well use as mock incarnations of e.g. agent models:
 """
 
 # ╔═╡ 4bddcabb-fc8b-4c3f-9d05-db4838ec65e9
 begin 
-	struct S1 end
-	struct S2 end
-	struct S3 end
-	struct S4 end
-	struct S5 end
+	struct S01 end
+	struct S02 end
+	struct S03 end
+	struct S04 end
+	struct S05 end
+	struct S06 end
+	struct S07 end
+	struct S08 end
+	struct S09 end
+	struct S10 end
 end
+
+# ╔═╡ 75d97586-8ac2-48f2-bdad-790a93f2df3b
+allS=(S01,S02,S03,S04,S05,S06,S07,S08,S09,S10)
 
 # ╔═╡ c97d9b7b-27fd-4a62-ba10-1946ee2964cc
 md"""
@@ -63,11 +73,16 @@ Define a function with a method for each of these types:
 
 # ╔═╡ 41ff535c-cdb6-499b-818b-49b32e6c77c4
 begin
-f(::S1,x)=1x
-f(::S2,x)=2x
-f(::S3,x)=3x
-f(::S4,x)=4x
-f(::S5,x)=5x
+    f(::S01,x)=1x
+    f(::S02,x)=2x
+    f(::S03,x)=3x
+    f(::S04,x)=4x
+    f(::S05,x)=5x
+    f(::S06,x)=6x
+    f(::S07,x)=7x
+    f(::S08,x)=8x
+    f(::S09,x)=9x
+    f(::S10,x)=10x
 end
 
 # ╔═╡ 7a9399ff-7684-4f63-8b04-e3b3bb250e37
@@ -76,7 +91,7 @@ Now, we create vector of different agents.
 """
 
 # ╔═╡ 3c7cff9b-c3f2-484b-a4c3-1fb2fa682be1
-any_collection=[rand((S1,S2,S3,S4,S5))() for i=1:N]
+any_collection=[rand(allS)() for i=1:N]
 
 # ╔═╡ b76b2a71-97ef-4db6-a64b-ebd3b5d6f1e6
 md"""
@@ -132,7 +147,7 @@ Define a union type, and essentially the same collection, but with this union ty
 """
 
 # ╔═╡ 68946d74-63f3-44fa-b267-54d830ad00ef
-const UnionS=Union{S1,S2,S3,S4,S5}
+const UnionS=Union{allS...}
 
 # ╔═╡ f8432585-1d5e-41e5-87dd-0f099f770b5c
 unionS_collection=UnionS[o for o ∈ any_collection]
@@ -157,7 +172,7 @@ The same pattern can be applied to e.g. vectors of data types.
 """
 
 # ╔═╡ a45bca8e-72d6-4853-b995-1372e12e4813
-datatype_collection=rand((S1,S2,S3,S4,S5),N)
+datatype_collection=rand(allS,N)
 
 # ╔═╡ c32ecb40-cecf-4c36-9c8c-0432e1cbb67a
 typeof(datatype_collection)
@@ -174,11 +189,16 @@ In this case, we need to dispatch on the parametric type `Type{}`;
 
 # ╔═╡ 801dee68-b7be-4d9a-a0da-d46e8817d9e8
 begin
-f(::Type{S1},x)=1x
-f(::Type{S2},x)=2x
-f(::Type{S3},x)=3x
-f(::Type{S4},x)=4x
-f(::Type{S5},x)=5x
+    f(::Type{S01},x)=1x
+    f(::Type{S02},x)=2x
+    f(::Type{S03},x)=3x
+    f(::Type{S04},x)=4x
+    f(::Type{S05},x)=5x
+    f(::Type{S06},x)=6x
+    f(::Type{S07},x)=7x
+    f(::Type{S08},x)=8x
+    f(::Type{S09},x)=9x
+    f(::Type{S10},x)=10x
 end
 
 # ╔═╡ cc87f4cb-94c1-4607-9fe7-0d551d0f5b4c
@@ -201,15 +221,25 @@ function sumup_f_manual(collection)
 	s=0.0
 	for i=1:length(collection)
 		c=collection[i]
-		if isa(c,S1)
+		if isa(c,S01)
 			s+=f(c,1)
-		elseif isa(c,S2)
+		elseif isa(c,S02)
 			s+=f(c,1)
-		elseif isa(c,S3)
+		elseif isa(c,S03)
 			s+=f(c,1)
-		elseif isa(c,S4)
+		elseif isa(c,S04)
 			s+=f(c,1)
-		elseif isa(c,S5)
+		elseif isa(c,S05)
+			s+=f(c,1)
+		elseif isa(c,S06)
+			s+=f(c,1)
+		elseif isa(c,S07)
+			s+=f(c,1)
+		elseif isa(c,S08)
+			s+=f(c,1)
+		elseif isa(c,S09)
+			s+=f(c,1)
+		elseif isa(c,S10)
 			s+=f(c,1)
 		end
 	end
@@ -238,7 +268,7 @@ Manual dispatch is straightforward to implement here as well, so we focus on uni
 """
 
 # ╔═╡ c02e8832-9586-4dff-9a5c-bb318ed44bc3
-const UnionTS=Union{Type{S1},Type{S2},Type{S3},Type{S4},Type{S5}}
+const UnionTS=Union{[Type{s} for s in allS]...}
 
 # ╔═╡ 751c89ee-5d2c-4132-bd20-f4522235f35a
 unionTS_collection=UnionTS[o for o ∈ datatype_collection]
@@ -263,12 +293,20 @@ Instead of working with different methods triggered by the object stored in the 
 
 # ╔═╡ 53712b18-5c51-4e50-b137-b7cfac43bc35
 begin
-	f1(x)=1x
-	f2(x)=2x
-	f3(x)=3x
-	f4(x)=4x
-	f5(x)=5x
+    f01(x)=1x
+    f02(x)=2x
+    f03(x)=3x
+    f04(x)=4x
+    f05(x)=5x
+    f06(x)=6x
+    f07(x)=7x
+    f08(x)=8x
+    f09(x)=9x
+    f10(x)=10x 
 end
+
+# ╔═╡ 1d7a3b43-b9b2-4d60-a7a6-2689967fe473
+allf=(f01,f02,f03,f04,f05,f06,f07,f08,f09,f10)
 
 # ╔═╡ 066ccd3e-018c-4f78-a77d-f3bcf2711834
 function sumup_funcs(collection)
@@ -280,7 +318,7 @@ function sumup_funcs(collection)
 end
 
 # ╔═╡ dafc4860-d2b9-4940-bf66-cbcd11592027
-func_collection=rand((f1,f2,f3,f4,f5),N)
+func_collection=rand(allf,N)
 
 # ╔═╡ db65bcd3-44f6-4557-bab9-0c14826123ba
 md"""
@@ -288,10 +326,10 @@ In Julia, each function has its own type, which is a subtype of `Function`, whic
 """
 
 # ╔═╡ c48c7899-ee26-45a3-80d6-3e08e3522964
-typeof(f1)==typeof(f2)
+typeof(f01)==typeof(f02)
 
 # ╔═╡ 509cf0ca-7eb1-42f2-bf00-ffb9702a373a
-isa(f2,Function)
+isa(f02,Function)
 
 # ╔═╡ 57b4a9d1-94e6-47dd-bb60-e106f546a125
 isconcretetype(Function)
@@ -323,7 +361,7 @@ We can define a union of the possible function types and thus constrain the the 
 """
 
 # ╔═╡ 39794bef-d215-4d7d-ba1a-35953d9049c4
-const UnionF=Union{typeof(f1),typeof(f2),typeof(f3),typeof(f4),typeof(f5)}
+const UnionF=Union{[typeof(f) for f in allf]...}
 
 # ╔═╡ f0709de9-a3e1-4c2d-8d6e-5d5b66917337
 unionF_collection=UnionF[f for f ∈ func_collection]
@@ -577,12 +615,13 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 
 # ╔═╡ Cell order:
 # ╟─fa392344-d2d9-4407-8e5c-1c80307006d0
-# ╟─0898ac67-775a-49db-ad2a-e72f84aaaea3
+# ╠═0898ac67-775a-49db-ad2a-e72f84aaaea3
 # ╟─d49a26dd-c503-44aa-982a-ad3dedbec613
 # ╠═4bfe6bc8-3c08-443f-bc8e-c6c2ee415ef1
 # ╟─1f2c9fe9-7076-40d1-b049-0be760180a1b
 # ╟─ba62da3e-723b-4595-b423-ae371f0c01d8
 # ╠═4bddcabb-fc8b-4c3f-9d05-db4838ec65e9
+# ╠═75d97586-8ac2-48f2-bdad-790a93f2df3b
 # ╟─c97d9b7b-27fd-4a62-ba10-1946ee2964cc
 # ╠═41ff535c-cdb6-499b-818b-49b32e6c77c4
 # ╟─7a9399ff-7684-4f63-8b04-e3b3bb250e37
@@ -625,6 +664,7 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╠═e885889a-4766-4390-a3b5-63db1e56b5a4
 # ╟─92e9756f-30aa-4c2b-8ff2-3c4d832e94f0
 # ╠═53712b18-5c51-4e50-b137-b7cfac43bc35
+# ╠═1d7a3b43-b9b2-4d60-a7a6-2689967fe473
 # ╠═066ccd3e-018c-4f78-a77d-f3bcf2711834
 # ╠═dafc4860-d2b9-4940-bf66-cbcd11592027
 # ╟─db65bcd3-44f6-4557-bab9-0c14826123ba
