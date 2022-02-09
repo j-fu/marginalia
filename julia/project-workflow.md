@@ -1,10 +1,11 @@
 @def tags = ["julia"]
+@def rss_description = "Julia: Project Workflow."
+@def rss_pubdate = Date(2022, 2, 9)
 
 # Julia: Project Workflow
-
-Initial version: 2021-11-15
-
-Update 2021-12-02: The term "project" in this post corresponds to the term "application" in [package manager glossary](https://pkgdocs.julialang.org/v1/glossary/#Glossary).
+- 2022-02-09: RSS
+- 2021-12-02: The term "project" in this post corresponds to the term "application" in [package manager glossary](https://pkgdocs.julialang.org/v1/glossary/#Glossary).
+- 2021-11-15: Initial version 
 
 
 Some ideas on basic julia workflow  are given  [here](/julia/basic-workflow).

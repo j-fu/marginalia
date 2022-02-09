@@ -1,9 +1,11 @@
 @def maxtoclevel=3
 @def tags = ["julia"]
+@def rss_description = "Julia: Achieving Performance."
+@def rss_pubdate = Date(2022, 2, 9)
 
 # Julia: Achieving Performance 
-
-Initial version: 2021-11-15
+- 2022-02-09: RSS
+- 2021-11-15: Initial version
 
 \toc
 

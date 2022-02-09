@@ -1,9 +1,12 @@
 @def tags = ["julia"]
+@def rss_description = "Julia: Basic Workflow."
+@def rss_pubdate = Date(2022, 2, 9)
 
 
-Julia: Basic Workflow
-=====================
-Initial version: 2021-11-15
+# Julia: Basic Workflow
+
+- 2022-02-09: RSS
+- 2021-11-15: Initial version
 
 
 \toc 
