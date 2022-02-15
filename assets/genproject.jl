@@ -28,7 +28,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 
-README(name)="""
+README(name,subname)="""
 $(name)
 ======
 
@@ -53,7 +53,7 @@ Pkg.activate(".")
 ### Adaptation
 - Please check the LICENSE file and replace it by another license if you don't agree with it.
 - Please check the `authors` entry in `Project.toml`
-- Remove or replace demo scripts, notebooks and `packages/MySubPackage`
+- Remove or replace demo scripts, notebooks and `packages/$(subname)`
 - Set up a git repo for sharing the code. All subdirectories and top level files in this initial version should be under version control
 - Consider introducing  subdirectories for large simulation results which are not under version control due to their size
 - Consider introducing further subdirectories to struture your project
@@ -70,10 +70,10 @@ MyProject/
 ├── notebooks
 │   └── presentation.jl
 ├── packages
-│   └── MySubPackage
+│   └── $(subname)
 │       ├── Project.toml
 │       └── src
-│       │    └── MySubPackage.jl
+│       │    └── $(subname).jl
 │       └── test
 │           └── runtests.jl
 ├── papers
@@ -101,7 +101,7 @@ The essential role of these files is as follows:
 
 
 
-demonotebook(name)="""### A Pluto.jl notebook ###
+demonotebook(name,subname)="""### A Pluto.jl notebook ###
 # v0.17.1
 
 using Markdown
@@ -114,7 +114,7 @@ begin
 	using Revise
 	using PlutoUI
 	using $(name)
-	using MySubPackage
+	using $(subname)
 end
 
 # ╔═╡ 882dda23-63b9-4b1e-a04e-69071deff69a
@@ -124,7 +124,7 @@ md"This notebook is only relocateable together with the whole $(name) project."
 $(name).greet()
 
 # ╔═╡ 73a94305-1c3c-45e5-969f-2a245baec10d
-MySubPackage.greet()
+$(subname).greet()
 
 # ╔═╡ Cell order:
 # ╠═882dda23-63b9-4b1e-a04e-69071deff69a
@@ -133,24 +133,24 @@ MySubPackage.greet()
 # ╠═73a94305-1c3c-45e5-969f-2a245baec10d
 """
 
-demoscript(name)="""            
+demoscript(name,subname)="""            
 module DemoScript
 using $(name)
-using MySubPackage
+using $(subname)
     
 function main()
    $(name).greet()
-   MySubPackage.greet()
+   $(subname).greet()
 end
 
 end
 """
 
 
-maketest(name)="""
+maketest(name,subname)="""
 using Test
 using $(name)
-using MySubPackage
+using $(subname)
 
 $(name).greet()
 
@@ -159,13 +159,13 @@ $(name).greet()
 end
 """
 
-makesubtest()="""
+makesubtest(subname)="""
 using Test
-using MySubPackage
+using $(subname)
 
-MySubPackage.greet()
+$(subname).greet()
 
-@testset "MySubPackage" begin
+@testset "$(subname)" begin
 @test true
 end
 """
@@ -179,10 +179,12 @@ function main(args)
     settings.add_version = true
     add_arg_table(settings,
                   "name", Dict(:help => "Project name",:required => true),
+                  "--sub", Dict(:help => "Subpackage name",:required => false, :default => "MySubPackage"),
                   )
     parsed_args=parse_args(args, settings)
     name=parsed_args["name"]
-    
+    subname=parsed_args["sub"]
+
 
     @info "Generate  $(name)"
     Pkg.generate(name)
@@ -195,14 +197,14 @@ function main(args)
         @info "Generate  packages subdirectory"
         mkdir("packages")
         cd("packages") do
-            Pkg.generate("MySubPackage")
-            cd("MySubPackage") do
+            Pkg.generate(subname)
+            cd(subname) do
                 Pkg.activate(".")
                 Pkg.add("Test")
                 mkdir("test")
                 cd("test") do
                     open("runtests.jl", "w") do io
-                        write(io,makesubtest())
+                        write(io,makesubtest(subname))
                     end
                 end
             end
@@ -210,13 +212,13 @@ function main(args)
         Pkg.activate(".")
 
         
-        Pkg.develop(path="packages/MySubPackage")
+        Pkg.develop(path="packages/$(subname)")
 
         @info "Generate demo notebook"
         mkdir("notebooks")
         cd("notebooks") do
             open("demo-notebook.jl", "w") do io
-                write(io,demonotebook(name))
+                write(io,demonotebook(name,subname))
             end
         end
 
@@ -224,7 +226,7 @@ function main(args)
         mkdir("scripts")
         cd("scripts") do
             open("demo-script.jl", "w") do io
-                write(io,demoscript(name))
+                write(io,demoscript(name,subname))
             end
         end
         
@@ -232,13 +234,13 @@ function main(args)
         mkdir("test")
         cd("test") do
             open("runtests.jl", "w") do io
-                write(io,maketest(name))
+                write(io,maketest(name,subname))
             end
         end
 
         @info "Run tests"
         Pkg.test()
-        Pkg.test("MySubPackage")
+        Pkg.test(subname)
 
         @info "Generate papers, license, readme"
         mkdir("papers")
@@ -248,16 +250,17 @@ function main(args)
         end
         
         open("README.md", "w") do io
-            write(io,README(name))
+            write(io,README(name,subname))
         end
 
         @info "run demo script"
-        include(joinpath(@__DIR__,name,"scripts","demo-script.jl"))
+        @show joinpath("scripts","demo-script.jl")
+        include(joinpath(pwd(),"scripts","demo-script.jl"))
         Base.invokelatest(DemoScript.main)
         println()
         
         @info "run demo notebook"
-        include(joinpath(@__DIR__,name,"notebooks","demo-notebook.jl"))
+        include(joinpath(pwd(),"notebooks","demo-notebook.jl"))
         println()
     end
 
