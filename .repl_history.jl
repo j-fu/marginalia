@@ -163,3 +163,15 @@
 # time: 2022-02-09 14:11:39 CET
 # mode: julia
 	publish()
+# time: 2022-02-10 01:10:36 CET
+# mode: pkg
+	add ThreadingUtilities
+# time: 2022-02-10 01:10:56 CET
+# mode: julia
+	using ThreadingUtilities
+# time: 2022-02-15 23:18:01 CET
+# mode: julia
+	publish
+# time: 2022-02-15 23:18:04 CET
+# mode: julia
+	publish()
