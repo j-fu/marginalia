@@ -13,9 +13,10 @@ ignore = ["node_modules/", "QUARRY", "QUARRY.md"]
 
 # RSS (the website_{title, descr, url} must be defined to get RSS)
 generate_rss = true
-website_title = "Marginalia"
-website_descr = "Remarks on computing & stuff"
-website_url   = "https://j-fu.github.io/marginalia/"
+rss_website_title = "Marginalia"
+rss_website_descr = "Remarks on computing & stuff"
+rss_website_url   = "https://j-fu.github.io/marginalia/"
+rss_full_content  = true
 prepath = "marginalia"
 +++
 
