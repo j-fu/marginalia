@@ -175,3 +175,9 @@
 # time: 2022-02-15 23:18:04 CET
 # mode: julia
 	publish()
+# time: 2022-06-28 22:40:31 CEST
+# mode: julia
+	serve()
+# time: 2022-06-28 23:33:30 CEST
+# mode: julia
+	upload()
