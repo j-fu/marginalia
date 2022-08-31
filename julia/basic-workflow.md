@@ -5,6 +5,7 @@
 
 # Julia: Basic Workflow
 
+- 2022-09-01: Link to [blogpost](https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/) by Julius Krumbiegel
 - 2022-02-09: RSS
 - 2021-11-15: Initial version
 
@@ -155,6 +156,8 @@ $ cd MyApp
 $ julia --project=.
 $ pkg> instantiate
 ```
+
+Update 2022-09-01: See [this blogpost](https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/) by Julius Krumbiegel for another take on Julia environments.
 
 See also the corresponding documentation on [environments](https://pkgdocs.julialang.org/v1/environments/) and [`Project.toml` and 
 `Manifest.toml`](https://pkgdocs.julialang.org/v1/toml-files/).
