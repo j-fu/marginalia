@@ -160,6 +160,8 @@
   <content:encoded>
     <![CDATA[  <h1 id="julia_basic_workflow">Julia: Basic Workflow</h1>
 <ul>
+<li><p>2022-09-01: Link to <a href="https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/">blogpost</a> by Julius Krumbiegel</p>
+</li>
 <li><p>2022-02-09: RSS</p>
 </li>
 <li><p>2021-11-15: Initial version</p>
@@ -247,6 +249,7 @@ pkg&gt; add Package1</code></pre>
 <pre><code class="language-julia">&#36; cd MyApp
 &#36; julia --project&#61;.
 &#36; pkg&gt; instantiate</code></pre>
+<p>Update 2022-09-01: See <a href="https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/">this blogpost</a> by Julius Krumbiegel for another take on Julia environments.</p>
 <p>See also the corresponding documentation on <a href="https://pkgdocs.julialang.org/v1/environments/">environments</a> and <a href="https://pkgdocs.julialang.org/v1/toml-files/"><code>Project.toml</code> and <code>Manifest.toml</code></a>.</p>
 <p>Pluto notebooks have their own <a href="https://github.com/fonsp/Pluto.jl/wiki/&#37;F0&#37;9F&#37;8E&#37;81-Package-management">built-in package management</a> and by default     contain a <code>Project.toml</code> and a <code>Manifest.toml</code> file to ensure portability.</p>
  ]]>
