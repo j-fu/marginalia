@@ -187,3 +187,6 @@
 # time: 2022-08-31 09:57:40 CEST
 # mode: julia
 	upload()
+# time: 2022-08-31 09:58:08 CEST
+# mode: julia
+	publish()
