@@ -1,4 +1,63 @@
-<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/marginalia/libs/highlight/github.min.css"> <link rel=stylesheet  href="/marginalia/css/franklin.css"> <link rel=stylesheet  href="/marginalia/css/poole_lanyon.css"> <link rel=stylesheet  href="/marginalia/css/adjust.css"> <link rel=icon  href="/marginalia/assets/favicon.png"> <title>Yet another attempt on a cmake intro...</title> <input type=checkbox  class=sidebar-checkbox  id=sidebar-checkbox > <div class=sidebar  id=sidebar > <div class=sidebar-item > <p>Marginalia</p> </div> <nav class=sidebar-nav > <a class="sidebar-nav-item " href="/marginalia/">Home</a> <a class="sidebar-nav-item " href="/marginalia/julia/">Julia</a> <a class="sidebar-nav-item " href="/marginalia/git/">Git</a> <a class="sidebar-nav-item " href="/marginalia/older-posts/">Older posts</a> </nav> <div class=sidebar-item > <p>&copy; Jürgen Fuhrmann.</p> </div> </div> <!-- Wrap is the content to shift when toggling the sidebar. We wrap the content to avoid any CSS collisions with our real content. --> <div class=wrap > <div class=masthead > <div class=container > <h3 class=masthead-title > <a href="/marginalia/" title=Home >Marginalia</a> </h3> </div> </div> </div> <div class="container content"> <div class=franklin-content ><h1 id=yet_another_attempt_on_a_cmake_intro ><a href="#yet_another_attempt_on_a_cmake_intro" class=header-anchor >Yet another attempt on a cmake intro...</a></h1> <p>&#40;2014-10-30&#41;</p> <p>CMake is the current fashion in build systems. It is not perfect &#40;e.g. the learning curve&#41; but better than its predecessors.</p> <h1 id=some_advantages_of_cmake ><a href="#some_advantages_of_cmake" class=header-anchor >Some advantages of cmake:</a></h1> <p>&#40;if you know how to use them...&#41;</p> <ul> <li><p>Cross platform portability. Linux, MacOSX, Windows are fully supported.</p> <li><p>Interaction with native build tools &#40;UNIX make, MacOSX xcode, Visual studio&#41;.</p> <li><p>Inbuilt support of unit tests.</p> <li><p>Easy handling of out-of-source builds.</p> </ul> <h1 id=resources_on_cmake ><a href="#resources_on_cmake" class=header-anchor >Resources on cmake</a></h1> <ul> <li><p><a href="http://www.cmake.org/">Home page</a></p> <li><p><a href="http://en.wikipedia.org/wiki/CMake">Wikipedia</a></p> <li><p><a href="http://www.cmake.org/cmake/help/v3.0/">Documentation &#40;v3.0&#41;</a></p> <li><p><a href="http://www.cmake.org/cmake-tutorial/">Tutorial &#40;cmake home page&#41;</a></p> <li><p><a href="https://www.google.de/search?q&#61;cmake&#43;tutorial">Tutorials &#40;as found by Google&#41;</a></p> <li><p><a href="http://rbast.github.io/talks/cmake/basics">CMake basics for busy scientists &#40;Radovan Bast&#41;</a></p> </ul> <p>Ok, so let us start with the <em>very</em> basics. Why in hell we do we need this ?</p> <h1 id=edit-compile-link-execute-fail-edit-compile ><a href="#edit-compile-link-execute-fail-edit-compile" class=header-anchor >Edit-Compile-Link-Execute-Fail-Edit-Compile...</a></h1> <p>This is the infinite Karma cycle of the programmer who works with classical <em>compiled</em> languages like C/Fortran/C&#43;&#43;. With the widespread adoption of <em>interpreted</em> languages &#40;in particular matlab&#41; it is not obvious that even university alumni have been exposed to this workflow. Still, compiled languages with respect to portability and speed are the best choice. It is not excluded that this situation will change in the not so distant future... which is not here yet.</p> <p>The source code for the demo test can be found in <a href="blobs/tinyproject.zip">tinyproject.zip</a></p> <h2 id=edit ><a href="#edit" class=header-anchor >Edit </a></h2> <p>So let us start with a small program in a file <code>hello.c</code>:</p> <p>#include &lt;stdio.h&gt; int main &#40;int argc, char *argv&#91;&#93;&#41; &#123; printf&#40;&quot;Hello world&#33;\n&quot;&#41;; return 0; &#125;</p> <p>It can be <em>compiled</em>, <em>linked</em> and <em>executed</em> from the command line:</p> <p>&#36; cc -o hello hello.c &#36; hello Hello world&#33;</p> <p>Now, our program shall do something more useful, by calling a function from a module described in <code>infinitecycle.h</code></p> <p>int infcyc&#40;int start&#41;; /* call infinite cycle and return result*/</p> <p>and <code>infinitecycle.c</code>:</p> <p>#include &quot;infinitecycle.h&quot; int infcyc&#40;int start&#41; &#123; int result; result&#61;start; for &#40;;result&lt;42;result&#43;&#43;&#41;; return result; &#125;</p> <p>Our program now looks like</p> <p>#include &lt;stdio.h&gt; #include &quot;infinitecycle.h&quot; int main &#40;int argc, char *argv&#91;&#93;&#41; &#123; int answer; answer&#61;infcyc&#40;0&#41;; printf&#40;&quot;Hello world, the answer is &#37;d&#33;\n&quot;,answer&#41;; return 0; &#125;</p> <p>To put this together, we call</p> <p>&#36; cc -o hello hello.c infinitecycle.c &#36; hello Hello world, the answer is 42&#33;</p> <h2 id=compile ><a href="#compile" class=header-anchor >Compile</a></h2> <p>The <code>cc</code> command above performs several process steps. It <em>compiles</em> the code into <em>object files</em> which already contain something like the machine code.</p> <p>&#36; cc -c -o hello.o hello.c &#36; cc -c -o infinitecycle.o infinitecycle.c</p> <h2 id=link ><a href="#link" class=header-anchor >Link</a></h2> <p>These object files have to be <em>linked</em> together and with system libraries containing e.g. the <code>printf</code> function and other voodoo. The program which performs this step is called <em>linker</em> or <em>loader</em> &#40;<code>ld</code> on Unix&#41;:</p> <p>&#36; ld -o hello hello.o infinitecycle.o -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 /usr/lib64/gcc/x86_64-suse-linux/4.8/../../../../lib64/crt1.o /usr/lib64/gcc/x86_64-suse-linux/4.8/../../../../lib64/crti.o /usr/lib64/gcc/x86_64-suse-linux/4.8/crtbegin.o -L/usr/lib64/gcc/x86_64-suse-linux/4.8 -L/usr/lib64/gcc/x86_64-suse-linux/4.8/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib64/gcc/x86_64-suse-linux/4.8/../../../../x86_64-suse-linux/lib -L/usr/lib64/gcc/x86_64-suse-linux/4.8/../../.. -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib64/gcc/x86_64-suse-linux/4.8/crtend.o /usr/lib64/gcc/x86_64-suse-linux/4.8/../../../../lib64/crtn.o</p> <p>Larger collections of object files can be put together into <em>libraries</em> &#40;<em>archives</em>&#41;, just for the example we make an archive of one object file:</p> <p>&#36; ar cvr libfinite.a infinitecycle.o a - infinitecycle.o</p> <p>These archives can be used to link with them rather than with the collection of object files they contain. In order not to have to write all the voodoo shown above, it is customary in Unix that the compiler commands know how to link the code, so it suffices to invoke</p> <p>&#36; cc -o hello hello.o libfinite.a</p> <h3 id=working_with_larger_projects ><a href="#working_with_larger_projects" class=header-anchor >Working with larger projects </a></h3> <p>Now this is essentially the way one puts together larger projects, possibly from different sources, e.g. a graphics library with some numerical code. The result of the installation of the library is that we have somewhere in our system the <em>header</em> &#40;<code>.h</code>&#41; files which describe to the compiler how to interface the code, and a library &#40;<code>.a</code>&#41; or <em>shared library</em> &#40;<code>.so</code>&#41; which contains the code. Also, for a larger project we put the code written by ourselves onto libraries. When developing, we want to have two things at once:</p> <ul> <li><p>after changing something, we want to have some magic which repeats the compilation and linking process automatically</p> <li><p>we do not want a recompile of everything after changing only a tiny bit of code</p> </ul> <p>On UNIX &#40;and MacOSX&#41;, Makefiles are used to describe the dependencies between the pieces of code.</p> <h2 id=fail ><a href="#fail" class=header-anchor >Fail...</a></h2> <p>In order to work properly, all dependencies have to be written into such a file. Cumbersome, and error prone, especially for larger projects... E.g. we have to trace all the <code>#include</code> statements and write the corresponding dependencies into the Makefile.</p> <h1 id=cmake_to_the_rescue ><a href="#cmake_to_the_rescue" class=header-anchor >CMake to the rescue&#33;</a></h1> <p>CMake essentially is the tool which automates this process. At the same time it can generate other dependency descriptions as well, e.g. for <a href="http://martine.github.io/ninja/">ninja</a>.</p> <h2 id=cmakeliststxt ><a href="#cmakeliststxt" class=header-anchor ><code>CMakeLists.txt</code></a></h2> <p>CMake relies on a project description in a file <code>CMakeLists.txt</code>. For larger projects, this file is much easier to write than a <code>Makefile</code>. In particular, it automatically traces all dependencies. By default, it generates a standard Unix Makefile which is then used for the real build.</p> <p>So let us try this for our tiny project. We add the following file <code>CMakeLists.txt</code> to our project directory:</p> <pre><code class="julia hljs"><span class=hljs-comment >#</span>
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/marginalia/libs/highlight/github.min.css"> <link rel=stylesheet  href="/marginalia/css/franklin.css"> <link rel=stylesheet  href="/marginalia/css/poole_lanyon.css"> <link rel=stylesheet  href="/marginalia/css/adjust.css"> <link rel=icon  href="/marginalia/assets/favicon.png"> <title>Yet another attempt on a cmake intro...</title> <input type=checkbox  class=sidebar-checkbox  id=sidebar-checkbox > <div class=sidebar  id=sidebar > <div class=sidebar-item > <p>Marginalia</p> </div> <nav class=sidebar-nav > <a class="sidebar-nav-item " href="/marginalia/">Home</a> <a class="sidebar-nav-item " href="/marginalia/julia/">Julia</a> <a class="sidebar-nav-item " href="/marginalia/git/">Git</a> <a class="sidebar-nav-item " href="/marginalia/older-posts/">Older posts</a> </nav> <div class=sidebar-item > <p>&copy; Jürgen Fuhrmann.</p> </div> </div> <!-- Wrap is the content to shift when toggling the sidebar. We wrap the content to avoid any CSS collisions with our real content. --> <div class=wrap > <div class=masthead > <div class=container > <h3 class=masthead-title > <a href="/marginalia/" title=Home >Marginalia</a> </h3> </div> </div> </div> <div class="container content"> <div class=franklin-content ><h1 id=yet_another_attempt_on_a_cmake_intro ><a href="#yet_another_attempt_on_a_cmake_intro" class=header-anchor >Yet another attempt on a cmake intro...</a></h1> <ul> <li><p>2022-09-08: Updated links etc. </p> <ul> <li><p>Ninja now works for fortran as well.</p> </ul> <li><p>2021-11-11: Transfer to franklin&#43;github.io</p> <li><p>2014-10-30: Initial version</p> </ul> <p><div class=franklin-toc ><ol><li><a href="#some_advantages_of_cmake">Some advantages of cmake:</a><li><a href="#resources_on_cmake">Resources on cmake</a><li><a href="#edit-compile-link-execute-fail-edit-compile">Edit-Compile-Link-Execute-Fail-Edit-Compile...</a><ol><li><a href="#edit">Edit </a><li><a href="#compile">Compile</a><li><a href="#link">Link</a><ol><li><a href="#working_with_larger_projects">Working with larger projects </a></ol><li><a href="#fail">Fail...</a></ol><li><a href="#cmake_to_the_rescue">CMake to the rescue&#33;</a><ol><li><a href="#cmakeliststxt_for_project_description"><code>CMakeLists.txt</code> for project description</a><li><a href="#out-of-source_workflow">Out-Of-Source Workflow</a><li><a href="#ninja">ninja</a><li><a href="#automatic_test">Automatic test</a></ol></ol></div> CMake is the current fashion in build systems. It is not perfect &#40;e.g. the learning curve&#41; but better than its predecessors.</p> <h2 id=some_advantages_of_cmake ><a href="#some_advantages_of_cmake" class=header-anchor >Some advantages of cmake:</a></h2> <p>&#40;if you know how to use them...&#41;</p> <ul> <li><p>Cross platform portability. Linux, MacOSX, Windows are fully supported.</p> <li><p>Interaction with native build tools &#40;UNIX make, MacOSX xcode, Visual studio&#41;.</p> <li><p>Inbuilt support of unit tests.</p> <li><p>Easy handling of out-of-source builds.</p> </ul> <h2 id=resources_on_cmake ><a href="#resources_on_cmake" class=header-anchor >Resources on cmake</a></h2> <ul> <li><p><a href="http://www.cmake.org/">Home page</a></p> <li><p><a href="http://en.wikipedia.org/wiki/CMake">Wikipedia</a></p> <li><p><a href="http://www.cmake.org/cmake/help/latest/">Documentation &#40;latest version&#41;</a></p> <li><p><a href="https://cmake.org/cmake/help/latest/guide/tutorial/index.html">Tutorial &#40;cmake home page&#41;</a></p> <li><p><a href="https://www.google.de/search?q&#61;cmake&#43;tutorial">Tutorials &#40;as found by Google&#41;</a></p> <li><p>&quot;CMake for busy scientists&quot; by Radovan Bast turned into the <a href="https://www.packtpub.com/product/cmake-cookbook/9781788470711">CMake cookbook</a></p> </ul> <p>Ok, so let us start with the <em>very</em> basics. Why in hell we do we need this ?</p> <h2 id=edit-compile-link-execute-fail-edit-compile ><a href="#edit-compile-link-execute-fail-edit-compile" class=header-anchor >Edit-Compile-Link-Execute-Fail-Edit-Compile...</a></h2> <p>This is the infinite Karma cycle of the programmer who works with classical <em>compiled</em> languages like C/Fortran/C&#43;&#43;. With the widespread adoption of <em>interpreted</em> languages &#40;in particular matlab&#41; it is not obvious that even university alumni have been exposed to this workflow. Still, compiled languages with respect to portability and speed are the best choice. It is not excluded that this situation will change in the not so distant future... which is not here yet.</p> <p>The source code for the demo test can be found in <a href="/marginalia/assets/tinyproject.zip">tinyproject.zip</a></p> <h3 id=edit ><a href="#edit" class=header-anchor >Edit </a></h3> <p>So let us start with a small program in a file <code>hello.c</code>:</p> <pre><code class="julia hljs"><span class=hljs-comment >#include &lt;stdio.h&gt;</span>
+int main (int argc, char *argv[]) 
+{
+   printf(<span class=hljs-string >&quot;Hello world!\n&quot;</span>);
+   <span class=hljs-keyword >return</span> <span class=hljs-number >0</span>;
+}</code></pre> <p>It can be <em>compiled</em>, <em>linked</em> and <em>executed</em> from the command line:</p> <pre><code class="julia hljs">$ cc -o hello hello.c
+$ hello
+Hello world!</code></pre> <p>Now, our program shall do something more useful, by calling a function from a module described in <code>infinitecycle.h</code></p> <pre><code class="julia hljs">int infcyc(int start); /* call infinite cycle and <span class=hljs-keyword >return</span> result*/</code></pre>
+<p>and <code>infinitecycle.c</code>:</p>
+<pre><code class="julia hljs"><span class=hljs-comment >#include &quot;infinitecycle.h&quot;</span>
+int infcyc(int start)
+{
+  int result;
+  result=start;
+  <span class=hljs-keyword >for</span> (;result&lt;<span class=hljs-number >42</span>;result++);
+  <span class=hljs-keyword >return</span> result;
+}</code></pre>
+<p>Our program now looks like</p>
+<pre><code class="julia hljs"><span class=hljs-comment >#include &lt;stdio.h&gt;</span>
+<span class=hljs-comment >#include &quot;infinitecycle.h&quot;</span>
+int main (int argc, char *argv[])
+{
+  int answer;
+  answer=infcyc(<span class=hljs-number >0</span>);
+  printf(<span class=hljs-string >&quot;Hello world, the answer is %d!\n&quot;</span>,answer);
+  <span class=hljs-keyword >return</span> <span class=hljs-number >0</span>;
+}</code></pre>
+<p>To put this together, we call</p>
+<pre><code class="julia hljs">$ cc -o hello hello.c infinitecycle.c
+$ hello
+Hello world, the answer is <span class=hljs-number >42</span>!</code></pre>
+<h3 id=compile ><a href="#compile" class=header-anchor >Compile</a></h3>
+<p>The <code>cc</code> command above performs several process steps. It <em>compiles</em> the  code into <em>object files</em> which already contain something like the machine code.</p>
+<pre><code class="julia hljs">$ cc -c -o hello.o hello.c
+$ cc -c -o infinitecycle.o infinitecycle.c</code></pre>
+<h3 id=link ><a href="#link" class=header-anchor >Link</a></h3>
+<p>These object files have to be <em>linked</em> together and with system libraries containing e.g. the <code>printf</code> function and other voodoo. The program which performs this step is called <em>linker</em> or <em>loader</em> &#40;<code>ld</code> on Unix&#41;:</p>
+<pre><code class="julia hljs">$ ld -o hello hello.o infinitecycle.o -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-<span class=hljs-number >64.</span>so<span class=hljs-number >.2</span>  /usr/lib64/gcc/x86_64-suse-linux/<span class=hljs-number >4.8</span>/../../../../lib64/crt1.o /usr/lib64/gcc/x86_64-suse-linux/<span class=hljs-number >4.8</span>/../../../../lib64/crti.o /usr/lib64/gcc/x86_64-suse-linux/<span class=hljs-number >4.8</span>/crtbegin.o -L/usr/lib64/gcc/x86_64-suse-linux/<span class=hljs-number >4.8</span> -L/usr/lib64/gcc/x86_64-suse-linux/<span class=hljs-number >4.8</span>/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib64/gcc/x86_64-suse-linux/<span class=hljs-number >4.8</span>/../../../../x86_64-suse-linux/lib -L/usr/lib64/gcc/x86_64-suse-linux/<span class=hljs-number >4.8</span>/../../.. -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib64/gcc/x86_64-suse-linux/<span class=hljs-number >4.8</span>/crtend.o /usr/lib64/gcc/x86_64-suse-linux/<span class=hljs-number >4.8</span>/../../../../lib64/crtn.o</code></pre>
+<p>Larger collections of object files can be put  together into <em>libraries</em> &#40;<em>archives</em>&#41;, just for the example we make an archive of one object file:</p>
+<pre><code class="julia hljs">$ ar cvr libfinite.a infinitecycle.o
+a - infinitecycle.o</code></pre>
+<p>These archives can be  used to link with them rather than with the collection of object files they contain. In  order not to have to write all the voodoo shown above, it is customary in Unix that the compiler commands know how to link the code, so it suffices to invoke</p>
+<pre><code class="julia hljs">$ cc -o hello hello.o libfinite.a</code></pre>
+<h4 id=working_with_larger_projects ><a href="#working_with_larger_projects" class=header-anchor >Working with larger projects </a></h4>
+<p>Now this  is essentially  the way one  puts together  larger projects, possibly from  different sources,  e.g. a  graphics library  with some numerical code. The result of the  installation of the library is that we  have somewhere  in  our  system the  <em>header</em>  &#40;<code>.h</code>&#41; files  which describe to  the compiler  how to  interface the  code, and  a library &#40;<code>.a</code>&#41; or <em>shared library</em> &#40;<code>.so</code>&#41; which contains the code.  Also, for a larger project we put the  code written by ourselves onto libraries. When developing, we want to have two things at once:</p>
+<ul>
+<li><p>after changing something,  we want to have some  magic which repeats the compilation and linking process automatically</p>
+
+<li><p>we do not want a recompile  of everything after changing only a tiny bit of code</p>
+
+</ul>
+<p>On UNIX &#40;and MacOSX&#41;, Makefiles  are used to describe the dependencies between  the  pieces  of  code.</p>
+<h3 id=fail ><a href="#fail" class=header-anchor >Fail...</a></h3>
+<p>In  order  to  work  properly,  all dependencies  have to  be written  into such  a file.  Cumbersome, and error prone, especially for larger projects... E.g. we have to trace all the <code>#include</code> statements and write the corresponding dependencies into the Makefile.</p>
+<h2 id=cmake_to_the_rescue ><a href="#cmake_to_the_rescue" class=header-anchor >CMake to the rescue&#33;</a></h2>
+<p>CMake essentially  is the  tool which automates  this process.   At the same time it can generate other dependency descriptions as well, e.g. for <a href="http://martine.github.io/ninja/">ninja</a>.</p>
+<h3 id=cmakeliststxt_for_project_description ><a href="#cmakeliststxt_for_project_description" class=header-anchor ><code>CMakeLists.txt</code> for project description</a></h3>
+<p>CMake relies on a project description in a file <code>CMakeLists.txt</code>.  For larger projects,  this file is much  easier to write than  a <code>Makefile</code>. In particular,  it automatically traces all  dependencies. By default, it generates a standard Unix Makefile  which is then used for the real build.</p>
+<p>So let us try this for our tiny project. We add the following file <code>CMakeLists.txt</code> to our project directory:</p>
+<pre><code class="julia hljs"><span class=hljs-comment >#</span>
 <span class=hljs-comment ># Minimal  version required for CMake</span>
 <span class=hljs-comment >#</span>
 cmake_minimum_required(<span class=hljs-literal >VERSION</span> <span class=hljs-number >2.8</span>)
@@ -22,7 +81,21 @@ add_executable(hello hello.c)
 <span class=hljs-comment >#</span>
 <span class=hljs-comment ># Add library(ies)  to link with the executable</span>
 <span class=hljs-comment >#</span>
-target_link_libraries(hello finite)</code></pre> <h2 id=out-of-source_workflow ><a href="#out-of-source_workflow" class=header-anchor >Out-Of-Source Workflow</a></h2> <p>The following workflow is not the only one possible, but highly recommended. It is called <em>out-of-source build</em> and essentially boils down to the fact that everything which is generated during the build process is placed into the <em>build</em> directory. <em>Nothing</em> is created in the source tree. This is of high practical value if one works with different build configurations &#40;debug/release&#41;, compilers or even operating systems from the same source directory.</p> <p>&#36; mkdir build &#36; cd build &#36; cmake .. &#36; cd .. &#36; make -C build &#36; .build/hello Hello world, the answer is 42&#33;</p> <p>Now we found out that the cycle in <code>infcyc</code> is finite. So we change the header file <code>infinitecycle.h</code> &#40;it is too late to change the name of the function as lots of people are using it. At least we remark this in the comment... &#41;:</p> <p>/* well, it is finite, but we don&#39;t want to break the API*/ int infcyc&#40;int start&#41;; /* call infinite cycle and return result*/</p> <p>We invoke the recompile:</p> <pre><code class="julia hljs">$ make -C build
+target_link_libraries(hello finite)</code></pre>
+<h3 id=out-of-source_workflow ><a href="#out-of-source_workflow" class=header-anchor >Out-Of-Source Workflow</a></h3>
+<p>The  following workflow  is  not  the only  one  possible, but  highly recommended. It is called  <em>out-of-source build</em> and essentially boils down  to the  fact that  everything which  is generated  during the  build process is placed into the  <em>build</em> directory. <em>Nothing</em> is created in the source  tree. This is  of high practical  value if one  works with different  build  configurations  &#40;debug/release&#41;, compilers  or  even operating systems from the same source directory.</p>
+<pre><code class="julia hljs">$ mkdir build
+$ cd build
+$ cmake ..
+$ cd ..
+$ make -C build
+$ .build/hello
+Hello world, the answer is <span class=hljs-number >42</span>!</code></pre>
+<p>Now we found out that the cycle in <code>infcyc</code> is finite. So we change the header file <code>infinitecycle.h</code> &#40;it is too late to change the name of the function as lots of people are using it. At least we remark this in the comment... &#41;:</p>
+<pre><code class="julia hljs">/* well, it is finite, but we don&#x27;t want to <span class=hljs-keyword >break</span> the API*/
+int infcyc(int start); /* call infinite cycle and <span class=hljs-keyword >return</span> result*/</code></pre>
+<p>We invoke the recompile:</p>
+<pre><code class="julia hljs">$ make -C build
 Scanning dependencies of target finite
 [ <span class=hljs-number >50</span>%] Building C object CMakeFiles/finite.dir/infinitecycle.c.o
 Linking C static library libfinite.a
@@ -30,7 +103,22 @@ Linking C static library libfinite.a
 Scanning dependencies of target hello
 [<span class=hljs-number >100</span>%] Building C object CMakeFiles/hello.dir/hello.c.o
 Linking C executable hello
-[<span class=hljs-number >100</span>%] Built target hello</code></pre> <p>This demonstrates that CMake built a Makefile for us which contains the dependency of <code>hello.c</code> and <code>infinitecycle.c</code> on <code>infinitecycle.h</code>.</p> <h2 id=ninja ><a href="#ninja" class=header-anchor >ninja</a></h2> <p>Just for demonstration, we perform a build with ninja. Ninja is much faster than make, and it can work efficiently in parallel. So it makes a difference in large projects. However it currently does not work for projects containing Fortran code.</p> <p>&#36; mkdir build-ninja &#36; cd build-ninja &#36; cmake -G Ninja .. &#36; cd .. &#36; ninja -C build-ninja &#36; build-ninja/hello Hello world, the answer is 42&#33;</p> <p>The previous example could have used <code>cmake -G &quot;Unix Makefiles&quot; ..</code> which is the default on Unix. Please remark as well that the <code>build</code> and <code>build-ninja</code> subdirectories coexist without problems.</p> <h2 id=automatic_test ><a href="#automatic_test" class=header-anchor >Automatic test</a></h2> <p>Automatic tests are a great tool to verify the correctness of code modifications. CMake provides some infrastructure for this.</p> <p>Let us add the following lines to <code>CMakeLists.txt</code></p> <pre><code class="julia hljs"><span class=hljs-comment >#</span>
+[<span class=hljs-number >100</span>%] Built target hello</code></pre>
+<p>This demonstrates that CMake built a Makefile for us which contains the dependency of <code>hello.c</code> and <code>infinitecycle.c</code> on <code>infinitecycle.h</code>.</p>
+<h3 id=ninja ><a href="#ninja" class=header-anchor >ninja</a></h3>
+<p>Just for demonstration, we perform a build with ninja.  Ninja is a replacement of  make which is much faster than make, and it can work efficiently in parallel. So it makes a difference in large projects.</p>
+<pre><code class="julia hljs">$ mkdir build-ninja
+$ cd build-ninja
+$ cmake -G Ninja ..
+$ cd ..
+$ ninja -C build-ninja
+$ build-ninja/hello
+Hello world, the answer is <span class=hljs-number >42</span>!</code></pre>
+<p>The previous example could have used <code>cmake -G &quot;Unix Makefiles&quot; ..</code> which  is the default on Unix. Please remark as well that the <code>build</code> and <code>build-ninja</code> subdirectories coexist without problems.</p>
+<h3 id=automatic_test ><a href="#automatic_test" class=header-anchor >Automatic test</a></h3>
+<p>Automatic tests  are a great  tool to  verify the correctness  of code modifications. CMake provides some infrastructure for this.</p>
+<p>Let us add the following lines to <code>CMakeLists.txt</code></p>
+<pre><code class="julia hljs"><span class=hljs-comment >#</span>
 <span class=hljs-comment ># Enable testing</span>
 <span class=hljs-comment >#</span>
 enable_testing()
@@ -38,7 +126,9 @@ enable_testing()
 <span class=hljs-comment >#</span>
 <span class=hljs-comment ># Run hello in test mode</span>
 <span class=hljs-comment >#</span>
-add_test(universe  hello -test)</code></pre> <p>and add a test mode to our program which now looks like</p> <pre><code class="julia hljs"><span class=hljs-comment >#include &lt;stdio.h&gt;</span>
+add_test(universe  hello -test)</code></pre>
+<p>and add a test mode to our program which now looks like</p>
+<pre><code class="julia hljs"><span class=hljs-comment >#include &lt;stdio.h&gt;</span>
 <span class=hljs-comment >#include &lt;string.h&gt;</span>
 <span class=hljs-comment >#include &quot;infinitecycle.h&quot;</span>
 int main (int argc, char *argv[])
@@ -59,7 +149,9 @@ int main (int argc, char *argv[])
     }
 	
   <span class=hljs-keyword >return</span> <span class=hljs-number >0</span>;
-}</code></pre> <p>And now</p> <pre><code class="julia hljs">$make -C build
+}</code></pre>
+<p>And now</p>
+<pre><code class="julia hljs">$make -C build
 [ <span class=hljs-number >50</span>%] Built target finite
 Scanning dependencies of target hello
 [<span class=hljs-number >100</span>%] Building C object CMakeFiles/hello.dir/hello.c.o
@@ -73,4 +165,23 @@ Test project /home/fuhrmann/Wias/www/fuhrmann/drafts/tinyproject/build
 
 <span class=hljs-number >100</span>% tests passed, <span class=hljs-number >0</span> tests failed out of <span class=hljs-number >1</span>
 
-Total Test time (real) =   <span class=hljs-number >0.00</span> sec</code></pre> <div class=page-foot > <div class=copyright > &copy; Jürgen Fuhrmann. License: <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode"> CC-BY-SA 4.0</a>. Last modified: August 31, 2022. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>. Upon finding factual errors, typos etc. <a href=https://github.com/j-fu/marginalia/issues> raise an issue<a>. <center> <a href="/marginalia/feed.xml"> <img src="/marginalia/assets/rss.png" style="width:100px;"></a> </center> </div> </div> </div> </div> </div> <label for=sidebar-checkbox  class=sidebar-toggle ></label>
+Total Test time (real) =   <span class=hljs-number >0.00</span> sec</code></pre>
+<div class=page-foot >
+  <div class=copyright >
+    &copy; Jürgen Fuhrmann. License: <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode"> CC-BY-SA 4.0</a>. Last modified: September 08, 2022. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
+Upon finding factual errors, typos etc. <a href=https://github.com/j-fu/marginalia/issues> raise an issue<a>.
+<center>  <a href="/marginalia/feed.xml"> <img src="/marginalia/assets/rss.png" style="width:100px;"></a> </center>
+  </div>
+</div>
+
+
+</div>
+      </div>  
+    </div> 
+    
+    
+        
+
+
+    
+    <label for=sidebar-checkbox  class=sidebar-toggle ></label>

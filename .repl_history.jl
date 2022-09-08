@@ -190,3 +190,21 @@
 # time: 2022-08-31 09:58:08 CEST
 # mode: julia
 	publish()
+# time: 2022-09-08 14:12:54 CEST
+# mode: julia
+	serve()
+# time: 2022-09-08 14:13:22 CEST
+# mode: julia
+	serve(port=8101)
+# time: 2022-09-08 14:13:27 CEST
+# mode: help
+	serve
+# time: 2022-09-08 14:13:36 CEST
+# mode: julia
+	serve(port=7000)
+# time: 2022-09-08 14:13:43 CEST
+# mode: julia
+	serve(port=8500)
+# time: 2022-09-08 14:58:29 CEST
+# mode: julia
+	publish()
