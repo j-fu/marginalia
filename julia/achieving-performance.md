@@ -4,6 +4,7 @@
 @def rss_pubdate = Date(2022, 2, 9)
 
 # Julia: Achieving Performance 
+- 2022-09-09: Updates on other resources
 - 2022-02-09: RSS
 - 2021-11-15: Initial version
 
@@ -25,7 +26,10 @@ down from 13s to 0.07s and allocations form 763.08 M allocations to 86.
 
 - Also, the [7 Julia Gotchas](https://www.stochasticlifestyle.com/7-julia-gotchas-handle/) still are worth to read in this context.
 
-- UPDATE 2021-12-01: [Writing type-stable Julia code](https://blog.sintef.com/industry-en/writing-type-stable-julia-code/)
+- UPDATE 
+  - 2021-12-01: Philippe Mainçon: [Writing type-stable Julia code](https://blog.sintef.com/industry-en/writing-type-stable-julia-code/)
+  - 2022-09-09: Jacob Nybo Nissen: [What scientists must know about hardware to write fast code](https://biojulia.net/post/hardware/)
+  - 2022-09-09: [Unionize your collections](/julia/unionize)
 
  
 
@@ -68,34 +72,37 @@ Also it may be worth to have a look at the [Visual Studio Code](https://www.juli
 
 Avoid to work with global variables. E.g. instead of
 
-```julia
-a=10
+```julia:code/ex1
+using BenchmarkTools # HIDE
+a=10 
 b=11
 
 function important(x)
    x=5*a+b
 end
 
-important(10)
+@btime important(10)
 ```
+\output{code/ex1}
 
 write
 
-```julia
+```julia:code/ex2
 a=10
 b=11
 
 function important(x,a,b)
      x=5*a+b
 end
-important(10,a,b)
 
+@btime important(10,a,b)
 ```
+\output{code/ex2}
 
 A more profound approach which would keep parameter lists  short may be the creation of a context `struct` which collects the parameters.
 
 Alternatively, wrap the global context into a function 
-```julia
+```julia:code/ex3
 function run()
   a::Int=10
   b::Int=11
@@ -103,11 +110,16 @@ function run()
   function important(x)
      x=5*a+b
   end
-  important(10)
+@btime important(10)
 end
+run()
 ```
+\output{code/ex3}
+
+
 and ensure that [`a` and `b` never change type](https://docs.julialang.org/en/v1/manual/performance-tips/#man-performance-captured)
-by [type-annotating](https://docs.julialang.org/en/v1/manual/types/#Type-Declarations) them (which is not possible for global variables).
+by [type-annotating](https://docs.julialang.org/en/v1/manual/types/#Type-Declarations) them (which is not possible for global variables
+in Julia versions <1.8).
 
 
 ##### Rationale:

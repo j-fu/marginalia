@@ -3,10 +3,8 @@
 
 # Julia
 
-- [Basic workflow](basic-workflow)
-- [Project workflow](project-workflow)
-- [Achieving Performance](achieving-performance)
-
-## Drafts
-- [Unionize your collections!](/assets/unionize.html)
+- [Basic workflow](julia/basic-workflow)
+- [Project workflow](julia/project-workflow)
+- [Achieving Performance](julia/achieving-performance)
+- [Unionize your collections!](julia/unionize)
 

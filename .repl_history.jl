@@ -208,3 +208,48 @@
 # time: 2022-09-08 14:58:29 CEST
 # mode: julia
 	publish()
+# time: 2022-09-08 15:01:16 CEST
+# mode: shell
+	git st
+# time: 2022-09-08 15:01:18 CEST
+# mode: shell
+	git out
+# time: 2022-09-08 15:01:30 CEST
+# mode: shell
+	git st __site/
+# time: 2022-09-08 15:01:36 CEST
+# mode: shell
+	ls __site/
+# time: 2022-09-08 15:01:40 CEST
+# mode: shell
+	ls -lrt __site/
+# time: 2022-09-08 23:46:40 CEST
+# mode: julia
+	serve()
+# time: 2022-09-08 23:54:30 CEST
+# mode: shell
+	git out
+# time: 2022-09-08 23:54:32 CEST
+# mode: julia
+	serve()
+# time: 2022-09-09 00:23:06 CEST
+# mode: shell
+	git out
+# time: 2022-09-09 00:23:08 CEST
+# mode: julia
+	serve()
+# time: 2022-09-09 00:26:34 CEST
+# mode: shell
+	mkdir _assets/code
+# time: 2022-09-09 00:26:39 CEST
+# mode: julia
+	serve()
+# time: 2022-09-09 10:48:47 CEST
+# mode: shell
+	cp ~/unionize.html _assets/
+# time: 2022-09-09 10:48:51 CEST
+# mode: julia
+	serve()
+# time: 2022-09-09 11:00:12 CEST
+# mode: julia
+	publish()
