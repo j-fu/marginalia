@@ -149,6 +149,29 @@
 
 <item>
   <title>
+    <![CDATA[    ]]>
+  </title>
+  <link> https://j-fu.github.io/marginalia/julia/unionize/index.html </link>
+  <guid> https://j-fu.github.io/marginalia/julia/unionize/index.html </guid>
+  <description>
+    <![CDATA[  Julia: Unionize your collections&#33;  ]]>
+  </description>  
+  
+  <content:encoded>
+    <![CDATA[  <h1 id="13633231208144796923"></h1><iframe style="height:9700px" width="100%" frameborder="0" src="https://j-fu.github.io/marginalia/assets/unionize.html"> </iframe> ]]>
+  </content:encoded>
+    
+  <pubDate>Wed, 09 Feb 2022 00:00:00 +0000</pubDate>  
+  
+  
+  <atom:author>
+    <atom:name>Jürgen Fuhrmann</atom:name>
+  </atom:author>
+        
+</item>
+
+<item>
+  <title>
     <![CDATA[  Julia: Basic Workflow  ]]>
   </title>
   <link> https://j-fu.github.io/marginalia/julia/basic-workflow/index.html </link>
@@ -277,6 +300,8 @@ pkg&gt; add Package1</code></pre>
   <content:encoded>
     <![CDATA[  <h1 id="julia_achieving_performance">Julia: Achieving Performance </h1>
 <ul>
+<li><p>2022-09-09: Updates on other resources</p>
+</li>
 <li><p>2022-02-09: RSS</p>
 </li>
 <li><p>2021-11-15: Initial version</p>
@@ -291,7 +316,15 @@ pkg&gt; add Package1</code></pre>
 </li>
 <li><p>Also, the <a href="https://www.stochasticlifestyle.com/7-julia-gotchas-handle/">7 Julia Gotchas</a> still are worth to read in this context.</p>
 </li>
-<li><p>UPDATE 2021-12-01: <a href="https://blog.sintef.com/industry-en/writing-type-stable-julia-code/">Writing type-stable Julia code</a></p>
+<li><p>UPDATE </p>
+<ul>
+<li><p>2021-12-01: Philippe Mainçon: <a href="https://blog.sintef.com/industry-en/writing-type-stable-julia-code/">Writing type-stable Julia code</a></p>
+</li>
+<li><p>2022-09-09: Jacob Nybo Nissen: <a href="https://biojulia.net/post/hardware/">What scientists must know about hardware to write fast code</a></p>
+</li>
+<li><p>2022-09-09: <a href="https://j-fu.github.io/marginalia/julia/unionize">Unionize your collections</a></p>
+</li>
+</ul>
 </li>
 </ul>
 <h2 id="measure_performance_with_time_and_pay_attention_to_memory_allocations">&quot;Measure performance with @time and pay attention to memory allocations&quot;</h2>
@@ -309,16 +342,20 @@ pkg&gt; add Package1</code></pre>
 <h2 id="avoid_global_variables">&quot;Avoid global variables&quot;</h2>
 <p><a href="https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-global-variables">Julia docs 🔗</a></p>
 <p>Avoid to work with global variables. E.g. instead of</p>
-<pre><code class="language-julia">a&#61;10
+<pre><code class="language-julia">a&#61;10 
 b&#61;11function important&#40;x&#41;
    x&#61;5*a&#43;b
-endimportant&#40;10&#41;</code></pre>
+end@btime important&#40;10&#41;</code></pre>
+<pre><code class="plaintext code-output">ArgumentError: Package BenchmarkTools not found in current path:
+- Run `import Pkg; Pkg.add("BenchmarkTools")` to install the BenchmarkTools package.</code></pre>
 <p>write</p>
 <pre><code class="language-julia">a&#61;10
 b&#61;11function important&#40;x,a,b&#41;
      x&#61;5*a&#43;b
-end
-important&#40;10,a,b&#41;</code></pre>
+end@btime important&#40;10,a,b&#41;</code></pre>
+<pre><code class="plaintext code-output">LoadError: UndefVarError: @btime not defined
+in expression starting at none:2
+</code></pre>
 <p>A more profound approach which would keep parameter lists  short may be the creation of a context <code>struct</code> which collects the parameters.</p>
 <p>Alternatively, wrap the global context into a function </p>
 <pre><code class="language-julia">function run&#40;&#41;
@@ -326,9 +363,13 @@ important&#40;10,a,b&#41;</code></pre>
   b::Int&#61;11  function important&#40;x&#41;
      x&#61;5*a&#43;b
   end
-  important&#40;10&#41;
-end</code></pre>
-<p>and ensure that <a href="https://docs.julialang.org/en/v1/manual/performance-tips/#man-performance-captured"><code>a</code> and <code>b</code> never change type</a> by <a href="https://docs.julialang.org/en/v1/manual/types/#Type-Declarations">type-annotating</a> them &#40;which is not possible for global variables&#41;.</p>
+@btime important&#40;10&#41;
+end
+run&#40;&#41;</code></pre>
+<pre><code class="plaintext code-output">LoadError: UndefVarError: @btime not defined
+in expression starting at none:8
+</code></pre>
+<p>and ensure that <a href="https://docs.julialang.org/en/v1/manual/performance-tips/#man-performance-captured"><code>a</code> and <code>b</code> never change type</a> by <a href="https://docs.julialang.org/en/v1/manual/types/#Type-Declarations">type-annotating</a> them &#40;which is not possible for global variables in Julia versions &lt;1.8&#41;.</p>
 <h5 id="rationale">Rationale:</h5>
 <p>Julia assumes that a global variable can change its type anytime, so it needs to be wrapped  into a container &#40;&quot;boxing&quot;&#41; labeled with its current type. Handling these is expensive and manifests itself in additional allocations. Type changes of captured variables would have similar implications. In fact, this is very similar to the way e.g. python works with <em>any</em> variable.</p>
 <h2 id="pre-allocate_outputs">&quot;Pre-allocate outputs&quot;</h2>
