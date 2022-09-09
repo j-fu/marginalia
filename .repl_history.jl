@@ -253,3 +253,12 @@
 # time: 2022-09-09 11:00:12 CEST
 # mode: julia
 	publish()
+# time: 2022-09-09 11:04:46 CEST
+# mode: shell
+	 e older-posts/2014-11-13-cmake-toolchains.md
+# time: 2022-09-09 11:06:29 CEST
+# mode: julia
+	serve()
+# time: 2022-09-09 11:09:37 CEST
+# mode: julia
+	publish()

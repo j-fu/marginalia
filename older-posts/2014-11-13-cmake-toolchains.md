@@ -6,8 +6,8 @@
 
     
     
-    CMake does a great job in auto-detecting your system. But
-    what to do if you want to be in control of the choice
+CMake does a great job in auto-detecting your system. But
+what to do if you want to be in control of the choice
 of compilers, flags etc ? Use toolchain files.
 
 <!-- more -->
@@ -17,7 +17,7 @@ of compilers, flags etc ? Use toolchain files.
 The  start of my cmake remarks is [here](/older-posts/2014-10-30-cmake).
 
 Please          consider           the          discussion          on
-[cross  compiling](http://www.cmake.org/Wiki/CMake_Cross_Compiling) on
+[cross  compiling](https://cmake.org/cmake/help/book/mastering-cmake/chapter/Cross%20Compiling%20With%20CMake.html) on
 the cmake home page. Using this approach I was able to cross-compile
 code for Windows (via [mingw](http://www.mingw.org/) on Linux, including
 GUI  ([fltk](http://www.fltk.org)) and OpenGL.

@@ -1,3 +1,4 @@
+@def title = "Marginalia -- Older posts"
 # Older posts
 This is a collection of older posts from around 2014.
 Things changed  since then, e.g. `git` has won...
