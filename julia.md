@@ -6,5 +6,6 @@
 - [Basic workflow](basic-workflow)
 - [Project workflow](project-workflow)
 - [Achieving Performance](achieving-performance)
-- [Unionize your collections!](unionize)
+- [Unionize your Collections!](unionize)
+- [Calculating sparse Jacobians](sparsejac)
 
