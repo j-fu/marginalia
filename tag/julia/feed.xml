@@ -23,6 +23,29 @@
 
 <item>
   <title>
+    <![CDATA[    ]]>
+  </title>
+  <link> https://j-fu.github.io/marginalia/julia/sparsejac/index.html </link>
+  <guid> https://j-fu.github.io/marginalia/julia/sparsejac/index.html </guid>
+  <description>
+    <![CDATA[  Calculating sparse jacobians  ]]>
+  </description>  
+  
+  <content:encoded>
+    <![CDATA[  <h1 id="13633231208144796923"></h1><iframe style="height:9800px" width="100%" frameborder="0" src="https://j-fu.github.io/marginalia/assets/sparsejac.html"> </iframe> ]]>
+  </content:encoded>
+    
+  <pubDate>Sat, 22 Oct 2022 00:00:00 +0000</pubDate>  
+  
+  
+  <atom:author>
+    <atom:name>Jürgen Fuhrmann</atom:name>
+  </atom:author>
+        
+</item>
+
+<item>
+  <title>
     <![CDATA[  Julia: Project Workflow  ]]>
   </title>
   <link> https://j-fu.github.io/marginalia/julia/project-workflow/index.html </link>
@@ -158,7 +181,7 @@
   </description>  
   
   <content:encoded>
-    <![CDATA[  <h1 id="13633231208144796923"></h1><iframe style="height:9700px" width="100%" frameborder="0" src="https://j-fu.github.io/marginalia/assets/unionize.html"> </iframe> ]]>
+    <![CDATA[  <h1 id="13633231208144796923"></h1><iframe style="height:10500px" width="100%" frameborder="0" src="https://j-fu.github.io/marginalia/assets/unionize.html"> </iframe> ]]>
   </content:encoded>
     
   <pubDate>Wed, 09 Feb 2022 00:00:00 +0000</pubDate>  
