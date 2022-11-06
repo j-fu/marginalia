@@ -5,10 +5,6 @@
 
 # Julia: Basic Workflow
 
-- 2022-09-01: Link to [blogpost](https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/) by Julius Krumbiegel
-- 2022-02-09: RSS
-- 2021-11-15: Initial version
-
 
 \toc 
 
@@ -40,7 +36,7 @@ However, for Julia this is a bad idea for at  least two reasons:
 
 Suggestions:
 
-- [Avoid global variables](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-global-variables) and develop any code in functions. E.g. `MyScript.jl` could look like:
+- [Avoid  untyped global variables](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-global-variables) and develop any code in functions. E.g. `MyScript.jl` could look like:
 ```
 using Package1
 using Package2
@@ -84,6 +80,13 @@ julia> include("MyScript.jl")
 julia> MyScript.main(kwarg1=5)
 ```
 
+- Load code via `using`. Once you have mastered modules and ensure that the file name corresponds to the module name, you can  load code via `using`. In order to allow for this, you need to ensure to have the directory containg `MyScript.jl` (e.g. the current directory `pwd()`) on the [`LOAD_PATH`](https://docs.julialang.org/en/v1/base/constants/#Base.LOAD_PATH):
+```
+$ julia
+julia> push!(LOAD_PATH,pwd())
+julia> using MyScript
+julia> MyScript.main(kwarg1=5)
+```
 
 ## Use Revise.jl to reload modified code
 
@@ -105,31 +108,29 @@ julia> MyScript.main(kwarg1=5)
 After having modified `MyScript.jl`, just another  invocation of `MyScript.main()`  would see the changes. See also the corresponding hints in the [Julia documentation](https://docs.julialang.org/en/v1/manual/workflow-tips/#Revise-based-workflows).
 
 Besides of tracking scripts loaded into the REPL, `Revise.jl` 
-- tracks changes in packages under development loaded into the script via `using` or `import`.
+- tracks changes in modules and packages under development loaded into the script via `using` or `import`.
 - works in [Pluto notebooks](https://github.com/fonsp/Pluto.jl)
 
 ## Record your project dependencies in reproducible environments
 
 
-Update 2021-12-02: Modified terminology according to the [Pkg Glossary](https://pkgdocs.julialang.org/v1/glossary/#Glossary): replaced "project" by "application".
-
-
-
+### Global environment
 By default, packages added to the Julia installation are recorded in the default _global environment_:
 ```
 $ julia
 julia>]
 pkg> add Package1
 ```
-This results in  corresponding entries in  `.julia/environments/vx.y/Project.toml`  and `.julia/environments/vy.y/Manifest.toml`  (where `x.y` stands for your installed Julia version).
-Sharing this global  environment between all your different projects is risky because of possible conflicts in package version requirements. In addition, relying on the global environment makes it hard to share your code with others, as you would have to find a way to communicate the names of the  packages (with versions) which they need to install to run your code.
+This results in  corresponding entries in  `.julia/environments/vx.y/Project.toml`  and `.julia/environments/vx.y/Manifest.toml`  (where `x.y` stands for your installed Julia version).
+Sharing this global  environment between all your different projects is risky because of possible conflicts in package version requirements. In addition, relying on the global environment makes it hard to share your code with others, as you would have to find a way to communicate the names of the  packages (with versions) which they need to install to run your code in a reproducible way.
 
 
 
+### Local environments
 _Local environments_ provide a remedy.
 
 Assume that an  _application_ is Julia code residing in a given directory `MyApp`, uses one or several other Julia packages and is not intended to be invoked from other packages or applications. An environment is described by the two files in the `MyApp` directory:  `Project.toml` and `Manifest.toml`.
-Set up an environment in the following way:
+Set up an environment in  the project directory in the following way:
 
 ```
 $ cd MyApp
@@ -157,11 +158,33 @@ $ julia --project=.
 $ pkg> instantiate
 ```
 
-Update 2022-09-01: See [this blogpost](https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/) by Julius Krumbiegel for another take on Julia environments.
 
-See also the corresponding documentation on [environments](https://pkgdocs.julialang.org/v1/environments/) and [`Project.toml` and 
-`Manifest.toml`](https://pkgdocs.julialang.org/v1/toml-files/).
+### `@` Environments
+Since Julia 1.7 it is possible to easily work with different more or less global environments:
+```
+$ julia --project=@myenv
+```
+calls Julia and activates the environment `.julia/environments/myenv`
 
 
-Pluto notebooks have their own [built-in package management](https://github.com/fonsp/Pluto.jl/wiki/%F0%9F%8E%81-Package-management) and by default     contain a `Project.toml` and a `Manifest.toml` file to ensure portability.
+### Further info
 
+
+- See also the corresponding documentation on [environments](https://pkgdocs.julialang.org/v1/environments/) and [`Project.toml` and  `Manifest.toml`](https://pkgdocs.julialang.org/v1/toml-files/).
+
+- Pluto notebooks have their own [built-in package management](https://github.com/fonsp/Pluto.jl/wiki/%F0%9F%8E%81-Package-management) and by default     contain a `Project.toml` and a `Manifest.toml` file to ensure portability.
+
+- See [this blogpost](https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/) by Julius Krumbiegel for another take on Julia environments.
+
+- See my [talk](https://www.wias-berlin.de/people/fuhrmann/AdSciComp-WS2223/week3/#reproducibility_infrastructure_of_the_julia_language) on the reproducibility infrastructure of the Julia language
+
+
+~~~
+<hr size="5" noshade>
+~~~
+
+__Update history__
+- 2022-11-06: `@` environments (since Julia 1.7) + LOAD_PATH, link to my talk on Julia's reproducibility infrastructure
+- 2022-09-01: Link to [blogpost](https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/) by Julius Krumbiegel
+- 2022-02-09: RSS
+- 2021-11-15: Initial version
