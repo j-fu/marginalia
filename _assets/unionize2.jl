@@ -1,8 +1,11 @@
 ### A Pluto.jl notebook ###
-# v0.19.12
+# v0.19.16
 
 using Markdown
 using InteractiveUtils
+
+# ╔═╡ f3c461f3-c8e5-470f-8fac-ac4582ee8698
+using FunctionWrappersWrappers,ForwardDiff
 
 # ╔═╡ 60941eaa-1aea-11eb-1277-97b991548781
 begin 
@@ -450,17 +453,17 @@ begin
     f10(x)=10x 
 end
 
-# ╔═╡ 1d7a3b43-b9b2-4d60-a7a6-2689967fe473
-allf=(f01,f02,f03,f04,f05,f06,f07,f08,f09,f10)
-
 # ╔═╡ 066ccd3e-018c-4f78-a77d-f3bcf2711834
-function sumup_funcs(collection)
+function sumup_funcs(collection,x)
 	s=0.0
 	for i ∈ eachindex(collection)
-		s+=collection[i](i)
+		s+=collection[i](x)
 	end
 	s
 end
+
+# ╔═╡ f11ceb94-c299-40f9-a6ae-d657cdeff6cd
+allf=(f01,f02,f03,f04,f05,f06,f07,f08,f09,f10)
 
 # ╔═╡ dafc4860-d2b9-4940-bf66-cbcd11592027
 func_collection=rand(allf,N)
@@ -493,10 +496,16 @@ As a consequence, accessing a function from the collection once again is connect
 """
 
 # ╔═╡ 78408644-96ca-426f-b2d5-0bb683cd0e8f
-@benchmark sumup_funcs(func_collection)
+@benchmark sumup_funcs(func_collection,1.0)
+
+# ╔═╡ fe6f9748-93cd-4a8f-86d6-e2ac3573e63c
+@benchmark ForwardDiff.derivative(x->sumup_funcs(func_collection,x),1)
 
 # ╔═╡ 0b29f85b-bdf0-426a-8bc5-4946b4d89f87
 @benchmark sum( f->f(1),func_collection)
+
+# ╔═╡ 088d269e-84f4-47d6-97d0-abf586948665
+@benchmark ForwardDiff.derivative(x->sum( f->f(x), func_collection),1)
 
 # ╔═╡ ebb273d6-1e6d-4e3d-95b1-300b59ababec
 md"""
@@ -523,10 +532,100 @@ Union splitting works here as well, we see the allocations vanish.
 """
 
 # ╔═╡ f1a94bfa-911d-4641-8ffb-8761d687f10c
-@benchmark sumup_funcs(unionF_collection)
+@benchmark sumup_funcs(unionF_collection,1)
+
+# ╔═╡ db843202-3980-4b15-ae8b-e0c42d5548b3
+@benchmark ForwardDiff.derivative(x->sumup_funcs(unionF_collection,x),1)
 
 # ╔═╡ 4a4ee1f7-0e46-4ab9-a7ef-cbab5be7592f
 @benchmark sum( f->f(1),unionF_collection)
+
+# ╔═╡ 4b4cae8e-2f5f-4193-bffa-66b327358298
+@benchmark ForwardDiff.derivative(x->sum( f->f(x), unionF_collection),1)
+
+# ╔═╡ efa930e6-2f3b-4d6f-9a7e-cf0fb011436e
+md"""
+## FunctionWrappers
+"""
+
+# ╔═╡ 5dbd60aa-bf43-4f50-a1c7-1cfe9be6112b
+import FunctionWrappers: FunctionWrapper
+
+# ╔═╡ 7f91e4a8-707d-480a-ad38-ef2041eef60b
+begin
+	abstract type AbstractFWStruct end
+	struct FWStruct
+	fun::FunctionWrapper{Float64, Tuple{Float64}}
+	end
+	evaluatefw(w,x)=w.fun(x)	
+end
+
+# ╔═╡ 00a1d146-080b-4964-8629-4232656f8b6e
+begin
+	fw01=FWStruct(f01)
+	fw02=FWStruct(f02)
+	fw03=FWStruct(f03)
+	fw04=FWStruct(f04)
+	fw05=FWStruct(f05)
+	fw06=FWStruct(f06)
+	fw07=FWStruct(f07)
+	fw08=FWStruct(f08)
+	fw09=FWStruct(f09)
+	fw10=FWStruct(f10)
+end
+
+# ╔═╡ c013af6c-c3c9-4b9b-9cab-c636d744aeed
+allfw=(fw01,fw02,fw03,fw04,fw05,fw06,fw07,fw08,fw09,fw10)
+
+# ╔═╡ 3617c67b-263a-47bc-b3a3-a2be2fb5a92c
+fw_collection=rand(allfw,N)
+
+# ╔═╡ 2a693863-601c-447f-a213-a450da5567ce
+function sumup_fws(collection)
+	s=0.0
+	for i ∈ eachindex(collection)
+		s+=evaluatefw(collection[i],i)
+	end
+	s
+end
+
+# ╔═╡ d76197c8-e953-4e02-b7f6-ba1d0a6b9919
+@benchmark sumup_fws(fw_collection)
+
+# ╔═╡ 9567e97a-3f11-4291-a996-97164aac8bcf
+@benchmark sum( f->f.fun(1),fw_collection)
+
+# ╔═╡ 78df3da3-e740-4776-99c9-50e5040d5a9a
+md"""
+Ok, works when we have only one method to call for a function
+"""
+
+# ╔═╡ 370b5694-1067-41db-b3d1-179d6aa4a3a8
+md"""
+## FunctionWrappersWrappers
+"""
+
+# ╔═╡ 406df8fb-1009-4e97-aaac-0718cda1c266
+begin
+	fww01 = FunctionWrappersWrapper(f01, (Tuple{Float64}, Tuple{ForwardDiff.Dual{Float64}} ),  (Float64, ForwardDiff.Dual{Float64}))
+end
+
+# ╔═╡ ea945209-60ab-468b-86b8-26fda0a76afc
+ForwardDiff.Dual{Float64}|> typeof
+
+# ╔═╡ 72cb2393-a4f3-47ce-86e9-9d9ac6d3918b
+md"""
+We would need `DataType`...
+Doesn't work for our case as we can't know the particular parametrized case for Dual
+"""
+
+# ╔═╡ 83b0914c-4bfe-468a-9d33-bb636136a875
+begin
+	fww0x = FunctionWrappersWrapper(f01, (Tuple{Float64}, Tuple{Int} ),  (Float64, Int))
+end
+
+# ╔═╡ f88dc3d9-a1a3-4fd0-ad2d-eb25f1b2c466
+fww0x(3)
 
 # ╔═╡ 5ceeff92-9ff7-4515-ba60-fc0909c5233a
 md"""
@@ -550,6 +649,11 @@ In fact, the same tests as above can be performed with much larger unions, which
 However, as the remark on `c ∈ collection` and the performance differences between `sum()` and "handwritten" summation show, it is strongly recommended to benchmark implementations which make use of this pattern. 
 """
 
+# ╔═╡ 76f1e139-0fc5-41b5-8e16-b0158cb5d112
+md"""
+FunctionWrappers and their Wrappers are of limited use, because they don't support full genericity.
+"""
+
 # ╔═╡ 494722e6-7753-42dc-b10a-68c8ab97aed4
 html"""<hr>"""
 
@@ -560,10 +664,16 @@ TableOfContents(title="",aside=true)
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+FunctionWrappers = "069b7b12-0de2-55c6-9aab-29f3d0a68a2e"
+FunctionWrappersWrappers = "77dc65aa-8811-40c2-897b-53d922fa7daf"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
 BenchmarkTools = "~1.3.1"
+ForwardDiff = "~0.10.32"
+FunctionWrappers = "~1.1.3"
+FunctionWrappersWrappers = "~0.1.1"
 PlutoUI = "~0.7.44"
 """
 
@@ -571,9 +681,9 @@ PlutoUI = "~0.7.44"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.8.2"
+julia_version = "1.8.3"
 manifest_format = "2.0"
-project_hash = "e2d3efcbedc4eec7465348c1d2d08b26d7df5b2f"
+project_hash = "f39fb824f7dacf66a6e83b92dd456d2187cb5a2b"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -597,11 +707,35 @@ git-tree-sha1 = "4c10eee4af024676200bc7752e536f858c6b8f93"
 uuid = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 version = "1.3.1"
 
+[[deps.ChainRulesCore]]
+deps = ["Compat", "LinearAlgebra", "SparseArrays"]
+git-tree-sha1 = "e7ff6cadf743c098e08fca25c91103ee4303c9bb"
+uuid = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+version = "1.15.6"
+
+[[deps.ChangesOfVariables]]
+deps = ["ChainRulesCore", "LinearAlgebra", "Test"]
+git-tree-sha1 = "38f7a08f19d8810338d4f5085211c7dfa5d5bdd8"
+uuid = "9e997f8a-9a97-42d5-a9f1-ce6bfc15e2c0"
+version = "0.1.4"
+
 [[deps.ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]
 git-tree-sha1 = "eb7f0f8307f71fac7c606984ea5fb2817275d6e4"
 uuid = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
 version = "0.11.4"
+
+[[deps.CommonSubexpressions]]
+deps = ["MacroTools", "Test"]
+git-tree-sha1 = "7b8a93dba8af7e3b42fecabf646260105ac373f7"
+uuid = "bbf7d656-a473-5ed7-a52c-81e309532950"
+version = "0.3.0"
+
+[[deps.Compat]]
+deps = ["Dates", "LinearAlgebra", "UUIDs"]
+git-tree-sha1 = "00a2cccc7f098ff3b66806862d275ca3db9e6e5a"
+uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
+version = "4.5.0"
 
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -611,6 +745,24 @@ version = "0.5.2+0"
 [[deps.Dates]]
 deps = ["Printf"]
 uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
+
+[[deps.DiffResults]]
+deps = ["StaticArraysCore"]
+git-tree-sha1 = "782dd5f4561f5d267313f23853baaaa4c52ea621"
+uuid = "163ba53b-c6d8-5494-b064-1a9d43ac40c5"
+version = "1.1.0"
+
+[[deps.DiffRules]]
+deps = ["IrrationalConstants", "LogExpFunctions", "NaNMath", "Random", "SpecialFunctions"]
+git-tree-sha1 = "c5b6685d53f933c11404a3ae9822afe30d522494"
+uuid = "b552c78f-8df3-52c6-915a-8e097449b14b"
+version = "1.12.2"
+
+[[deps.DocStringExtensions]]
+deps = ["LibGit2"]
+git-tree-sha1 = "c36550cb29cbe373e95b3f40486b9a4148f89ffd"
+uuid = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
+version = "0.9.2"
 
 [[deps.Downloads]]
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
@@ -625,6 +777,23 @@ deps = ["Statistics"]
 git-tree-sha1 = "335bfdceacc84c5cdf16aadc768aa5ddfc5383cc"
 uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93"
 version = "0.8.4"
+
+[[deps.ForwardDiff]]
+deps = ["CommonSubexpressions", "DiffResults", "DiffRules", "LinearAlgebra", "LogExpFunctions", "NaNMath", "Preferences", "Printf", "Random", "SpecialFunctions", "StaticArrays"]
+git-tree-sha1 = "187198a4ed8ccd7b5d99c41b69c679269ea2b2d4"
+uuid = "f6369f11-7733-5829-9624-2563aa707210"
+version = "0.10.32"
+
+[[deps.FunctionWrappers]]
+git-tree-sha1 = "d62485945ce5ae9c0c48f124a84998d755bae00e"
+uuid = "069b7b12-0de2-55c6-9aab-29f3d0a68a2e"
+version = "1.1.3"
+
+[[deps.FunctionWrappersWrappers]]
+deps = ["FunctionWrappers"]
+git-tree-sha1 = "a5e6e7f12607e90d71b09e6ce2c965e41b337968"
+uuid = "77dc65aa-8811-40c2-897b-53d922fa7daf"
+version = "0.1.1"
 
 [[deps.Hyperscript]]
 deps = ["Test"]
@@ -647,6 +816,23 @@ version = "0.2.2"
 [[deps.InteractiveUtils]]
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
+
+[[deps.InverseFunctions]]
+deps = ["Test"]
+git-tree-sha1 = "49510dfcb407e572524ba94aeae2fced1f3feb0f"
+uuid = "3587e190-3f89-42d0-90ee-14403ec27112"
+version = "0.1.8"
+
+[[deps.IrrationalConstants]]
+git-tree-sha1 = "7fd44fd4ff43fc60815f8e764c0f352b83c49151"
+uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
+version = "0.1.1"
+
+[[deps.JLLWrappers]]
+deps = ["Preferences"]
+git-tree-sha1 = "abc9885a7ca2052a736a600f7fa66209f96506e1"
+uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
+version = "1.4.1"
 
 [[deps.JSON]]
 deps = ["Dates", "Mmap", "Parsers", "Unicode"]
@@ -680,8 +866,20 @@ uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 deps = ["Libdl", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
+[[deps.LogExpFunctions]]
+deps = ["ChainRulesCore", "ChangesOfVariables", "DocStringExtensions", "InverseFunctions", "IrrationalConstants", "LinearAlgebra"]
+git-tree-sha1 = "946607f84feb96220f480e0422d3484c49c00239"
+uuid = "2ab3a3ac-af41-5b50-aa03-7779005ae688"
+version = "0.3.19"
+
 [[deps.Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
+
+[[deps.MacroTools]]
+deps = ["Markdown", "Random"]
+git-tree-sha1 = "42324d08725e200c23d4dfb549e0d5d89dede2d2"
+uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
+version = "0.5.10"
 
 [[deps.Markdown]]
 deps = ["Base64"]
@@ -699,6 +897,12 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 version = "2022.2.1"
 
+[[deps.NaNMath]]
+deps = ["OpenLibm_jll"]
+git-tree-sha1 = "a7c3d1da1189a1c2fe843a3bfa04d18d20eb3211"
+uuid = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
+version = "1.0.1"
+
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
@@ -707,6 +911,17 @@ version = "1.2.0"
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
 version = "0.3.20+0"
+
+[[deps.OpenLibm_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
+version = "0.8.1+0"
+
+[[deps.OpenSpecFun_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "13652491f6856acfd2db29360e1bbcd4565d04f1"
+uuid = "efe28fd5-8261-553b-a9e1-b2916fc3738e"
+version = "0.5.5+0"
 
 [[deps.Parsers]]
 deps = ["Dates"]
@@ -724,6 +939,12 @@ deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "Hyperscript"
 git-tree-sha1 = "6e33d318cf8843dade925e35162992145b4eb12f"
 uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 version = "0.7.44"
+
+[[deps.Preferences]]
+deps = ["TOML"]
+git-tree-sha1 = "47e5f437cc0e7ef2ce8406ce1e7e24d44915f88d"
+uuid = "21216c6a-2e73-6563-6e65-726566657250"
+version = "1.3.0"
 
 [[deps.Printf]]
 deps = ["Unicode"]
@@ -759,6 +980,23 @@ uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 [[deps.SparseArrays]]
 deps = ["LinearAlgebra", "Random"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+
+[[deps.SpecialFunctions]]
+deps = ["ChainRulesCore", "IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
+git-tree-sha1 = "d75bda01f8c31ebb72df80a46c88b25d1c79c56d"
+uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
+version = "2.1.7"
+
+[[deps.StaticArrays]]
+deps = ["LinearAlgebra", "Random", "StaticArraysCore", "Statistics"]
+git-tree-sha1 = "ffc098086f35909741f71ce21d03dadf0d2bfa76"
+uuid = "90137ffa-7385-5640-81b9-e52037218182"
+version = "1.5.11"
+
+[[deps.StaticArraysCore]]
+git-tree-sha1 = "6b7ba252635a5eff6a0b0664a41ee140a1c9e72a"
+uuid = "1e83bf80-4336-4d27-bf5d-d5a4f845583c"
+version = "1.4.0"
 
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
@@ -890,8 +1128,8 @@ version = "17.4.0+0"
 # ╠═0c81f249-9755-4ee1-9ef7-2d8ff574f863
 # ╟─92e9756f-30aa-4c2b-8ff2-3c4d832e94f0
 # ╠═53712b18-5c51-4e50-b137-b7cfac43bc35
-# ╠═1d7a3b43-b9b2-4d60-a7a6-2689967fe473
 # ╠═066ccd3e-018c-4f78-a77d-f3bcf2711834
+# ╠═f11ceb94-c299-40f9-a6ae-d657cdeff6cd
 # ╠═dafc4860-d2b9-4940-bf66-cbcd11592027
 # ╟─db65bcd3-44f6-4557-bab9-0c14826123ba
 # ╠═c48c7899-ee26-45a3-80d6-3e08e3522964
@@ -901,7 +1139,9 @@ version = "17.4.0+0"
 # ╟─2aa2c229-0471-4c9b-8f69-1f63f7753d42
 # ╟─7760fc0e-cf94-4fac-a553-ff6061a2e612
 # ╠═78408644-96ca-426f-b2d5-0bb683cd0e8f
+# ╠═fe6f9748-93cd-4a8f-86d6-e2ac3573e63c
 # ╠═0b29f85b-bdf0-426a-8bc5-4946b4d89f87
+# ╠═088d269e-84f4-47d6-97d0-abf586948665
 # ╟─ebb273d6-1e6d-4e3d-95b1-300b59ababec
 # ╟─ae2712cf-6a80-467e-8f99-7786e1f87c0a
 # ╠═39794bef-d215-4d7d-ba1a-35953d9049c4
@@ -909,9 +1149,29 @@ version = "17.4.0+0"
 # ╠═7eee7597-1d4f-4df5-afb2-a4d1d3afe9e5
 # ╟─2d6ec664-7203-47ba-a749-76a3c947acf4
 # ╠═f1a94bfa-911d-4641-8ffb-8761d687f10c
+# ╠═db843202-3980-4b15-ae8b-e0c42d5548b3
 # ╠═4a4ee1f7-0e46-4ab9-a7ef-cbab5be7592f
+# ╠═4b4cae8e-2f5f-4193-bffa-66b327358298
+# ╟─efa930e6-2f3b-4d6f-9a7e-cf0fb011436e
+# ╠═5dbd60aa-bf43-4f50-a1c7-1cfe9be6112b
+# ╠═7f91e4a8-707d-480a-ad38-ef2041eef60b
+# ╠═00a1d146-080b-4964-8629-4232656f8b6e
+# ╠═c013af6c-c3c9-4b9b-9cab-c636d744aeed
+# ╠═3617c67b-263a-47bc-b3a3-a2be2fb5a92c
+# ╠═2a693863-601c-447f-a213-a450da5567ce
+# ╠═d76197c8-e953-4e02-b7f6-ba1d0a6b9919
+# ╠═9567e97a-3f11-4291-a996-97164aac8bcf
+# ╟─78df3da3-e740-4776-99c9-50e5040d5a9a
+# ╟─370b5694-1067-41db-b3d1-179d6aa4a3a8
+# ╠═f3c461f3-c8e5-470f-8fac-ac4582ee8698
+# ╠═406df8fb-1009-4e97-aaac-0718cda1c266
+# ╠═ea945209-60ab-468b-86b8-26fda0a76afc
+# ╟─72cb2393-a4f3-47ce-86e9-9d9ac6d3918b
+# ╠═83b0914c-4bfe-468a-9d33-bb636136a875
+# ╠═f88dc3d9-a1a3-4fd0-ad2d-eb25f1b2c466
 # ╟─5ceeff92-9ff7-4515-ba60-fc0909c5233a
 # ╟─da54e050-43b8-4683-8374-58004a23a7f5
+# ╟─76f1e139-0fc5-41b5-8e16-b0158cb5d112
 # ╟─494722e6-7753-42dc-b10a-68c8ab97aed4
 # ╠═60941eaa-1aea-11eb-1277-97b991548781
 # ╟─c58b6ca2-3646-4844-b502-5ac3f3c6954a
