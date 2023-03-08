@@ -58,12 +58,13 @@ For collaborative development, it is worth to dig down the concept of _branches_
 In order to avoid or to minimize the interaction with git via the command line, graphical user interface tools are [available](https://en.wikipedia.org/wiki/Comparison_of_Git_GUIs).
 A good quality criterion for choosing such a tool is its ability to visualize the underlying DAG.
 
-- Windwows, Mac: [sourcetree](https://www.sourcetreeapp.com/)
+- Windows, Mac: [sourcetree](https://www.sourcetreeapp.com/)
 - On Linux, there are a number of tools. Among them are: 
    - [git-cola, git-dag](https://git-cola.github.io/)
    - [qgit](https://github.com/tibirna/qgit)
   It should be possible to install them wia the package manager of your distribution.
-  
+- Also, now there is [gitui](https://github.com/extrawurst/gitui) for work in the terminal.
+
 ### Git interaction from editing environments
 
 Modern editors and editing environments like [Visual Studio Code](https://code.visualstudio.com/docs/editor/versioncontrol#_git-support)

@@ -40,3 +40,9 @@
 # time: 2022-12-07 09:59:36 CET
 # mode: julia
 	publish()
+# time: 2022-12-11 23:45:35 CET
+# mode: pkg
+	up
+# time: 2022-12-11 23:46:00 CET
+# mode: julia
+	serve()

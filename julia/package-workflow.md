@@ -70,19 +70,24 @@ The files in `test` provide the environment and the code to run tests of the fun
 Imagine the need to change something in the  package three years after the last serious work on it...
 
 
-It is quite possible that tests have more dependencies than the package itself. Therefore Julia packages have their own test environment in `test/Project.toml`. The `runtests.jl` file contains the code for the tests.
-All code called from the [`@test`](https://docs.julialang.org/en/v1/stdlib/Test/#Test.@test) macro is part of the test coverage.
+It is quite possible that tests have more dependencies than the package itself. Therefore Julia packages can have their own test environment in `test/Project.toml`. The `runtests.jl` file contains the code for the tests.
+All code called from the [`@test`](https://docs.julialang.org/en/v1/stdlib/Test/#Test.@test) macro is part of the test coverage. A simple file `runtests.jl` contains e.g.:
+```
+using Test
+
+@test 1+1 == 2
+```
 
 Tests code can be called in different ways. In the package root environment:
 ```
 julia> Pkg.test()
 ```
-or
+or in the test environment: 
 ```
 ] test
 ```
 
-In any environment with the package added: 
+The seame test can be invoked also in any environment with the package added: 
 ```
 julia> Pkg.test("MyPackageName")
 ```
@@ -96,10 +101,13 @@ Your package tests sucessfully run on your linux laptop. But how can you be sure
 And, you want to show off with a good test coverage helping to build up trust in your work.
 
 The solution ?  Run your tests on different systems via [github actions](https://github.com/features/actions) and [show off](https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/adding-a-workflow-status-badge) the result.
+
+In order to achieve this, it is sufficient to add a file
+```
+.github/workflow/ci.yml
+```
+
 Alternatively, this can be done on [gitlab](https://discourse.julialang.org/t/julia-and-gitlab-self-hosted-a-state-of-the-art/86685) as well.
-
-
-
 
 ## Providing 
 ### Using  a package under development
