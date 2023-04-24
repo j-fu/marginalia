@@ -1,4 +1,5 @@
 [deps]
+Artifacts = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
 Franklin = "713c75ef-9fc9-4b05-94a9-213340da978e"
 NodeJS = "2bd173c7-0d6d-553b-b6af-13a54713934c"
 ThreadingUtilities = "8290d209-cae3-49c0-8002-c8c24d57dab5"

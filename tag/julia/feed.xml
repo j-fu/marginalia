@@ -23,6 +23,180 @@
 
 <item>
   <title>
+    <![CDATA[  Julia: Package Workflow  ]]>
+  </title>
+  <link> https://j-fu.github.io/marginalia/julia/package-workflow/index.html </link>
+  <guid> https://j-fu.github.io/marginalia/julia/package-workflow/index.html </guid>
+  <description>
+    <![CDATA[  Julia: Package Workflow.  ]]>
+  </description>  
+  
+  <content:encoded>
+    <![CDATA[  <h1 id="julia_package_workflow">Julia: Package Workflow</h1>
+<p>&#40;Draft&#41;</p>
+<div class="franklin-toc"><ol><li>Intro</li><li>Starting a package<ol><li>Starting a package as part of an application project</li><li>Starting a package repository</li></ol></li><li>Tests</li><li>Continuous Integration</li><li>Providing <ol><li>Using  a package under development</li><li>Registration of a new package or a new version in a local registry</li><li>Without write access to the registry</li><li>With write access to this repository</li><li>Using the General registry</li><li>Naming and versioning</li></ol></li><li>Other useful introductions</li></ol></div>
+<h2 id="intro">Intro</h2>
+<p>This post is work in progress. May be one of the other useful introductions will be more useful at the moment.</p>
+<p>For general terminology, see the <a href="https://pkgdocs.julialang.org/v1/glossary/#Glossary">package manager glossary</a>. According to this, here, we assume that a  <em>package</em> is Julia code which is supposed to be used by other projects, applications or packages.</p>
+<p>When developing Julia packages it is advisable to set the environment variable <a href="https://pkgdocs.julialang.org/v1/api/#Pkg.develop"><code>JULIA_PKG_DEVDIR</code></a> to a reasonable path. All Julia packages under development will reside there, and for a particular package, we refer to its corresponding <code>package_dir</code>  during this post.</p>
+<h2 id="starting_a_package">Starting a package</h2>
+<p>See also the <a href="https://pkgdocs.julialang.org/v1/creating-packages/">Pkg documentation</a></p>
+<h3 id="starting_a_package_as_part_of_an_application_project">Starting a package as part of an application project</h3>
+<p>Often, packages evolve during the development of larger application, when it becomes clear that some part of it provides some well defined functionality which can be formulated with its own API.  Local packages within an application project allow to start the package development process in such a situation.  For this structure, see <a href="https://j-fu.github.io/marginalia/julia/project-workflow#new_packages_can_evolve_from_the_projec_code">my previous post</a>.</p>
+<h3 id="starting_a_package_repository">Starting a package repository</h3>
+<p>Typically, each Julia package resides in its own git repository &#40;other configurations are <a href="https://discourse.julialang.org/t/usage-of-subdirectories-to-store-multiple-packages-in-a-single-repo/55534">possible</a>&#41;.</p>
+<p>Create an  empty repository <code>NewPackageName.jl</code> on a server with <code>git_url</code></p>
+<pre><code class="language-julia">&#36; cd &#36;JULIA_PKG_DEVDIR
+&#36; julia
+pkg&gt; generate NewPackageName
+julia&gt; exit&#40;&#41;
+cd NewPackageName
+git init
+git add remote origin git_url
+git add .</code></pre>
+<p>Julia packages have a fixed structure which includes</p>
+<ul>
+<li><p><a href="https://pkgdocs.julialang.org/v1/toml-files/#Project.toml"><code>Project.toml</code></a>: description of dependencies. This also provides the package with its own environment during development. Furthermore, it contains the universally unique identifier &#40;UUID&#41; used to identify the package and its name, author and version number.</p>
+</li>
+<li><p><code>README.md</code>: Short information about the package</p>
+</li>
+<li><p><code>LICENSE</code>: License information. Should be one of the <a href="https://opensource.org/licenses">OSI approved</a> open source licenses if the package shall be registered with the Julia General Registry</p>
+</li>
+<li><p><code>src</code>: subdirectory containing code</p>
+<ul>
+<li><p><code>src/NewPackageName.jl</code>: Julia source file which must contain a module <code>NewPackageName</code> where all package code resides. It may include further source code files.</p>
+</li>
+</ul>
+</li>
+<li><p><code>test</code>: subdirectory containing test code</p>
+<ul>
+<li><p><code>test/runtests.jl</code>: script for running tests</p>
+</li>
+<li><p><code>test/Project.toml</code>: environment file containing test only dependencies</p>
+</li>
+</ul>
+</li>
+<li><p><code>docs</code>: subdirectory containing documentation </p>
+<ul>
+<li><p><code>docs/make.jl</code>: script for builidng documentation based on Documenter.jl</p>
+</li>
+<li><p><code>docs/Project.toml</code>: environment file containing dependencies for documentation</p>
+</li>
+</ul>
+</li>
+<li><p>Configuration files for Continuous Integration</p>
+</li>
+</ul>
+<p>A  <a href="https://pkgdocs.julialang.org/v1/toml-files/#Project.toml"><code>Manifest.toml</code></a> file is created as soon as the package environment is instantiated. It contains the full metadata of  all package dependencies. This file <em>should not be tracked by git</em>. Instead, the <code>Project.toml</code> shall contain a <code>&#91;compat&#93;</code> section which inform the package resolver about the compatibility with different versions of dependencies.</p>
+<p>Instead of invoking <code>pkg&gt; generate NewPackageName</code>, a more comprehensive initial package structure can be be created by cloning  <a href="https://github.com/JuliaLang/Example.jl">Example.jl</a> or with <a href="https://github.com/invenia/PkgTemplates.jl">PkgTemplates.jl</a>. These also create the necessary files for controlling automatic CI tests on github/gitlab.</p>
+<h2 id="tests">Tests</h2>
+<p>See also the <a href="https://pkgdocs.julialang.org/v1/creating-packages/#Adding-tests-to-the-package">Pkg documentation</a>.</p>
+<p>The files in <code>test</code> provide the environment and the code to run tests of the functions implemented in the package. While it is hard to have 100&#37; test coverage of the package functionality, one should strive to achieve this goal. Besides of the obvious reasons of reproducibility,  peer pressure etc., sufficient test coverage helps to keep a package author sane. Imagine the need to change something in the  package three years after the last serious work on it...</p>
+<p>It is quite possible that tests have more dependencies than the package itself. Therefore Julia packages can have their own test environment in <code>test/Project.toml</code>. The <code>runtests.jl</code> file contains the code for the tests. All code called from the <a href="https://docs.julialang.org/en/v1/stdlib/Test/#Test.@test"><code>@test</code></a> macro is part of the test coverage. A simple file <code>runtests.jl</code> contains e.g.:</p>
+<pre><code class="language-julia">using Test@test 1&#43;1 &#61;&#61; 2</code></pre>
+<p>Tests code can be called in different ways. In the package root environment:</p>
+<pre><code class="language-julia">julia&gt; Pkg.test&#40;&#41;</code></pre>
+<p>or from the <code>Pkg</code> prompt:</p>
+<pre><code class="language-julia">&#93; test</code></pre>
+<p>The seame test can be invoked also in any environment with the package added: </p>
+<pre><code class="language-julia">julia&gt; Pkg.test&#40;&quot;MyPackageName&quot;&#41;</code></pre>
+<p>or</p>
+<pre><code class="language-julia">&#93; test MyPackageName</code></pre>
+<h2 id="continuous_integration">Continuous Integration</h2>
+<p>Your package tests sucessfully run on your linux laptop. But how can you be sure that they also run on Mac and Windows ? And, you want to show off with a good test coverage helping to build up trust in your work.</p>
+<p>The solution ?  Run your tests on different systems via <a href="https://github.com/features/actions">github actions</a> and <a href="https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/adding-a-workflow-status-badge">show off</a> the result.</p>
+<p>In order to achieve this, it is sufficient to add a file</p>
+<pre><code class="language-julia">.github/workflows/ci.yml</code></pre>
+<p>Alternatively, this can be done on <a href="https://discourse.julialang.org/t/julia-and-gitlab-self-hosted-a-state-of-the-art/86685">gitlab</a> as well.</p>
+<h2 id="providing">Providing </h2>
+<h3 id="using_a_package_under_development">Using  a package under development</h3>
+<p>While the package is unregistered you can add it to the environment of a project:</p>
+<pre><code class="language-julia">&#36; cd project_dir
+&#36; julia --project&#61;@.
+pkg&gt; add git_url</code></pre>
+<p>In this case, the version in the git repository on the server is used via a shallow clone &#40;clone without versioning information&#41; created in <code>&#36;HOME/.julia/packages</code>. If you use</p>
+<pre><code class="language-julia">pkg&gt; dev git_url</code></pre>
+<p>instead, a full clone is created in <code>&#36;JULIA_PKG_DEVDIR</code> and used. If the corresponding subdirectory in <code>JULIA_PKG_DEVDIR</code> does not exist, it will be checked out from <code>git_url</code>. The same would happen with registered packages added by name.</p>
+<h3 id="registration_of_a_new_package_or_a_new_version_in_a_local_registry">Registration of a new package or a new version in a local registry</h3>
+<p>We assume to speak about <code>MyRegistry</code> as an example, but generally this is true for all registries. </p>
+<h3 id="without_write_access_to_the_registry">Without write access to the registry</h3>
+<p>Send an  email to  one of  the admins  containing the  git url  of the corresponding repository singnaling the advance of a new version.  The <code>Project.toml</code> file already should contain the new version number.</p>
+<h3 id="with_write_access_to_this_repository">With write access to this repository</h3>
+<p>Add the <a href="https://github.com/GunnarFarneback/LocalRegistry.jl">LocalRegistry.jl</a> package to your environment</p>
+<pre><code class="language-julia">pkg&gt;  add LocalRegistry</code></pre>
+<p>For a new package <code>X.jl</code> or a new version thereof, first obtain a clone, either by checking it out via its url, or by adding it to the environment, getting into develop mode and updating it:</p>
+<pre><code class="language-julia">pkg&gt; add X
+pkg&gt; develop X
+pkg&gt; update X # not clear if really necessary</code></pre>
+<p>Then, you will be able to register a new version based on the updated version number in <code>Project.toml</code>:</p>
+<pre><code class="language-julia">julia&gt; using X
+julia&gt; using LocalRegistry
+julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;,push&#61;true&#41;</code></pre>
+<p>This assumes that the remote origin of the local clone in <code>.julia/registries/MyRegistry</code> has been modified to <code>git@github.com:me/MyRegistry</code>. The <code>push&#61;true</code> can be omitted, in this case, <code>LocalRegistry.Register</code> results in a commit to the local copy which you can push later.</p>
+<p>After this, do not forget to create a tag in your repository marking the version <code>x.y.z</code> of the package:</p>
+<pre><code class="language-julia">&#36; git tag vx.y.z</code></pre>
+<h3 id="using_the_general_registry">Using the General registry</h3>
+<p>Registring packages in the general registry assumes full compliance to a number of rules:</p>
+<ul>
+<li><p>Package is deployed with automatic testing on github &#40;at least this is the current practice&#41; with <a href="https://juliadocs.github.io/Documenter.jl/stable/man/hosting/index.html">travis, deploydocs etc. enabled</a></p>
+</li>
+<li><p>Don&#39;t forget compat info for  julia and all packages  in Project.toml</p>
+</li>
+<li><p>Proper versioning sequence</p>
+</li>
+<li><p>Must wait 3 days for merge for  new package</p>
+</li>
+<li><p>Must wait \(\approx\) 1 hour for new version</p>
+</li>
+</ul>
+<p>All of this is automatically handeled by the <a href="https://github.com/JuliaRegistries/Registrator.jl">JuliaRegistrator</a></p><div class="img-small">
+<img src="https://raw.githubusercontent.com/JuliaRegistries/Registrator.jl/master/graphics/logo.png">
+</div><p>It needs to be installed as a github app in for the package repository.</p>
+<h3 id="naming_and_versioning">Naming and versioning</h3>
+<ul>
+<li><p>Registration in the general registry starts with version 0.1.0, all deviations from this will create extra work upon registration in the general registry.</p>
+</li>
+<li><p>Start registration Registering with JuliaEgistrator</p>
+</li>
+<li><p>Either name a &quot;budding package&quot; &#40;e.g. Ants.jl&#41; accordingly: AntsPrototype.jl, Ants0.jl </p>
+</li>
+</ul>
+<h2 id="other_useful_introductions">Other useful introductions</h2>
+<ul>
+<li><p><a href="https://jaantollander.com/post/how-to-create-software-packages-with-julia-language/">Jaan Tollander de Balsch: How to Create Software Packages with Julia Language</a></p>
+</li>
+<li><p><a href="https://sdobber.github.io/juliapackage/">Sören Dobberschütz: Tips and tricks to register your first Julia package</a></p>
+</li>
+<li><p><a href="https://medium.com/analytics-vidhya/an-introduction-to-continuous-integration-github-actions-for-julia-1a5a1a6e64d6">Kim Fung: An Introduction to Continuous Integration &amp; GitHub Actions for Julia</a></p>
+</li>
+<li><p><a href="https://medium.com/coffee-in-a-klein-bottle/developing-your-julia-package-682c1d309507">DSB: Developing your Julia package</a></p>
+</li>
+<li><p><a href="https://www.stochasticlifestyle.com/developing-julia-packages/">Christopher Rackauckas: Developing Julia packages &#40;video&#41;</a></p>
+</li>
+</ul>
+<p>
+<hr size="5" noshade>
+ <strong>Update history</strong></p>
+<ul>
+<li><p>2023-04-24: Draft updated &#43; made public</p>
+</li>
+<li><p>2022-12-06: First draft</p>
+</li>
+</ul>
+ ]]>
+  </content:encoded>
+    
+  <pubDate>Mon, 24 Apr 2023 00:00:00 +0000</pubDate>  
+  
+  
+  <atom:author>
+    <atom:name>Jürgen Fuhrmann</atom:name>
+  </atom:author>
+        
+</item>
+
+<item>
+  <title>
     <![CDATA[    ]]>
   </title>
   <link> https://j-fu.github.io/marginalia/julia/sparsejac/index.html </link>
@@ -56,14 +230,9 @@
   
   <content:encoded>
     <![CDATA[  <h1 id="julia_project_workflow">Julia: Project Workflow</h1>
-<ul>
-<li><p>2022-02-09: RSS</p>
-</li>
-<li><p>2021-12-02: The term &quot;project&quot; in this post corresponds to the term &quot;application&quot; in <a href="https://pkgdocs.julialang.org/v1/glossary/#Glossary">package manager glossary</a>.</p>
-</li>
-<li><p>2021-11-15: Initial version </p>
-</li>
-</ul>
+<p><div class="franklin-toc"><ol><li>Rationale</li><li>Recommendations<ol><li>Generate the project directory itself as a package</li><li>New packages can evolve from the project code</li><li>Always start Julia from the package root</li><li>Activate the project environment in notebooks</li><li>Consider using DrWatson.jl</li><li>A sample project tree</li></ol></li><li>Summary</li></ol></div> </p>
+<p>The term &quot;project&quot; in this post corresponds to the term &quot;application&quot; in <a href="https://pkgdocs.julialang.org/v1/glossary/#Glossary">package manager glossary</a></p>
+<h2 id="rationale">Rationale</h2>
 <p>Some ideas on basic julia workflow  are given  <a href="https://j-fu.github.io/marginalia/julia/basic-workflow">here</a>. For a larger project, structuring of the project code is essential for many reasons, some of them are:</p>
 <ul>
 <li><p>Different project scripts and Pluto notebooks may share some parts of the code, and you want to avoid <a href="https://en.wikipedia.org/wiki/Don&#37;27t_repeat_yourself">repeating yourself</a>.</p>
@@ -77,31 +246,34 @@
 <li><p>The whole project directory <em>still</em> shall be shareable with collaborators in a reproducible way.</p>
 </li>
 </ul>
+<h2 id="recommendations">Recommendations</h2>
 <p>The following recommendations are partially inspired by B. Kaminski&#39;s post on  <a href="https://bkamins.github.io/julialang/2020/05/18/project-workflow.html">project workflow</a> and  the  <a href="https://github.com/JuliaDynamics/DrWatson.jl">DrWatson.jl</a> package by G. Datseris.</p>
-<ul>
-<li><p>Generate the project directory itself as a package &#40;named e.g. <code>MyProject</code>&#41; using <a href="https://pkgdocs.julialang.org/v1/creating-packages/"><code>Pkg.generate</code></a> or <a href="https://github.com/invenia/PkgTemplates.jl">PkgTemplates.jl</a>. This  <em>project-package</em> will remain unregistered, its code will be shared directly via git repository urls.  Developing the project in such a project-package has the following advantages:</p>
+<h3 id="generate_the_project_directory_itself_as_a_package">Generate the project directory itself as a package</h3>
+<p>Name this e.g. <code>MyProject</code>. Use<a href="https://pkgdocs.julialang.org/v1/creating-packages/"><code>Pkg.generate</code></a> or <a href="https://github.com/invenia/PkgTemplates.jl">PkgTemplates.jl</a>. Unlinke a published Julia package, this  <em>project-package</em> will remain not be registered in a Julia package registry, its code will be shared directly via git repository urls.  Developing the project in such a project-package has the following advantages:</p>
 <ul>
 <li><p>Straightforward way to share  the code in the <code>src</code> folder among different project scripts and notebooks based on one shared environment via <code>using MyProject</code>.</p>
 </li>
 <li><p>Straightforward availability of Julia&#39;s  test and documentation functionality for the project.</p>
 </li>
-</ul>
+<li><p>Reproducibility due to dependencies recorded in the project environment &#40;files <code>Project.toml</code> and <code>Manifest.toml</code>&#41;.</p>
 </li>
-<li><p>Optionally have a folder <code>packages</code> which contains other sub-packages which potentially can evolve into standalone, registered packages. As <a href="https://github.com/JuliaLang/Pkg.jl/issues/1214">relative paths are recorded in Manifest.toml</a>, these are made available within the  project via <code>Pkg.develop&#40;path&#61;&quot;packages/MySubPackage&quot;&#41;</code>. This way, the  whole project  tree including sub-packages  will stay relocateable.</p>
+</ul>
+<h3 id="new_packages_can_evolve_from_the_project_code">New packages can evolve from the project code</h3>
+<p>For this purpose, optionally you can have a folder <code>packages</code> which contains other sub-packages which potentially can evolve into standalone, even registered packages. As <a href="https://github.com/JuliaLang/Pkg.jl/issues/1214">relative paths are recorded in Manifest.toml</a>, these are made available within the  project via <code>Pkg.develop&#40;path&#61;&quot;packages/MySubPackage&quot;&#41;</code>. This way, the  whole project  tree including sub-packages  will stay relocateable.</p>
 <ul>
 <li><p>This allows for easy start of low key package development. At a later stage, <code>MySubPackage</code> could be registered as a Julia package while still residing in the project tree, or even removed from the project tree without affecting  scripts depending on it – once registered, the package can be added in to the project environment via <code>Pkg.add</code> instead of <code>Pkg.develop</code>.</p>
 </li>
 </ul>
-</li>
+<h3 id="always_start_julia_from_the_package_root">Always start Julia from the package root</h3>
+<ul>
 <li><p>When working with the project, always run julia from the package root with the package environment activated: <code>julia --project&#61;.</code> </p>
 </li>
-<li><p>Assume project specific Pluto notebooks to reside in a <code>notebooks</code> subdirectory  and call <code>Pkg.activate&#40;joinpath&#40;@__DIR__,&quot;..&quot;&#41;&#41;</code> in their respective Pkg cell to activate the <code>MyProject</code> environment.  As a consequence, Pluto&#39;s in-built package manager will be disabled and the project specific notebooks will share the <code>MyProject</code> environment and <em>cannot be shared independent from the <code>MyProject</code> tree</em> &#40;If independent sharing is desired, common project code can be collected into a package residing in <code>packages</code> and registered in a registry; registering <code>MyProject</code> itself as a package is not recommended.  – More about this in another post&#41;.</p>
-</li>
 </ul>
-<ul>
-<li><p>You may use <a href="https://github.com/JuliaDynamics/DrWatson.jl">DrWatson.jl</a> for managing subdirectory access, simulation results and version tagging. By explicitely activating the project environment at the start of Julia or in the notebook Pkg cell, you can avoid <code>@quickactivate</code> and  avoid putting <code>using DrWatson</code> into script files and notebooks for the sole purpose of activating the common environment. See also <a href="https://github.com/JuliaDynamics/DrWatson.jl/issues/261">this discussion</a>.</p>
-</li>
-</ul>
+<h3 id="activate_the_project_environment_in_notebooks">Activate the project environment in notebooks</h3>
+<p>Project specific Pluto notebooks would reside in a <code>notebooks</code> subdirectory  and call <code>Pkg.activate&#40;joinpath&#40;@__DIR__,&quot;..&quot;&#41;&#41;</code> in their respective Pkg cell to activate the <code>MyProject</code> environment.  As a consequence, Pluto&#39;s in-built package manager will be disabled and the project specific notebooks will share the <code>MyProject</code> environment and <em>cannot be shared independent from the <code>MyProject</code> tree</em> &#40;If independent sharing is desired, common project code can be collected into a package residing in <code>packages</code> and registered in a registry; registering <code>MyProject</code> itself as a package is not recommended.  – More about this in another post&#41;.</p>
+<h3 id="consider_using_drwatsonjl">Consider using DrWatson.jl</h3>
+<p>You may use <a href="https://github.com/JuliaDynamics/DrWatson.jl">DrWatson.jl</a> for managing subdirectory access, simulation results and version tagging. By explicitely activating the project environment at the start of Julia or in the notebook Pkg cell, you can avoid <code>@quickactivate</code> and  avoid putting <code>using DrWatson</code> into script files and notebooks for the sole purpose of activating the common environment. See also <a href="https://github.com/JuliaDynamics/DrWatson.jl/issues/261">this discussion</a>.</p>
+<h3 id="a_sample_project_tree">A sample project tree</h3>
 <p>A sample project tree could e.g. look like this</p>
 <pre><code class="language-julia">MyProject
 ├── LICENSE
@@ -158,6 +330,19 @@
 <li><p>Have examples ✓</p>
 </li>
 </ol>
+<p>
+<hr size="5" noshade>
+ <strong>Update history</strong></p>
+<ul>
+<li><p>2023-04-24: Intermediate headers</p>
+</li>
+<li><p>2022-02-09: RSS</p>
+</li>
+<li><p>2021-12-02: The term &quot;project&quot; in this post corresponds to the term &quot;application&quot; in <a href="https://pkgdocs.julialang.org/v1/glossary/#Glossary">package manager glossary</a>.</p>
+</li>
+<li><p>2021-11-15: Initial version </p>
+</li>
+</ul>
  ]]>
   </content:encoded>
     
@@ -205,7 +390,7 @@
   
   <content:encoded>
     <![CDATA[  <h1 id="julia_basic_workflow">Julia: Basic Workflow</h1>
-<p><div class="franklin-toc"><ol><li>Never leave Julia and  write code in functions</li><li>Use Revise.jl to reload modified code</li><li>Record your project dependencies in reproducible environments<ol><li>Global environment</li><li>Local environments</li><li><code>@</code> Environments</li><li>Further info</li></ol></li></ol></div> </p>
+<p><div class="franklin-toc"><ol><li>Never leave Julia and  write code in functions</li><li>Use Revise.jl to reload modified code</li><li>Record your project dependencies in reproducible environments<ol><li>Global environment</li><li>Local environments</li><li>Shared &#40;&quot;<code>@</code>&quot;&#41; Environments</li><li>Further info</li></ol></li></ol></div> </p>
 <p>These workflow hints have been developed from my own experience and are essentially an illustration of the <a href="https://docs.julialang.org/en/v1/manual/workflow-tips">workflow tips</a>  found in the Julia documentation. </p>
 <h2 id="never_leave_julia_and_write_code_in_functions">Never leave Julia and  write code in functions</h2>
 <p>Many available Julia examples and  the mindset influenced by Matlab or Python suggest  that code is written in scripts where  computations are performed in the global context. E.g.  a script <code>MyScript.jl</code> would look like:</p>
@@ -265,7 +450,7 @@ julia&gt; MyScript.main&#40;kwarg1&#61;5&#41;</code></pre>
 julia&gt; includet&#40;&quot;MyScript.jl&quot;&#41;
 julia&gt; MyScript.main&#40;kwarg1&#61;5&#41;</code></pre>
 <p>After having modified <code>MyScript.jl</code>, just another  invocation of <code>MyScript.main&#40;&#41;</code>  would see the changes. See also the corresponding hints in the <a href="https://docs.julialang.org/en/v1/manual/workflow-tips/#Revise-based-workflows">Julia documentation</a>.</p>
-<p>Besides of tracking scripts loaded into the REPL, <code>Revise.jl</code> </p>
+<p>Besides of tracking scripts loaded into the REPL via <code>includet</code>, <code>Revise.jl</code> </p>
 <ul>
 <li><p>tracks changes in modules and packages under development loaded into the script via <code>using</code> or <code>import</code>.</p>
 </li>
@@ -296,10 +481,13 @@ pkg&gt; add Package1</code></pre>
 <pre><code class="language-julia">&#36; cd MyApp
 &#36; julia --project&#61;.
 &#36; pkg&gt; instantiate</code></pre>
-<h3 id="environments"><code>@</code> Environments</h3>
+<h3 id="shared_environments">Shared &#40;&quot;<code>@</code>&quot;&#41; Environments</h3>
 <p>Since Julia 1.7 it is possible to easily work with different more or less global environments:</p>
 <pre><code class="language-julia">&#36; julia --project&#61;@myenv</code></pre>
 <p>calls Julia and activates the environment <code>.julia/environments/myenv</code></p>
+<p>This is e.g. useful when working with Pluto. One would start Julia via</p>
+<pre><code class="language-julia">&#36; julia --project&#61;@pluto</code></pre>
+<p>Just note that by default, each Pluto notebook will activates it&#39;s own environment.</p>
 <h3 id="further_info">Further info</h3>
 <ul>
 <li><p>See also the corresponding documentation on <a href="https://pkgdocs.julialang.org/v1/environments/">environments</a> and <a href="https://pkgdocs.julialang.org/v1/toml-files/"><code>Project.toml</code> and <code>Manifest.toml</code></a>.</p>
@@ -312,6 +500,8 @@ pkg&gt; add Package1</code></pre>
 </li>
 </ul><hr size="5" noshade><p><strong>Update history</strong></p>
 <ul>
+<li><p>2023-04-24: Smaller improvements</p>
+</li>
 <li><p>2022-11-06: <code>@</code> environments &#40;since Julia 1.7&#41; &#43; LOAD_PATH, link to my talk on Julia&#39;s reproducibility infrastructure</p>
 </li>
 <li><p>2022-09-01: Link to <a href="https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/">blogpost</a> by Julius Krumbiegel</p>
@@ -345,15 +535,7 @@ pkg&gt; add Package1</code></pre>
   
   <content:encoded>
     <![CDATA[  <h1 id="julia_achieving_performance">Julia: Achieving Performance </h1>
-<ul>
-<li><p>2022-09-09: Updates on other resources</p>
-</li>
-<li><p>2022-02-09: RSS</p>
-</li>
-<li><p>2021-11-15: Initial version</p>
-</li>
-</ul>
-<div class="franklin-toc"><ol><li>Other resources on this topic</li><li>&quot;Measure performance with @time and pay attention to memory allocations&quot;</li><li>&quot;REPL based workflow&quot;</li><li>&quot;Avoid global variables&quot;</li><li>&quot;Pre-allocate outputs&quot;</li><li>&quot;Avoid changing the type of a variable&quot; </li><li>&quot;More dots: fuse vectorized operations&quot;</li><li>&quot;Be aware of when Julia avoids specializing&quot;</li><li>&quot;Performance annotations&quot;</li></ol></div>
+<div class="franklin-toc"><ol><li>Other resources on this topic</li><li>&quot;Measure performance with @time and pay attention to memory allocations&quot;</li><li>&quot;REPL based workflow&quot;</li><li>&quot;Avoid untyped global variables&quot;</li><li>&quot;Pre-allocate outputs&quot;</li><li>&quot;Avoid changing the type of a variable&quot; </li><li>&quot;More dots: fuse vectorized operations&quot;</li><li>&quot;Be aware of when Julia avoids specializing&quot;</li><li>&quot;Performance annotations&quot;</li></ol></div>
 <p>In  order  to  let  newcomers  to the  language  experience  the  real performance potential of Julia it  is important to raise the awareness for the corresponding &quot;tricks&quot; early on.</p>
 <p>This text results from an effort  to improve the code performance of a piece  of experimental  research  code  which has  been  written by  a colleague new  to Julia. It   describes the steps  taken  to  get runtime down from 13s to 0.07s and allocations form 763.08 M allocations to 86.</p>
 <h2 id="other_resources_on_this_topic">Other resources on this topic</h2>
@@ -374,7 +556,7 @@ pkg&gt; add Package1</code></pre>
 </li>
 </ul>
 <h2 id="measure_performance_with_time_and_pay_attention_to_memory_allocations">&quot;Measure performance with @time and pay attention to memory allocations&quot;</h2>
-<p><a href="https://docs.julialang.org/en/v1/manual/performance-tips/#Measure-performance-with-&#91;@time&#93;&#40;@ref&#41;-and-pay-attention-to-memory-allocatioan">Julia docs 🔗</a></p>
+<p><a href="https://docs.julialang.org/en/v1/manual/performance-tips/#Measure-performance-with-&#91;@time&#93;&#40;@ref&#41;-and-pay-attention-to-memory-allocation">Julia docs 🔗</a></p>
 <p>One allocation can use the time of several hundred floating point multiplications. </p>
 <p>In order to understand the role of allocations ist is useful to  understand the concept of <a href="https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html#the-stack-and-the-heap">stack and heap</a>, which is fundamental for any modern computer language &#40;as e.g. for Rust in the previous link&#41;.</p>
 <p>An allocation reserves memory from the memory pool of the operating system &#40;&quot;heap&quot;&#41; and is expensive  as the  interaction  with the  operating  system  kernel needs certain amount of bookkeeping. Fundamentally, an allocation happens in  any language when  creating an object of a priori unknown size, e.g. an  array of length unknown at compile time. Objects with a priori known size, as e.g. structs  can be placed on top of a piece of memory pre-allocated during program start called &quot;stack&quot;, with almost no bookkeeping as no allocation from the system is necessary.</p>
@@ -385,8 +567,8 @@ pkg&gt; add Package1</code></pre>
 <p>During code development it is  helpful never to leave the Julia command line and to include the code after each change using the <code>include</code> statement. This approach avoids Just-in-time &#40;JIT&#41; recompilation which is peformed at startup time.</p>
 <p>For more intense projects it is worth to use <a href="https://github.com/timholy/Revise.jl">Revise.jl</a> for automatic handling of code updates instead of calling <code>include</code> again and again.</p>
 <p>Also it may be worth to have a look at the <a href="https://www.julia-vscode.org/">Visual Studio Code</a> editing environment for working with Julia.</p>
-<h2 id="avoid_global_variables">&quot;Avoid global variables&quot;</h2>
-<p><a href="https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-global-variables">Julia docs 🔗</a></p>
+<h2 id="avoid_untyped_global_variables">&quot;Avoid untyped global variables&quot;</h2>
+<p><a href="https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables">Julia docs 🔗</a></p>
 <p>Avoid to work with global variables. E.g. instead of</p>
 <pre><code class="language-julia">a&#61;10 
 b&#61;11function important&#40;x&#41;
@@ -470,6 +652,19 @@ end</code></pre>
 <h2 id="performance_annotations">&quot;Performance annotations&quot;</h2>
 <p><a href="https://docs.julialang.org/en/v1/manual/performance-tips/#man-performance-annotations">Julia docs 🔗</a></p>
 <p>Annotate  inner loops with <code>@fastmath @inbounds</code> to remove bounds checking and some speed constraints inherent to pure  IEEE floating point arithmetic.</p>
+<p>
+<hr size="5" noshade>
+ <strong>Update history</strong></p>
+<ul>
+<li><p>2023-04-24: Smaller improvements</p>
+</li>
+<li><p>2022-09-09: Updates on other resources</p>
+</li>
+<li><p>2022-02-09: RSS</p>
+</li>
+<li><p>2021-11-15: Initial version</p>
+</li>
+</ul>
  ]]>
   </content:encoded>
     
