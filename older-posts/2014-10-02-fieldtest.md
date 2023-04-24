@@ -1,3 +1,6 @@
+@def hasmath = true
+
+
 # Stabilität von Differentialgleichunssystemen mit Javascript und JSXGraph
 (2014-10-02, im Moment etwas beschädigt)
 Hier ein weiteres Beispiel aus besagter Vorlesung.

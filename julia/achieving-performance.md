@@ -4,10 +4,6 @@
 @def rss_pubdate = Date(2022, 2, 9)
 
 # Julia: Achieving Performance 
-- 2022-09-09: Updates on other resources
-- 2022-02-09: RSS
-- 2021-11-15: Initial version
-
 \toc
 
 In  order  to  let  newcomers  to the  language  experience  the  real
@@ -34,7 +30,7 @@ down from 13s to 0.07s and allocations form 763.08 M allocations to 86.
  
 
 ##   "Measure performance with @time and pay attention to memory allocations"
-[Julia docs 🔗](https://docs.julialang.org/en/v1/manual/performance-tips/#Measure-performance-with-[@time](@ref)-and-pay-attention-to-memory-allocatioan)
+[Julia docs 🔗](https://docs.julialang.org/en/v1/manual/performance-tips/#Measure-performance-with-[@time](@ref)-and-pay-attention-to-memory-allocation)
 
 One allocation can use the time of several hundred floating point multiplications. 
 
@@ -66,9 +62,9 @@ For more intense projects it is worth to use [Revise.jl](https://github.com/timh
 Also it may be worth to have a look at the [Visual Studio Code](https://www.julia-vscode.org/) editing environment for working with Julia.
 
 <!-- ---------------------------------------------------------- --> 
-##  "Avoid global variables"
+##  "Avoid untyped global variables"
 
-[Julia docs 🔗](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-global-variables)
+[Julia docs 🔗](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables)
 
 Avoid to work with global variables. E.g. instead of
 
@@ -247,4 +243,15 @@ Type-annotating `func` in the parameter list of `g` with a [type parameter](http
 [Julia docs 🔗](https://docs.julialang.org/en/v1/manual/performance-tips/#man-performance-annotations)
 
 Annotate  inner loops with `@fastmath @inbounds` to remove bounds checking and some speed constraints inherent to pure  IEEE floating point arithmetic.
+
+
+
+~~~
+<hr size="5" noshade>
+~~~
+__Update history__
+- 2023-04-24: Smaller improvements
+- 2022-09-09: Updates on other resources
+- 2022-02-09: RSS
+- 2021-11-15: Initial version
 

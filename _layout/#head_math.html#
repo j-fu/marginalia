@@ -1,0 +1,17 @@
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ["\\(", "\\)"]],
+      processEscapes: true,
+    }
+  };
+</script>
+
+<!-- This weird alignment is required by Franklin's parser. -->
+<script
+    async
+    src="{{artifact MathJax MathJax-3.2.2 es5 tex-mml-chtml.js}}">
+</script>
+

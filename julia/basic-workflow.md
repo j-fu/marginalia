@@ -107,7 +107,7 @@ julia> MyScript.main(kwarg1=5)
 ```
 After having modified `MyScript.jl`, just another  invocation of `MyScript.main()`  would see the changes. See also the corresponding hints in the [Julia documentation](https://docs.julialang.org/en/v1/manual/workflow-tips/#Revise-based-workflows).
 
-Besides of tracking scripts loaded into the REPL, `Revise.jl` 
+Besides of tracking scripts loaded into the REPL via `includet`, `Revise.jl` 
 - tracks changes in modules and packages under development loaded into the script via `using` or `import`.
 - works in [Pluto notebooks](https://github.com/fonsp/Pluto.jl)
 
@@ -159,13 +159,18 @@ $ pkg> instantiate
 ```
 
 
-### `@` Environments
+### Shared ("`@`") Environments
 Since Julia 1.7 it is possible to easily work with different more or less global environments:
 ```
 $ julia --project=@myenv
 ```
 calls Julia and activates the environment `.julia/environments/myenv`
 
+This is e.g. useful when working with Pluto. One would start Julia via
+```
+$ julia --project=@pluto
+```
+Just note that by default, each Pluto notebook will activates it's own environment.
 
 ### Further info
 
@@ -184,6 +189,7 @@ calls Julia and activates the environment `.julia/environments/myenv`
 ~~~
 
 __Update history__
+- 2023-04-24: Smaller improvements
 - 2022-11-06: `@` environments (since Julia 1.7) + LOAD_PATH, link to my talk on Julia's reproducibility infrastructure
 - 2022-09-01: Link to [blogpost](https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/) by Julius Krumbiegel
 - 2022-02-09: RSS

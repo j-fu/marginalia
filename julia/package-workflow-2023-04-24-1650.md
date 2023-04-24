@@ -1,7 +1,3 @@
-@def tags = ["julia"]
-@def rss_description = "Julia: Package Workflow."
-@def rss_pubdate = Date(2023, 4, 24)
-
 # Julia: Package Workflow
 (Draft)
 
@@ -10,7 +6,7 @@
 
 
 ## Intro
-This post is work in progress. May be one of the [other useful introductions](#other_useful_introductions) will be more useful at the moment.
+This post is work in progress. May be one of the [other useful introductions](#other_useful_introductions)
 
 For general terminology, see the [package manager glossary](https://pkgdocs.julialang.org/v1/glossary/#Glossary). According to this, here, we assume that a  _package_ is Julia code which is supposed to be used by other projects, applications or packages.
 
@@ -21,7 +17,7 @@ When developing Julia packages it is advisable to set the environment variable [
 
 See also the [Pkg documentation](https://pkgdocs.julialang.org/v1/creating-packages/)
 ### Starting a package as part of an application project
-Often, packages evolve during the development of larger application, when it becomes clear that some part of it provides some well defined functionality which can be formulated with its own API.  Local packages within an application project allow to start the package development process in such a situation.  For this structure, see [my previous post](/julia/project-workflow#new_packages_can_evolve_from_the_projec_code).
+Often, packages evolve during the development of larger application, when it becomes clear that some part of it provides some well defined functionality which can be formulated with its own API.  Local packages within an application project allow to start the package development process in such a situation.  For this structure, see [my previous post](/julia/project-workflow).
 
 
 ### Starting a package repository
@@ -41,8 +37,8 @@ git add .
 
 
 Julia packages have a fixed structure which includes
-- [`Project.toml`](https://pkgdocs.julialang.org/v1/toml-files/#Project.toml): description of dependencies. This also provides the package with its own environment during development.
-  Furthermore, it contains the universally unique identifier (UUID) used to identify the package and its name, author and version number.
+- [`Project.toml`](https://pkgdocs.julialang.org/v1/toml-files/#Project.toml): description of dependencies. This also provides the packages with its own environment during development.
+  Furthermore, it contains the uuid used to identify the package and its name, author and version number.
 - `README.md`: Short information about the package
 - `LICENSE`: License information. Should be one of the [OSI approved](https://opensource.org/licenses) open source licenses if the package shall be registered with the Julia General Registry
 - `src`: subdirectory containing code
@@ -65,7 +61,7 @@ These also create the necessary files for controlling automatic CI tests on gith
 ## Tests
 See also the [Pkg documentation](https://pkgdocs.julialang.org/v1/creating-packages/#Adding-tests-to-the-package).
 
-The files in `test` provide the environment and the code to run tests of the functions implemented in the package. While it is hard to have 100% test coverage of the package functionality, one should strive to achieve this goal. Besides of the obvious reasons of reproducibility,  peer pressure etc., sufficient test coverage helps to keep a package author sane.
+The files in `test` provide the environment and the code to run tests of the functions implemented in the package. While it is hard to have 100% test coverage of the package functinality, one should strive to achieve this goal. Besides of the obvious reasons of reproducibility,  peer pressure etc., sufficient test coverage helps to keep a package author sane.
 Imagine the need to change something in the  package three years after the last serious work on it...
 
 
@@ -81,7 +77,7 @@ Tests code can be called in different ways. In the package root environment:
 ```
 julia> Pkg.test()
 ```
-or from the `Pkg` prompt:
+or in the test environment: 
 ```
 ] test
 ```
@@ -95,7 +91,7 @@ or
 ] test MyPackageName
 ```
 
-## Continuous Integration
+## Continouos Integration
 Your package tests sucessfully run on your linux laptop. But how can you be sure that they also run on Mac and Windows ?
 And, you want to show off with a good test coverage helping to build up trust in your work.
 
@@ -103,7 +99,7 @@ The solution ?  Run your tests on different systems via [github actions](https:/
 
 In order to achieve this, it is sufficient to add a file
 ```
-.github/workflows/ci.yml
+.github/workflow/ci.yml
 ```
 
 Alternatively, this can be done on [gitlab](https://discourse.julialang.org/t/julia-and-gitlab-self-hosted-a-state-of-the-art/86685) as well.
@@ -198,14 +194,14 @@ It needs to be installed as a github app in for the package repository.
   upon registration in the general registry.
 - Start registration Registering with JuliaEgistrator
 - Either name a "budding package" (e.g. Ants.jl) accordingly: AntsPrototype.jl, Ants0.jl 
-
+have a version number conventiom.
 
 ## Other useful introductions
-- [Jaan Tollander de Balsch: How to Create Software Packages with Julia Language](https://jaantollander.com/post/how-to-create-software-packages-with-julia-language/)
-- [Sören Dobberschütz: Tips and tricks to register your first Julia package](https://sdobber.github.io/juliapackage/)
-- [Kim Fung: An Introduction to Continuous Integration & GitHub Actions for Julia](https://medium.com/analytics-vidhya/an-introduction-to-continuous-integration-github-actions-for-julia-1a5a1a6e64d6)
 - [DSB: Developing your Julia package](https://medium.com/coffee-in-a-klein-bottle/developing-your-julia-package-682c1d309507)
+- [Jaan Tollander de Balsch: How to Create Software Packages with Julia Language](https://jaantollander.com/post/how-to-create-software-packages-with-julia-language/)
 - [Christopher Rackauckas: Developing Julia packages (video)](https://www.stochasticlifestyle.com/developing-julia-packages/)
+- [Kim Fung: An Introduction to Continuous Integration & GitHub Actions for Julia](https://medium.com/analytics-vidhya/an-introduction-to-continuous-integration-github-actions-for-julia-1a5a1a6e64d6)
+- [Sören Dobberschütz: Tips and tricks to register your first Julia package](https://sdobber.github.io/juliapackage/)
 
 
 
@@ -213,5 +209,5 @@ It needs to be installed as a github app in for the package repository.
 <hr size="5" noshade>
 ~~~
 __Update history__
-- 2023-04-24: Draft updated + made public
-- 2022-12-06: First draft
+- 2023-04-24: Intermediate headers
+- 2022-12-06: first draft
