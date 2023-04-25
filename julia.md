@@ -3,6 +3,7 @@
 
 # Julia
 
+- [Introductory material](intro-material)
 - [Basic workflow](basic-workflow)
 - [Project workflow](project-workflow)
 - [Package workflow (draft with some useful links)](package-workflow)
