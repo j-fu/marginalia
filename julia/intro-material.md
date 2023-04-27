@@ -32,7 +32,8 @@ Install the latest stable version via the Julia [Homepage](https://julialang.org
   - [Cheat Sheet](https://juliadocs.github.io/Julia-Cheat-Sheet/)
   - [Matlab-Julia-Python cheat sheet](https://cheatsheets.quantecon.org/)
 
-## Introductory material from my TU Berlin courses (videos + Pluto notebooks)
+## Introductory material from my TU Berlin courses  and other talks (videos + Pluto notebooks)
+  - [The Julia programming language - an overview](https://av.tib.eu/media/57515). Talk at [Leibniz MMS Days 2022](https://www.wias-berlin.de/workshops/MMSDays22/).
   - [Julia+Pluto installation](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week1/#julia_pluto_installation)
   - [First contact: Pluto](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week1/#first_contact_pluto)
   - [First contact: Julia](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week1/#first_contact_julia)
