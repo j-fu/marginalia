@@ -208,7 +208,7 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;,push&#61;true&#41;
   <content:encoded>
     <![CDATA[  <h1 id="julia_introductory_material">Julia: Introductory material</h1>
 <p>This is a collection of online references pointing at introductory material for the Julia language.If you look for further online resources, please ensure that they are for Julia 1.0 and newer. This is best achieved by looking for material not older than 2019.</p>
-<div class="franklin-toc"><ol><li>Installation</li><li>Learning<ol><li>Resoures curated by the Julia development team.</li><li>More learning resources </li></ol></li><li>Introductory material from my TU Berlin courses &#40;videos &#43; Pluto notebooks&#41;</li><li>Editing</li></ol></div>
+<div class="franklin-toc"><ol><li>Installation</li><li>Learning<ol><li>Resoures curated by the Julia development team.</li><li>More learning resources </li></ol></li><li>Introductory material from my TU Berlin courses  and other talks &#40;videos &#43; Pluto notebooks&#41;</li><li>Editing</li></ol></div>
 <h2 id="installation">Installation</h2>
 <p>Install the latest stable version via the Julia <a href="https://julialang.org">Homepage</a>. Julia devs recommend not to use the Julia versions provided from other sources &#40;like Homebrew, various Linux package managers&#41;</p>
 <h2 id="learning">Learning</h2>
@@ -250,8 +250,10 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;,push&#61;true&#41;
 <li><p><a href="https://cheatsheets.quantecon.org/">Matlab-Julia-Python cheat sheet</a></p>
 </li>
 </ul>
-<h2 id="introductory_material_from_my_tu_berlin_courses_videos_pluto_notebooks">Introductory material from my TU Berlin courses &#40;videos &#43; Pluto notebooks&#41;</h2>
+<h2 id="introductory_material_from_my_tu_berlin_courses_and_other_talks_videos_pluto_notebooks">Introductory material from my TU Berlin courses  and other talks &#40;videos &#43; Pluto notebooks&#41;</h2>
 <ul>
+<li><p><a href="https://av.tib.eu/media/57515">The Julia programming language - an overview</a>. Talk at <a href="https://www.wias-berlin.de/workshops/MMSDays22/">Leibniz MMS Days 2022</a>.</p>
+</li>
 <li><p><a href="https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week1/#julia_pluto_installation">Julia&#43;Pluto installation</a></p>
 </li>
 <li><p><a href="https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week1/#first_contact_pluto">First contact: Pluto</a></p>
