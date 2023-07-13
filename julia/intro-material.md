@@ -21,8 +21,7 @@ Install the latest stable version via the Julia [Homepage](https://julialang.org
      - Noteworthy differences from [Matlab](https://docs.julialang.org/en/v1/manual/noteworthy-differences/#Noteworthy-differences-from-MATLAB-1), [R](https://docs.julialang.org/en/v1/manual/noteworthy-differences/#Noteworthy-differences-from-R-1), [Python](https://docs.julialang.org/en/v1/manual/noteworthy-differences/?highlight=matlab#Noteworthy-differences-from-Python-1), [C/C++](https://docs.julialang.org/en/v1/manual/noteworthy-differences/#Noteworthy-differences-from-C/C)
   - [Curated learning resources](https://julialang.org/learning/)
   - Julia is evolving. New versions in the 1.x range introduce many important additions and non-breaking changes. Many important Julia packages require at least the current long term service (LTS) version 1.6. 
-    - Julia version highlights: [1.5](https://julialang.org/blog/2020/08/julia-1.5-highlights/), [1.6](https://julialang.org/blog/2021/03/julia-1.6-highlights/), [1.7](https://julialang.org/blog/2021/11/julia-1.7-highlights/), [1.8](https://julialang.org/blog/2022/08/julia-1.8-highlights/). 
-    - Watch out for Julia [1.9](https://juliahub.com/company/resources/webinar/what-is-new-in-julia_1_9/)
+    - Julia version highlights: [1.5](https://julialang.org/blog/2020/08/julia-1.5-highlights/), [1.6](https://julialang.org/blog/2021/03/julia-1.6-highlights/), [1.7](https://julialang.org/blog/2021/11/julia-1.7-highlights/), [1.8](https://julialang.org/blog/2022/08/julia-1.8-highlights/) [1.9](https://julialang.org/blog/2023/04/julia-1.9-highlights/)
     - [Why Julia 2.0 Isn’t Coming Anytime Soon](https://towardsdatascience.com/why-julia-2-0-isnt-coming-anytime-soon-and-why-that-is-a-good-thing-641ae3d2a177)
 ### More learning resources 
   - [Julia for Talented Amateurs](https://www.youtube.com/c/juliafortalentedamateurs/videos): Actively maintained collection of video tutorials for many different aspects of Julia

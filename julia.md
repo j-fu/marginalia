@@ -10,4 +10,5 @@
 - [Achieving Performance](achieving-performance)
 - [Unionize your Collections!](unionize)
 - [Calculating sparse Jacobians](sparsejac)
+- [Sparse matrix solver scaling](scalingtest)
 

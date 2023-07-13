@@ -1,3 +1,13 @@
+https://gdalle.github.io/ModernJuliaWorkflows/
+
+- Workflow updates:
+  - Project.toml + compat anstelle von Project.toml+ Manifest.
+    Manifest nur wenn exakte versionen wirklich erforderlich sind
+  - PackageNursery: Hungarian Notation names in order to distinguish
+    budding package from real one => allow for full semver already
+    at devElopment stage.
+    LiquidElectrolytesPrototype etc.
+
 - Unionize your collections!
 When working e.g with agent based models or finite elements with varying element geometries 
 a common pattern is the occurence of collections of objects of different types on which one
