@@ -23,6 +23,29 @@
 
 <item>
   <title>
+    <![CDATA[    ]]>
+  </title>
+  <link> https://j-fu.github.io/marginalia/julia/scalingtest/index.html </link>
+  <guid> https://j-fu.github.io/marginalia/julia/scalingtest/index.html </guid>
+  <description>
+    <![CDATA[  Sparse matrix solver scaling  ]]>
+  </description>  
+  
+  <content:encoded>
+    <![CDATA[  <h1 id="13633231208144796923"></h1><iframe style="height:9800px" width="100%" frameborder="0" src="https://j-fu.github.io/marginalia/assets/scalingtest2.html"> </iframe> ]]>
+  </content:encoded>
+    
+  <pubDate>Thu, 13 Jul 2023 00:00:00 +0000</pubDate>  
+  
+  
+  <atom:author>
+    <atom:name>Jürgen Fuhrmann</atom:name>
+  </atom:author>
+        
+</item>
+
+<item>
+  <title>
     <![CDATA[  Julia: Package Workflow  ]]>
   </title>
   <link> https://j-fu.github.io/marginalia/julia/package-workflow/index.html </link>
@@ -226,9 +249,7 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;,push&#61;true&#41;
 </li>
 <li><p>Julia is evolving. New versions in the 1.x range introduce many important additions and non-breaking changes. Many important Julia packages require at least the current long term service &#40;LTS&#41; version 1.6. </p>
 <ul>
-<li><p>Julia version highlights: <a href="https://julialang.org/blog/2020/08/julia-1.5-highlights/">1.5</a>, <a href="https://julialang.org/blog/2021/03/julia-1.6-highlights/">1.6</a>, <a href="https://julialang.org/blog/2021/11/julia-1.7-highlights/">1.7</a>, <a href="https://julialang.org/blog/2022/08/julia-1.8-highlights/">1.8</a>. </p>
-</li>
-<li><p>Watch out for Julia <a href="https://juliahub.com/company/resources/webinar/what-is-new-in-julia_1_9/">1.9</a></p>
+<li><p>Julia version highlights: <a href="https://julialang.org/blog/2020/08/julia-1.5-highlights/">1.5</a>, <a href="https://julialang.org/blog/2021/03/julia-1.6-highlights/">1.6</a>, <a href="https://julialang.org/blog/2021/11/julia-1.7-highlights/">1.7</a>, <a href="https://julialang.org/blog/2022/08/julia-1.8-highlights/">1.8</a> <a href="https://julialang.org/blog/2023/04/julia-1.9-highlights/">1.9</a></p>
 </li>
 <li><p><a href="https://towardsdatascience.com/why-julia-2-0-isnt-coming-anytime-soon-and-why-that-is-a-good-thing-641ae3d2a177">Why Julia 2.0 Isn’t Coming Anytime Soon</a></p>
 </li>
