@@ -183,12 +183,14 @@ Just note that by default, each Pluto notebook will activates it's own environme
 
 - See my [talk](https://www.wias-berlin.de/people/fuhrmann/AdSciComp-WS2223/week3/#reproducibility_infrastructure_of_the_julia_language) on the reproducibility infrastructure of the Julia language
 
+- [Modern Julia Workflows](https://modernjuliaworkflows.github.io/) A series of blog post drafts on best practices for Julia development.
 
 ~~~
 <hr size="5" noshade>
 ~~~
 
 __Update history__
+- 2023-10-17: Link to modern julia workflowa
 - 2023-04-24: Smaller improvements
 - 2022-11-06: `@` environments (since Julia 1.7) + LOAD_PATH, link to my talk on Julia's reproducibility infrastructure
 - 2022-09-01: Link to [blogpost](https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/) by Julius Krumbiegel

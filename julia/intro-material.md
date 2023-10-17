@@ -12,10 +12,11 @@ This is a collection of online references pointing at introductory material for 
 
 ## Installation
 
-Install the latest stable version via the Julia [Homepage](https://julialang.org). Julia devs recommend not to use the Julia versions provided from other sources (like Homebrew, various Linux package managers)
+Install the latest stable version via the Julia [Homepage](https://julialang.org). Julia devs recommend not to use the Julia versions provided from other sources (like Homebrew, various Linux package managers). [juliaup](https://github.com/JuliaLang/juliaup) provides another flexible way to install Julia and to switch between versions.
+
 
 ## Learning
-### Resoures curated by the Julia development team.
+### Resources curated by the Julia development team.
   - [Documentation](https://docs.julialang.org/en/v1/)
      - [Getting started](https://docs.julialang.org/en/v1/manual/getting-started/)
      - Noteworthy differences from [Matlab](https://docs.julialang.org/en/v1/manual/noteworthy-differences/#Noteworthy-differences-from-MATLAB-1), [R](https://docs.julialang.org/en/v1/manual/noteworthy-differences/#Noteworthy-differences-from-R-1), [Python](https://docs.julialang.org/en/v1/manual/noteworthy-differences/?highlight=matlab#Noteworthy-differences-from-Python-1), [C/C++](https://docs.julialang.org/en/v1/manual/noteworthy-differences/#Noteworthy-differences-from-C/C)
@@ -30,21 +31,29 @@ Install the latest stable version via the Julia [Homepage](https://julialang.org
   - [QuantEcon](https://julia.quantecon.org/index_toc.html) tutorial with focus on economics and statistics
   - [Cheat Sheet](https://juliadocs.github.io/Julia-Cheat-Sheet/)
   - [Matlab-Julia-Python cheat sheet](https://cheatsheets.quantecon.org/)
+  - [Julia as a second language](https://www.manning.com/books/julia-as-a-second-language) by Erik Engheim
 
 ## Introductory material from my TU Berlin courses  and other talks (videos + Pluto notebooks)
   - [The Julia programming language - an overview](https://av.tib.eu/media/57515). Talk at [Leibniz MMS Days 2022](https://www.wias-berlin.de/workshops/MMSDays22/).
-  - [Julia+Pluto installation](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week1/#julia_pluto_installation)
-  - [First contact: Pluto](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week1/#first_contact_pluto)
-  - [First contact: Julia](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week1/#first_contact_julia)
-  - [Julia type system](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week2/#julia_type_system)
-  - [JIT compilation and performance](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week2/#just-in-time_jit_compilation_and_performance)
-  - [Julia interoperabillity](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week2/#julia_interoperability)
-  - [Stack, heap, allocations](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week3/#stack_heap_allocations)
-  - [Reproducibility infrastructure of the Julia language](https://www.wias-berlin.de/people/fuhrmann/AdSciComp-WS2223/week3/#reproducibility_infrastructure_of_the_julia_language)
-  - [Plotting in Julia](https://www.wias-berlin.de/people/fuhrmann/AdSciComp-WS2223/week3/#plotting_in_julia)
+  - [Julia+Pluto installation (Winter 21/22)](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week1/#julia_pluto_installation)
+  - [First contact: Pluto (Winter 21/22)](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week1/#first_contact_pluto)
+  - [First contact: Julia (Winter 21/22)](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week1/#first_contact_julia)
+  - [Julia type system (Winter 21/22)](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week2/#julia_type_system)
+  - [JIT compilation and performance (Winter 21/22)](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week2/#just-in-time_jit_compilation_and_performance)
+  - [Julia interoperabillity (Winter 21/22)](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week2/#julia_interoperability)
+  - [Stack, heap, allocations (Winter 21/22)](https://www.wias-berlin.de/people/fuhrmann/SciComp-WS2122/week3/#stack_heap_allocations)
+  - [Reproducibility infrastructure of the Julia language (Winter 22/23)](https://www.wias-berlin.de/people/fuhrmann/AdSciComp-WS2223/week3/#reproducibility_infrastructure_of_the_julia_language)
+  - [Plotting in Julia (Winter 22/23)](https://www.wias-berlin.de/people/fuhrmann/AdSciComp-WS2223/week3/#plotting_in_julia)
 
 ## Editing
 - [Visual Studio Code extension](https://github.com/julia-vscode/julia-vscode)
 - [Pluto notebooks](https://github.com/fonsp/Pluto.jl); 
     How to install Julia and Pluto: [MIT course video](https://www.youtube.com/watch?v=OOjKEgbt8AI)
 - [Emacs support](https://github.com/JuliaEditorSupport/julia-emacs)
+
+~~~
+<hr size="5" noshade>
+~~~
+
+__Update history__
+- 2023-10-17: Julia as a second language, semester info

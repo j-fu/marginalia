@@ -1,0 +1,178 @@
+<!-- PlutoStaticHTML.Begin -->
+<!--
+    # This information is used for caching.
+    [PlutoStaticHTML.State]
+    input_sha = "07346fc0f7b103f61174fdd1d026fedca125d7df39fa3a59e31abe5b77e1d872"
+    julia_version = "1.9.0-rc1"
+-->
+
+<div class="markdown"><p>Make a lecture from this</p></div>
+
+
+<div class="markdown"><p>cf  <a href="https://www.stochasticlifestyle.com/direct-automatic-differentiation-of-solvers-vs-analytical-adjoints-which-is-better/">Direct Automatic Differentiation of (Differential Equation) Solvers vs Analytical Adjoints: Which is Better?</a> by C. Rackauckas and <a href="https://docs.sciml.ai/SciMLSensitivity/stable/manual/direct_adjoint_sensitivities/">SciMLSensitivity</a></p></div>
+
+
+<div class="markdown"><h1>Parameter dependent systems</h1></div>
+
+
+<div class="markdown"><ul><li><p>Stationary case: </p></li></ul><p class="tex">$$	f(u,p)=0$$</p><ul><li><p>Transient case: </p></li></ul><p class="tex">$$	u̇ = f(x,p,t)$$</p><ul><li><p>Measurement: <span class="tex">$m(u)$</span></p></li></ul></div>
+
+
+<div class="markdown"><h2>Stationary case</h2><p><span class="tex">$\newcommand{\dist}{\mathrm{dist}}$</span></p><h3>Sensitivity</h3><p>Let  <span class="tex">$f(\tilde u, \tilde p)=0$</span>. Calculate </p><p class="tex">$$\partial_p m(\tilde u) = ∂_u m(\tilde u ) ∂_p \tilde u$$</p><p class="tex">$$ 0=\partial_p f(\tilde u, \tilde p) = \partial_u f \partial_p \tilde u + \partial_p f$$</p><p>Therefore, </p><p class="tex">$$	\partial_p \tilde u =  -(\partial_u f)^{-1} \partial_p f$$</p><p>This means that we have two variants to calculate measurement sensitivity. a): full calculation where we use derivatives in the matrix as well b): stepwise calculation, where there is no need to solve with duals</p></div>
+
+
+<div class="markdown"><h4>Example</h4></div>
+
+<pre class='language-julia'><code class='language-julia'>using NLsolve,ForwardDiff,LinearAlgebra,BenchmarkTools</code></pre>
+
+
+<pre class='language-julia'><code class='language-julia'>f(u,p)= [ p[1]*u[i]^3-0.1*sum(u)*p[2]/length(u)-i for i=1:length(u)]</code></pre>
+<pre class="code-output documenter-example-output" id="var-f">f (generic function with 1 method)</pre>
+
+<pre class='language-julia'><code class='language-julia'>const u0=zeros(100);</code></pre>
+
+
+<pre class='language-julia'><code class='language-julia'>const p=[2,9.0];</code></pre>
+
+
+<pre class='language-julia'><code class='language-julia'>m(u)=[sum(u),sum(x-&gt; x^2,u),sum(x-&gt; x^3,u)]</code></pre>
+<pre class="code-output documenter-example-output" id="var-m">m (generic function with 1 method)</pre>
+
+<pre class='language-julia'><code class='language-julia'>dm(u)=ForwardDiff.jacobian(m,u)</code></pre>
+<pre class="code-output documenter-example-output" id="var-dm">dm (generic function with 1 method)</pre>
+
+<pre class='language-julia'><code class='language-julia'>dmdp ≈ dgdp</code></pre>
+<pre class="code-output documenter-example-output" id="var-hash122631">true</pre>
+
+<pre class='language-julia'><code class='language-julia'>const xtol=1.0e-12</code></pre>
+<pre class="code-output documenter-example-output" id="var-const xtol">1.0e-12</pre>
+
+<pre class='language-julia'><code class='language-julia'>const ftol=1.0e-12</code></pre>
+<pre class="code-output documenter-example-output" id="var-const ftol">1.0e-12</pre>
+
+<pre class='language-julia'><code class='language-julia'>function gstep(p)
+    utilde=nlsolve(u-&gt;f(u,p), Float64.(u0); autodiff=:forward,method=:newton,xtol,ftol).zero
+    dfdp=ForwardDiff.jacobian(p-&gt;f(utilde,p),p)
+    J=ForwardDiff.jacobian(u-&gt;f(u,p),utilde)
+    dmdu=dm(utilde) # n_m x n
+    dudp=J\dfdp  # n x n_p
+    -dmdu*dudp
+end</code></pre>
+<pre class="code-output documenter-example-output" id="var-gstep">gstep (generic function with 1 method)</pre>
+
+<pre class='language-julia'><code class='language-julia'>dmdp=gstep(p)</code></pre>
+<pre class="code-output documenter-example-output" id="var-dmdp">3×2 Matrix{Float64}:
+   -48.6244   0.748985
+  -290.115    3.65193
+ -1348.51    14.5873</pre>
+
+<pre class='language-julia'><code class='language-julia'>@benchmark gstep(p)</code></pre>
+<pre class="code-output documenter-example-output" id="var-hash376732">BenchmarkTools.Trial: 299 samples with 1 evaluation.
+ Range (min … max):  15.560 ms …  20.584 ms  ┊ GC (min … max): 0.00% … 7.43%
+ Time  (median):     16.485 ms               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   16.742 ms ± 777.634 μs  ┊ GC (mean ± σ):  1.01% ± 2.43%
+
+          ▁▄█▇  ▁▁ ▁                                            
+  ▃▁▂▂▃▂▂▃█████▆██▆█▆▄▅▆▆▄▂▂▂▃▃▃▁▃▆▃▃▄▂▄▃▂▃▂▂▁▃▃▁▁▂▂▂▂▁▂▃▂▁▁▁▃ ▃
+  15.6 ms         Histogram: frequency by time         19.3 ms &lt;
+
+ Memory estimate: 5.79 MiB, allocs estimate: 538.</pre>
+
+<pre class='language-julia'><code class='language-julia'>function g(p)
+    Tp=eltype(p)
+    res=nlsolve(u-&gt;f(u,p), Tp.(u0);autodiff=:forward,method=:newton,xtol,ftol)
+    m(res.zero)
+end</code></pre>
+<pre class="code-output documenter-example-output" id="var-g">g (generic function with 1 method)</pre>
+
+<pre class='language-julia'><code class='language-julia'>dgdp=ForwardDiff.jacobian(g,p)</code></pre>
+<pre class="code-output documenter-example-output" id="var-dgdp">3×2 Matrix{Float64}:
+   -48.6244   0.748985
+  -290.115    3.65193
+ -1348.51    14.5873</pre>
+
+<pre class='language-julia'><code class='language-julia'>@benchmark ForwardDiff.jacobian(g,p)</code></pre>
+<pre class="code-output documenter-example-output" id="var-hash659470">BenchmarkTools.Trial: 88 samples with 1 evaluation.
+ Range (min … max):  53.215 ms … 63.093 ms  ┊ GC (min … max): 0.00% … 3.69%
+ Time  (median):     56.168 ms              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   56.813 ms ±  2.369 ms  ┊ GC (mean ± σ):  1.04% ± 1.37%
+
+     ▂ ▂ ▂▂ ▂ ▂▂▂ ▅█  ▂    ▂    █     ▅        ▂               
+  ▅█▅█▅█▅██▅█▅██████▅██▁▅▅███▅▅▁█▁▅▁▅▅█▁▅▁██▅▁▁█▅▁█▁▁▁▅▁▁▁▁▅▅ ▁
+  53.2 ms         Histogram: frequency by time        62.5 ms &lt;
+
+ Memory estimate: 16.34 MiB, allocs estimate: 773.</pre>
+
+
+<div class="markdown"><h3>Parameter identification:</h3><p>Assume <span class="tex">$\hat m$</span> is given. Find <span class="tex">$\tilde p$</span> such that if <span class="tex">$f(\tilde u, \tilde p)=0$</span>,     then <span class="tex">$\dist(\hat m, m(\tilde u))$</span> is minimal.</p></div>
+
+
+<div class="markdown"><h2>Transient case.</h2></div>
+
+
+<div class="markdown"><h2>QUARRY</h2></div>
+
+
+<div class="markdown"><p>For ODEs we should be able to  use <a href="https://docs.sciml.ai/SciMLSensitivity/stable/ode_fitting/optimization_ode/">this</a></p><p>We have the choice between the  https://docs.sciml.ai/SciMLSensitivity/stable/manual/direct<em>forward</em>sensitivity/ We might want to implement an ODEForwardSensitivityProblem</p><p>and the adjoint sensitivity method https://docs.sciml.ai/SciMLSensitivity/stable/manual/direct<em>adjoint</em>sensitivities/</p></div>
+
+
+<hr/>
+
+<pre class='language-julia'><code class='language-julia'>begin 
+    using PlutoUI,HypertextLiteral
+end</code></pre>
+
+
+<pre class='language-julia'><code class='language-julia'>TableOfContents(depth=4)</code></pre>
+
+
+<pre class='language-julia'><code class='language-julia'>begin
+    hrule()=html"""&lt;hr&gt;"""
+    highlight(mdstring,color)= htl"""&lt;blockquote style="padding: 10px; background-color: $(color);"&gt;$(mdstring)&lt;/blockquote&gt;"""
+    
+    macro important_str(s)	:(highlight(Markdown.parse($s),"#ffcccc")) end
+    macro definition_str(s)	:(highlight(Markdown.parse($s),"#ccccff")) end
+    macro statement_str(s)	:(highlight(Markdown.parse($s),"#ccffcc")) end
+        
+# 	https://github.com/fonsp/Pluto.jl/blob/main/frontend/light_color.css
+#	    --code-background:  #eaffea;
+    html"""
+        &lt;style&gt;
+         :root {
+        --code-background:  #f2f4f2;
+        --cm-editor-text-color: #000000;
+        --cm-string-color: #803030;
+        --cm-comment-color: #a05050;
+         }
+    
+         h1{background-color:#dddddd;  padding: 10px;}
+         h2{background-color:#e7e7e7;  padding: 10px;}
+         h3{background-color:#eeeeee;  padding: 10px;}
+         h4{background-color:#f7f7f7;  padding: 10px;}
+/*
+         h1{background-color:#fff;  padding: 10px;}
+         h2{background-color:#fff;  padding: 10px;}
+         h3{background-color:#fff;  padding: 10px;}
+         h4{background-color:#fff;  padding: 10px;}
+*/
+    
+         pluto-log-dot-sizer  { max-width: 655px;}
+         pluto-log-dot.Stdout { background: #002000;
+                                color: #10f080;
+                                border: 6px solid #b7b7b7;
+                                min-width: 18em;
+                                max-height: 300px;
+                                width: 675px;
+                                    overflow: auto;
+ 	                           }
+    
+    &lt;/style&gt;
+"""
+end</code></pre>
+
+
+
+<div class="markdown"><p class="tex">$$  	  \newcommand{\dist}{\mathrm{dist}}	$$</p></div>
+
+<!-- PlutoStaticHTML.End -->
+
