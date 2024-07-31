@@ -356,7 +356,7 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;,push&#61;true&#41;
   
   <content:encoded>
     <![CDATA[  <h1 id="julia_project_workflow">Julia: Project Workflow</h1>
-<p><div class="franklin-toc"><ol><li>Rationale</li><li>Recommendations<ol><li>Generate the project directory itself as a package</li><li>New packages can evolve from the project code</li><li>Always start Julia from the package root</li><li>Activate the project environment in notebooks</li><li>Consider using DrWatson.jl</li><li>A sample project tree</li></ol></li><li>Summary</li></ol></div> </p>
+<p><div class="franklin-toc"><ol><li>Rationale</li><li>Recommendations<ol><li>Generate the project directory itself as a package</li><li>New packages can evolve from the project code</li><li>Manifest or not ?</li><li>Always start Julia from the package root</li><li>Activate the project environment in notebooks</li><li>Consider using DrWatson.jl</li><li>A sample project tree</li></ol></li><li>Summary</li></ol></div> </p>
 <p>The term &quot;project&quot; in this post corresponds to the term &quot;application&quot; in <a href="https://pkgdocs.julialang.org/v1/glossary/#Glossary">package manager glossary</a></p>
 <h2 id="rationale">Rationale</h2>
 <p>Some ideas on basic julia workflow  are given  <a href="https://j-fu.github.io/marginalia/julia/basic-workflow">here</a>. For a larger project, structuring of the project code is essential for many reasons, some of them are:</p>
@@ -385,9 +385,35 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;,push&#61;true&#41;
 </li>
 </ul>
 <h3 id="new_packages_can_evolve_from_the_project_code">New packages can evolve from the project code</h3>
-<p>For this purpose, optionally you can have a folder <code>packages</code> which contains other sub-packages which potentially can evolve into standalone, even registered packages. As <a href="https://github.com/JuliaLang/Pkg.jl/issues/1214">relative paths are recorded in Manifest.toml</a>, these are made available within the  project via <code>Pkg.develop&#40;path&#61;&quot;packages/MySubPackage&quot;&#41;</code>. This way, the  whole project  tree including sub-packages  will stay relocateable.</p>
+<p>For this purpose, optionally you can have a folder <code>packages</code> which contains other sub-packages which potentially can evolve into standalone, even registered packages. As <a href="https://github.com/JuliaLang/Pkg.jl/issues/1214">relative paths are recorded in Manifest.toml</a>, these are made available within the  project via <code>Pkg.develop&#40;path&#61;&quot;packages/MySubPackage&quot;&#41;</code>. Starting wit Julia 1.11, <code>Project.toml</code> can have a <a href="https://pkgdocs.julialang.org/dev/toml-files/#The-&#91;sources&#93;-section"><code>&#91;sources&#93;</code> section</a> which can contain a relative path for a subpackage. Either way, using this approach, the  whole project  tree including sub-packages  will stay relocateable.</p>
 <ul>
-<li><p>This allows for easy start of low key package development. At a later stage, <code>MySubPackage</code> could be registered as a Julia package while still residing in the project tree, or even removed from the project tree without affecting  scripts depending on it – once registered, the package can be added in to the project environment via <code>Pkg.add</code> instead of <code>Pkg.develop</code>.</p>
+<li><p>This allows for easy start of low key package development. At a later stage, <code>MySubPackage</code> could be registered as a Julia package while still residing in the project tree, or even removed from the project tree without affecting  scripts depending on it – once registered, the package can be added to the project environment via <code>Pkg.add</code> instead of <code>Pkg.develop</code>, or just removed from the <code>&#91;sources&#93;</code> section.</p>
+</li>
+</ul>
+<h3 id="manifest_or_not">Manifest or not ?</h3>
+<p>Should the <code>Manifest.toml</code> be checked into the project repository or not ? The answer is - your mileage may vary.</p>
+<p>Pro Checking in the manifest file:</p>
+<ul>
+<li><p>Strong reproducibility of the computational results</p>
+</li>
+<li><p>Starting with Julia 1.11, there can be different Manifest files for each Julia minor version &#40;e.g. <code>Manifest-v1.11.toml</code>&#41;, checking in the respective manifests can allow to use different Julia versions.</p>
+</li>
+<li><p>Subpackages in relative paths can only be found via the <code>Manifest.toml</code> &#40;for Julia &lt;1.11&#41;</p>
+</li>
+</ul>
+<p>Pro not checking in the manifest file:</p>
+<ul>
+<li><p>Strong reproducibility is required when publishing results, not during development, where experimentation is ubiquitous</p>
+</li>
+<li><p>Dependency version checking can be managed via the <code>&#91;compat&#93;</code> section in <code>Project.toml</code></p>
+</li>
+<li><p>With Julia &lt;1.11, checking in the manifest file requires that all project collaborators use the same Julia version</p>
+</li>
+<li><p>Subpackages in relative paths can be found via the <code>&#91;sources&#93;</code> section of Project.toml  &#40;for Julia &gt;&#61;1.11&#41;</p>
+</li>
+<li><p>Successful tests with different dependency versions are a sign of robustness of the package code.  Diverging results with different Julia versions or different versions of dependencies hint on possible problems of the project code or the packages.</p>
+</li>
+<li><p>Easy unit tests on different Julia versions</p>
 </li>
 </ul>
 <h3 id="always_start_julia_from_the_package_root">Always start Julia from the package root</h3>
@@ -460,6 +486,8 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;,push&#61;true&#41;
 <hr size="5" noshade>
  <strong>Update history</strong></p>
 <ul>
+<li><p>2024-07-31: Julia 1.11</p>
+</li>
 <li><p>2023-04-24: Intermediate headers</p>
 </li>
 <li><p>2022-02-09: RSS</p>
