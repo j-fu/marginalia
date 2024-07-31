@@ -29,9 +29,26 @@ Name this e.g. `MyProject`. Use[`Pkg.generate`](https://pkgdocs.julialang.org/v1
    - Reproducibility due to dependencies recorded in the project environment (files `Project.toml` and `Manifest.toml`).
 
 ### New packages can evolve from the project code
-For this purpose, optionally you can have a folder `packages` which contains other sub-packages which potentially can evolve into standalone, even registered packages. As [relative paths are recorded in Manifest.toml](https://github.com/JuliaLang/Pkg.jl/issues/1214), these are made available within the  project via `Pkg.develop(path="packages/MySubPackage")`. This way, the  whole project  tree including sub-packages  will stay relocateable.
-   - This allows for easy start of low key package development. At a later stage, `MySubPackage` could be registered as a Julia package while still residing in the project tree, or even removed from the project tree without affecting  scripts depending on it -- once registered, the package can be added in to the project environment via `Pkg.add` instead of `Pkg.develop`.
+For this purpose, optionally you can have a folder `packages` which contains other sub-packages which potentially can evolve into standalone, even registered packages. As [relative paths are recorded in Manifest.toml](https://github.com/JuliaLang/Pkg.jl/issues/1214), these are made available within the  project via `Pkg.develop(path="packages/MySubPackage")`.
+Starting wit Julia 1.11, `Project.toml` can have a [`[sources]` section](https://pkgdocs.julialang.org/dev/toml-files/#The-[sources]-section) which can contain a relative path for a subpackage.
+Either way, using this approach, the  whole project  tree including sub-packages  will stay relocateable.
+   - This allows for easy start of low key package development. At a later stage, `MySubPackage` could be registered as a Julia package while still residing in the project tree, or even removed from the project tree without affecting  scripts depending on it -- once registered, the package can be added to the project environment via `Pkg.add` instead of `Pkg.develop`, or just removed from the `[sources]` section.
    
+### Manifest or not ?
+Should the `Manifest.toml` be checked into the project repository or not ? The answer is - your mileage may vary.
+
+Pro Checking in the manifest file:
+- Strong reproducibility of the computational results
+- Starting with Julia 1.11, there can be different Manifest files for each Julia minor version (e.g. `Manifest-v1.11.toml`), checking in the respective manifests can allow to use different Julia versions.
+- Subpackages in relative paths can only be found via the `Manifest.toml` (for Julia <1.11)
+
+Pro not checking in the manifest file:
+- Strong reproducibility is required when publishing results, not during development, where experimentation is ubiquitous
+- Dependency version checking can be managed via the `[compat]` section in `Project.toml`
+- With Julia <1.11, checking in the manifest file requires that all project collaborators use the same Julia version
+- Subpackages in relative paths can be found via the `[sources]` section of Project.toml  (for Julia >=1.11)
+- Successful tests with different dependency versions are a sign of robustness of the package code.  Diverging results with different Julia versions or different versions of dependencies hint on possible problems of the project code or the packages.
+- Easy unit tests on different Julia versions
 
 ### Always start Julia from the package root
 - When working with the project, always run julia from the package root with the package environment activated: `julia --project=.` 
@@ -98,6 +115,7 @@ By taking advantage of Julia's best-in-class package management facilities, the 
 <hr size="5" noshade>
 ~~~
 __Update history__
+- 2024-07-31: Julia 1.11
 - 2023-04-24: Intermediate headers
 - 2022-02-09: RSS
 - 2021-12-02: The term "project" in this post corresponds to the term "application" in [package manager glossary](https://pkgdocs.julialang.org/v1/glossary/#Glossary).
