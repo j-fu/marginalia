@@ -2,7 +2,7 @@
 @def rss_description = "Julia: Project Workflow."
 @def rss_pubdate = Date(2022, 2, 9)
 
-# Julia: Project Workflow
+# Julia: Project Workflow Recommendations
 
 \toc 
 

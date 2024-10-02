@@ -11,9 +11,7 @@ This is a collection of online references pointing at introductory material for 
 
 
 ## Installation
-
-Install the latest stable version via the Julia [Homepage](https://julialang.org). Julia devs recommend not to use the Julia versions provided from other sources (like Homebrew, various Linux package managers). [juliaup](https://github.com/JuliaLang/juliaup) provides another flexible way to install Julia and to switch between versions.
-
+[juliaup](https://julialang.org/downloads/#install_julia) provides the most flexible way to install Julia and to switch between versions. Alternatively, install the latest stable version via the Julia [homepage](https://julialang.org/downloads/#current_stable_release). Julia devs [recommend not to use](https://julialang.org/downloads/#please_do_not_use_the_version_of_julia_shipped_by_unix_package_managers) the Julia versions provided from other sources (like Homebrew, various Linux package managers). 
 
 ## Learning
 ### Resources curated by the Julia development team.
@@ -22,7 +20,7 @@ Install the latest stable version via the Julia [Homepage](https://julialang.org
      - Noteworthy differences from [Matlab](https://docs.julialang.org/en/v1/manual/noteworthy-differences/#Noteworthy-differences-from-MATLAB-1), [R](https://docs.julialang.org/en/v1/manual/noteworthy-differences/#Noteworthy-differences-from-R-1), [Python](https://docs.julialang.org/en/v1/manual/noteworthy-differences/?highlight=matlab#Noteworthy-differences-from-Python-1), [C/C++](https://docs.julialang.org/en/v1/manual/noteworthy-differences/#Noteworthy-differences-from-C/C)
   - [Curated learning resources](https://julialang.org/learning/)
   - Julia is evolving. New versions in the 1.x range introduce many important additions and non-breaking changes. Many important Julia packages require at least the current long term service (LTS) version 1.6. 
-    - Julia version highlights: [1.5](https://julialang.org/blog/2020/08/julia-1.5-highlights/), [1.6](https://julialang.org/blog/2021/03/julia-1.6-highlights/), [1.7](https://julialang.org/blog/2021/11/julia-1.7-highlights/), [1.8](https://julialang.org/blog/2022/08/julia-1.8-highlights/) [1.9](https://julialang.org/blog/2023/04/julia-1.9-highlights/)
+    - Julia version highlights: [1.5](https://julialang.org/blog/2020/08/julia-1.5-highlights/), [1.6](https://julialang.org/blog/2021/03/julia-1.6-highlights/), [1.7](https://julialang.org/blog/2021/11/julia-1.7-highlights/), [1.8](https://julialang.org/blog/2022/08/julia-1.8-highlights/) [1.9](https://julialang.org/blog/2023/04/julia-1.9-highlights/), [1.10](https://julialang.org/blog/2023/12/julia-1.10-highlights/)
     - [Why Julia 2.0 Isn’t Coming Anytime Soon](https://towardsdatascience.com/why-julia-2-0-isnt-coming-anytime-soon-and-why-that-is-a-good-thing-641ae3d2a177)
 ### More learning resources 
   - [Julia for Talented Amateurs](https://www.youtube.com/c/juliafortalentedamateurs/videos): Actively maintained collection of video tutorials for many different aspects of Julia
@@ -46,8 +44,8 @@ Install the latest stable version via the Julia [Homepage](https://julialang.org
   - [Plotting in Julia (Winter 22/23)](https://www.wias-berlin.de/people/fuhrmann/AdSciComp-WS2223/week3/#plotting_in_julia)
 
 ## Editing
-- [Visual Studio Code extension](https://github.com/julia-vscode/julia-vscode)
-- [Pluto notebooks](https://github.com/fonsp/Pluto.jl); 
+- [Visual Studio Code extension](https://www.julia-vscode.org/docs/latest/gettingstarted/)
+- [Pluto notebooks](https://plutojl.org); 
     How to install Julia and Pluto: [MIT course video](https://www.youtube.com/watch?v=OOjKEgbt8AI)
 - [Emacs support](https://github.com/JuliaEditorSupport/julia-emacs)
 
@@ -56,4 +54,5 @@ Install the latest stable version via the Julia [Homepage](https://julialang.org
 ~~~
 
 __Update history__
+- 2024-10-02: Julia 1.10, upvote juliaup
 - 2023-10-17: Julia as a second language, semester info

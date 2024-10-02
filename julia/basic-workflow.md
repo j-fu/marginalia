@@ -3,7 +3,7 @@
 @def rss_pubdate = Date(2022, 2, 9)
 
 
-# Julia: Basic Workflow
+# Julia: Basic Workflow Recomendations
 
 
 \toc 
@@ -87,6 +87,7 @@ julia> push!(LOAD_PATH,pwd())
 julia> using MyScript
 julia> MyScript.main(kwarg1=5)
 ```
+``LOAD_PATH`` can also be passed to Julia as an environment variable defined before the invocation of julia.
 
 ## Use Revise.jl to reload modified code
 
@@ -149,15 +150,15 @@ $ julia --project=.
 and work in the environment. All packages added  to Julia in this case are recorded in `MyApp` instead of `.julia/environments/vx.y/`. Packages in the global environment still will be visible to your project.
 
 
-The  `Project.toml` file lists the packages added to the environment. In addition, a `Manifest.toml` file appears which holds the information about the exact versions of all Julia packages used by the project. Both  should be checked into version control along with the source code.
-If you took care about adding all necessary dependencies to the local environment, after checking out your code, another project collaborator can easily install all dependencies via
-
+The  `Project.toml` file lists the packages added to the environment. In addition, a `Manifest.toml` file appears which holds the information about the exact versions of all Julia packages used by the project. 
+`Project.toml`  should be checked into version control along with the source code. If you took care about adding all necessary dependencies to the local environment, after checking out your code, another project collaborator can easily install all dependencies via
 ```
 $ cd MyApp
 $ julia --project=.
 $ pkg> instantiate
 ```
 
+If `Manifest.toml` is distributed and checked into version control along with `Project.toml`, `instantiate` will install the exact same package versions as recorded in the manifest.
 
 ### Shared ("`@`") Environments
 Since Julia 1.7 it is possible to easily work with different more or less global environments:
@@ -173,24 +174,25 @@ $ julia --project=@pluto
 Just note that by default, each Pluto notebook will activates it's own environment.
 
 ### Further info
+- [Modern Julia Workflows](https://modernjuliaworkflows.github.io/):  Best practices for Julia development.
 
+- My [talk](https://www.wias-berlin.de/people/fuhrmann/AdSciComp-WS2223/week3/#reproducibility_infrastructure_of_the_julia_language) on the reproducibility infrastructure of the Julia language
 
-- See also the corresponding documentation on [environments](https://pkgdocs.julialang.org/v1/environments/) and [`Project.toml` and  `Manifest.toml`](https://pkgdocs.julialang.org/v1/toml-files/).
+- Documentation on [environments](https://pkgdocs.julialang.org/v1/environments/) and [`Project.toml` and  `Manifest.toml`](https://pkgdocs.julialang.org/v1/toml-files/).
 
 - Pluto notebooks have their own [built-in package management](https://github.com/fonsp/Pluto.jl/wiki/%F0%9F%8E%81-Package-management) and by default     contain a `Project.toml` and a `Manifest.toml` file to ensure portability.
 
-- See [this blogpost](https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/) by Julius Krumbiegel for another take on Julia environments.
+- [Blogpost](https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/) by Julius Krumbiegel for another take on Julia environments.
 
-- See my [talk](https://www.wias-berlin.de/people/fuhrmann/AdSciComp-WS2223/week3/#reproducibility_infrastructure_of_the_julia_language) on the reproducibility infrastructure of the Julia language
 
-- [Modern Julia Workflows](https://modernjuliaworkflows.github.io/) A series of blog post drafts on best practices for Julia development.
 
 ~~~
 <hr size="5" noshade>
 ~~~
 
 __Update history__
-- 2023-10-17: Link to modern julia workflowa
+- 2024-10-02: Make Manifest check-in optional, upvote  "Modern julia workflows"
+- 2023-10-17: Link to modern julia workflows
 - 2023-04-24: Smaller improvements
 - 2022-11-06: `@` environments (since Julia 1.7) + LOAD_PATH, link to my talk on Julia's reproducibility infrastructure
 - 2022-09-01: Link to [blogpost](https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/) by Julius Krumbiegel
