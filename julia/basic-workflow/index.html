@@ -1,4 +1,4 @@
-<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/marginalia/libs/highlight/github.min.css"> <link rel=stylesheet  href="/marginalia/css/franklin.css"> <link rel=stylesheet  href="/marginalia/css/poole_lanyon.css"> <link rel=stylesheet  href="/marginalia/css/adjust.css"> <link rel=icon  href="/marginalia/assets/favicon.png"> <title>Julia: Basic Workflow</title> <input type=checkbox  class=sidebar-checkbox  id=sidebar-checkbox > <div class=sidebar  id=sidebar > <div class=sidebar-item > <p>Marginalia</p> </div> <nav class=sidebar-nav > <a class="sidebar-nav-item " href="/marginalia/">Home</a> <a class="sidebar-nav-item " href="/marginalia/julia/">Julia</a> <a class="sidebar-nav-item " href="/marginalia/git/">Git</a> <a class="sidebar-nav-item " href="/marginalia/older-posts/">Older posts</a> </nav> <div class=sidebar-item > <p>&copy; Jürgen Fuhrmann.</p> </div> </div> <!-- Wrap is the content to shift when toggling the sidebar. We wrap the content to avoid any CSS collisions with our real content. --> <div class=wrap > <div class=masthead > <div class=container > <h3 class=masthead-title > <a href="/marginalia/" title=Home >Marginalia</a> </h3> </div> </div> </div> <div class="container content"> <div class=franklin-content ><h1 id=julia_basic_workflow ><a href="#julia_basic_workflow" class=header-anchor >Julia: Basic Workflow</a></h1> <p><div class=franklin-toc ><ol><li><a href="#never_leave_julia_and_write_code_in_functions">Never leave Julia and write code in functions</a><li><a href="#use_revisejl_to_reload_modified_code">Use Revise.jl to reload modified code</a><li><a href="#record_your_project_dependencies_in_reproducible_environments">Record your project dependencies in reproducible environments</a><ol><li><a href="#global_environment">Global environment</a><li><a href="#local_environments">Local environments</a><li><a href="#shared_environments">Shared &#40;&quot;<code>@</code>&quot;&#41; Environments</a><li><a href="#further_info">Further info</a></ol></ol></div> </p> <p>These workflow hints have been developed from my own experience and are essentially an illustration of the <a href="https://docs.julialang.org/en/v1/manual/workflow-tips">workflow tips</a> found in the Julia documentation. </p> <h2 id=never_leave_julia_and_write_code_in_functions ><a href="#never_leave_julia_and_write_code_in_functions" class=header-anchor >Never leave Julia and write code in functions</a></h2> <p>Many available Julia examples and the mindset influenced by Matlab or Python suggest that code is written in scripts where computations are performed in the global context. E.g. a script <code>MyScript.jl</code> would look like:</p> <pre><code class="julia hljs"><span class=hljs-keyword >using</span> Package1
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/marginalia/libs/highlight/github.min.css"> <link rel=stylesheet  href="/marginalia/css/franklin.css"> <link rel=stylesheet  href="/marginalia/css/poole_lanyon.css"> <link rel=stylesheet  href="/marginalia/css/adjust.css"> <link rel=icon  href="/marginalia/assets/favicon.png"> <title>Julia: Basic Workflow Recomendations</title> <input type=checkbox  class=sidebar-checkbox  id=sidebar-checkbox > <div class=sidebar  id=sidebar > <div class=sidebar-item > <p>Marginalia</p> </div> <nav class=sidebar-nav > <a class="sidebar-nav-item " href="/marginalia/">Home</a> <a class="sidebar-nav-item " href="/marginalia/julia/">Julia</a> <a class="sidebar-nav-item " href="/marginalia/git/">Git</a> <a class="sidebar-nav-item " href="/marginalia/older-posts/">Older posts</a> </nav> <div class=sidebar-item > <p>&copy; Jürgen Fuhrmann.</p> </div> </div> <!-- Wrap is the content to shift when toggling the sidebar. We wrap the content to avoid any CSS collisions with our real content. --> <div class=wrap > <div class=masthead > <div class=container > <h3 class=masthead-title > <a href="/marginalia/" title=Home >Marginalia</a> </h3> </div> </div> </div> <div class="container content"> <div class=franklin-content ><h1 id=julia_basic_workflow_recomendations ><a href="#julia_basic_workflow_recomendations" class=header-anchor >Julia: Basic Workflow Recomendations</a></h1> <p><div class=franklin-toc ><ol><li><a href="#never_leave_julia_and_write_code_in_functions">Never leave Julia and write code in functions</a><li><a href="#use_revisejl_to_reload_modified_code">Use Revise.jl to reload modified code</a><li><a href="#record_your_project_dependencies_in_reproducible_environments">Record your project dependencies in reproducible environments</a><ol><li><a href="#global_environment">Global environment</a><li><a href="#local_environments">Local environments</a><li><a href="#shared_environments">Shared &#40;&quot;<code>@</code>&quot;&#41; Environments</a><li><a href="#further_info">Further info</a></ol></ol></div> </p> <p>These workflow hints have been developed from my own experience and are essentially an illustration of the <a href="https://docs.julialang.org/en/v1/manual/workflow-tips">workflow tips</a> found in the Julia documentation. </p> <h2 id=never_leave_julia_and_write_code_in_functions ><a href="#never_leave_julia_and_write_code_in_functions" class=header-anchor >Never leave Julia and write code in functions</a></h2> <p>Many available Julia examples and the mindset influenced by Matlab or Python suggest that code is written in scripts where computations are performed in the global context. E.g. a script <code>MyScript.jl</code> would look like:</p> <pre><code class="julia hljs"><span class=hljs-keyword >using</span> Package1
 <span class=hljs-keyword >using</span> Package2
 
 <span class=hljs-comment ># computations here</span>
@@ -53,6 +53,7 @@ julia&gt; MyScript.main(kwarg1=<span class=hljs-number >5</span>)</code></pre>
 julia&gt; push!(<span class=hljs-literal >LOAD_PATH</span>,pwd())
 julia&gt; <span class=hljs-keyword >using</span> MyScript
 julia&gt; MyScript.main(kwarg1=<span class=hljs-number >5</span>)</code></pre>
+<p><code>LOAD_PATH</code> can also be passed to Julia as an environment variable defined before the invocation of julia.</p>
 <h2 id=use_revisejl_to_reload_modified_code ><a href="#use_revisejl_to_reload_modified_code" class=header-anchor >Use Revise.jl to reload modified code</a></h2>
 <p>In the previous examples, re-loading the code after modifications required to re-run the include statement. The package <a href="https://github.com/timholy/Revise.jl">Revise.jl</a> exports a function <code>includet</code> which triggers automatic recompilation  if the source code of the script file or of packages used therein has been modified.</p>
 <p>In order to set this up, place the following into the Julia startup file <code>.julia/config/startup.jl</code> in your home directory:</p>
@@ -89,10 +90,11 @@ $ exit()</code></pre>
 <pre><code class="julia hljs">$ cd MyApp
 $ julia --project=.</code></pre>
 <p>and work in the environment. All packages added  to Julia in this case are recorded in <code>MyApp</code> instead of <code>.julia/environments/vx.y/</code>. Packages in the global environment still will be visible to your project.</p>
-<p>The <code>Project.toml</code> file lists the packages added to the environment. In addition, a <code>Manifest.toml</code> file appears which holds the information about the exact versions of all Julia packages used by the project. Both  should be checked into version control along with the source code. If you took care about adding all necessary dependencies to the local environment, after checking out your code, another project collaborator can easily install all dependencies via</p>
+<p>The <code>Project.toml</code> file lists the packages added to the environment. In addition, a <code>Manifest.toml</code> file appears which holds the information about the exact versions of all Julia packages used by the project. <code>Project.toml</code>  should be checked into version control along with the source code. If you took care about adding all necessary dependencies to the local environment, after checking out your code, another project collaborator can easily install all dependencies via</p>
 <pre><code class="julia hljs">$ cd MyApp
 $ julia --project=.
 $ pkg&gt; instantiate</code></pre>
+<p>If <code>Manifest.toml</code> is distributed and checked into version control along with <code>Project.toml</code>, <code>instantiate</code> will install the exact same package versions as recorded in the manifest.</p>
 <h3 id=shared_environments ><a href="#shared_environments" class=header-anchor >Shared &#40;&quot;<code>@</code>&quot;&#41; Environments</a></h3>
 <p>Since Julia 1.7 it is possible to easily work with different more or less global environments:</p>
 <pre><code class="julia hljs">$ julia --project=<span class=hljs-meta >@myenv</span></code></pre>
@@ -102,15 +104,15 @@ $ pkg&gt; instantiate</code></pre>
 <p>Just note that by default, each Pluto notebook will activates it&#39;s own environment.</p>
 <h3 id=further_info ><a href="#further_info" class=header-anchor >Further info</a></h3>
 <ul>
-<li><p>See also the corresponding documentation on <a href="https://pkgdocs.julialang.org/v1/environments/">environments</a> and <a href="https://pkgdocs.julialang.org/v1/toml-files/"><code>Project.toml</code> and <code>Manifest.toml</code></a>.</p>
+<li><p><a href="https://modernjuliaworkflows.github.io/">Modern Julia Workflows</a>:  Best practices for Julia development.</p>
+
+<li><p>My <a href="https://www.wias-berlin.de/people/fuhrmann/AdSciComp-WS2223/week3/#reproducibility_infrastructure_of_the_julia_language">talk</a> on the reproducibility infrastructure of the Julia language</p>
+
+<li><p>Documentation on <a href="https://pkgdocs.julialang.org/v1/environments/">environments</a> and <a href="https://pkgdocs.julialang.org/v1/toml-files/"><code>Project.toml</code> and <code>Manifest.toml</code></a>.</p>
 
 <li><p>Pluto notebooks have their own <a href="https://github.com/fonsp/Pluto.jl/wiki/&#37;F0&#37;9F&#37;8E&#37;81-Package-management">built-in package management</a> and by default     contain a <code>Project.toml</code> and a <code>Manifest.toml</code> file to ensure portability.</p>
 
-<li><p>See <a href="https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/">this blogpost</a> by Julius Krumbiegel for another take on Julia environments.</p>
-
-<li><p>See my <a href="https://www.wias-berlin.de/people/fuhrmann/AdSciComp-WS2223/week3/#reproducibility_infrastructure_of_the_julia_language">talk</a> on the reproducibility infrastructure of the Julia language</p>
-
-<li><p><a href="https://modernjuliaworkflows.github.io/">Modern Julia Workflows</a> A series of blog post drafts on best practices for Julia development.</p>
+<li><p><a href="https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/">Blogpost</a> by Julius Krumbiegel for another take on Julia environments.</p>
 
 </ul>
 
@@ -118,7 +120,9 @@ $ pkg&gt; instantiate</code></pre>
 
 <p><strong>Update history</strong></p>
 <ul>
-<li><p>2023-10-17: Link to modern julia workflowa</p>
+<li><p>2024-10-02: Make Manifest check-in optional, upvote  &quot;Modern julia workflows&quot;</p>
+
+<li><p>2023-10-17: Link to modern julia workflows</p>
 
 <li><p>2023-04-24: Smaller improvements</p>
 
@@ -133,7 +137,7 @@ $ pkg&gt; instantiate</code></pre>
 </ul>
 <div class=page-foot >
   <div class=copyright >
-    &copy; Jürgen Fuhrmann. License: <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode"> CC-BY-SA 4.0</a>. Last modified: July 31, 2024. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
+    &copy; Jürgen Fuhrmann. License: <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode"> CC-BY-SA 4.0</a>. Last modified: October 02, 2024. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 Upon finding factual errors, typos etc. <a href=https://github.com/j-fu/marginalia/issues> raise an issue<a>.
 <center>  <a href="/marginalia/feed.xml"> <img src="/marginalia/assets/rss.png" style="width:100px;"></a> </center>
   </div>

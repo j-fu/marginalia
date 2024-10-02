@@ -23,6 +23,88 @@
 
 <item>
   <title>
+    <![CDATA[  Julia: Project Workflow Howto  ]]>
+  </title>
+  <link> https://j-fu.github.io/marginalia/julia/project-howto/index.html </link>
+  <guid> https://j-fu.github.io/marginalia/julia/project-howto/index.html </guid>
+  <description>
+    <![CDATA[  Julia: Project Workflow.  ]]>
+  </description>  
+  
+  <content:encoded>
+    <![CDATA[  <h1 id="julia_project_workflow_howto">Julia: Project Workflow Howto</h1>
+<p>This post complements the <a href="https://j-fu.github.io/marginalia/julia/project-workflow">project workflow recommendations</a>. It tries to explain in a more introductory and rather assertive way how to work  on collaborative projects &#40;not packages&#41; in Julia. It is also meant to be an introduction for  collaborators with whome I share a Julia project following these conventions.</p>
+<p><div class="franklin-toc"><ol><li>The project files</li><li>Installation and updating of dependent packages</li><li>Running code<ol><li>Scripts</li><li>Notebooks</li></ol></li></ol></div> </p>
+<h2 id="the_project_files">The project files</h2>
+<p>After checking out the project the first time, you will see it populated with a number of files and subdirectories.</p>
+<p>The essential role of files a typical Julia project file tree is as follows:</p>
+<ul>
+<li><p><code>Project.toml</code>: This file describes the project on a high level, including the packages it depends on and their compatibility constraints as <a href="https://j-fu.github.io/marginalia/julia/basic-workflow/#record_your_project_dependencies_in_reproducible_environments">described in &quot;Basic Workflow&quot;</a>.</p>
+</li>
+<li><p><code>LICENSE</code>: License of the project.</p>
+</li>
+<li><p><code>README.md</code>: A general description of the project</p>
+</li>
+<li><p><code>src</code>: Subdirectory for project specific source code shared between scripts and notebooks of the project</p>
+</li>
+<li><p><code>test</code>: Unit tests for the project code in <code>src</code>. Could include something from <code>scripts</code>, <code>notebooks</code>.</p>
+</li>
+<li><p><code>packages</code>: Subdirectory containing packages developed locally in this project. At some stage these could be turned into separate Julia packages.</p>
+</li>
+<li><p><code>scripts</code>: Julia scripts for creating project results. </p>
+</li>
+<li><p><code>notebooks</code>: Interactive notebooks</p>
+</li>
+<li><p><code>docs</code>:  Sources for the documentation created with <code>Documenter.jl</code></p>
+</li>
+</ul>
+<h2 id="installation_and_updating_of_dependent_packages">Installation and updating of dependent packages</h2>
+<p>After checking out the code with git, at first it is necessary to instantiate the project environment. Go to the project root directory and invoke</p>
+<pre><code class="language-julia">&#36; julia --project&#61;.
+julia&gt; using Pkg
+julia&gt; Pkg.instantiate&#40;&#41;</code></pre>
+<p>This uses the Julia package manager to automatically download and precompile all Julia packages listed as dependencies in <code>Project.toml</code>.  It also will create a <code>Manifest.toml</code> file which records recursively all dependenencies with their exact versions.</p>
+<p>Likewise, after updating some code from the git repository, it is possible to update the project environment:</p>
+<pre><code class="language-julia">&#36; julia --project&#61;.
+julia&gt; using Pkg
+julia&gt; Pkg.update&#40;&#41;</code></pre>
+<h2 id="running_code">Running code</h2>
+<p>In order to ensure the activation of the project evironment described in <code>Project.toml</code>, all scripts and all notebooks activate the project environment at their respective start. Typically, this looks like</p>
+<pre><code class="language-julia">Pkg.activate&#40;joinpath&#40;@__DIR__, &quot;...&quot;&#41;&#41;</code></pre>
+<h3 id="scripts">Scripts</h3>
+<p>To run script <code>scripts/script1.jl</code>, perform from the project root:</p>
+<pre><code class="language-julia">&#36; julia --project&#61;.
+julia&gt; using Revise
+julia&gt; includet&#40;&quot;scripts/script1.jl&quot;&#41;</code></pre>
+<p>See <a href="https://j-fu.github.io/marginalia/julia/basic-workflow/#use_revisejl_to_reload_modified_code">here</a> for an explanation of <code>Revise</code></p>
+<p>With some precompilation hiatus, it is possible to just run</p>
+<pre><code class="language-julia">julia scripts/script1.jl</code></pre>
+<h3 id="notebooks">Notebooks</h3>
+<p>To run the Pluto notebook <code>notebooks/notebook1.jl</code>, <a href="https://plutojl.org">install Pluto</a> in your global environment and perform</p>
+<pre><code class="language-julia">&#36; julia 
+julia&gt; using Pluto
+julia&gt; Pluto.run&#40;notebook&#61;&quot;notebooks/notebook1.jl&quot;&#41;</code></pre>
+<p>
+<hr size="5" noshade>
+ <strong>Update history</strong></p>
+<ul>
+<li><p>2024-10-02: Initial version </p>
+</li>
+</ul>
+ ]]>
+  </content:encoded>
+    
+  <pubDate>Wed, 02 Oct 2024 00:00:00 +0000</pubDate>  
+  
+  
+  <atom:author>
+    <atom:name>Jürgen Fuhrmann</atom:name>
+  </atom:author>
+        
+</item>
+
+<item>
+  <title>
     <![CDATA[    ]]>
   </title>
   <link> https://j-fu.github.io/marginalia/julia/scalingtest/index.html </link>
@@ -233,7 +315,7 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;,push&#61;true&#41;
 <p>This is a collection of online references pointing at introductory material for the Julia language.If you look for further online resources, please ensure that they are for Julia 1.0 and newer. This is best achieved by looking for material not older than 2019.</p>
 <div class="franklin-toc"><ol><li>Installation</li><li>Learning<ol><li>Resources curated by the Julia development team.</li><li>More learning resources </li></ol></li><li>Introductory material from my TU Berlin courses  and other talks &#40;videos &#43; Pluto notebooks&#41;</li><li>Editing</li></ol></div>
 <h2 id="installation">Installation</h2>
-<p>Install the latest stable version via the Julia <a href="https://julialang.org">Homepage</a>. Julia devs recommend not to use the Julia versions provided from other sources &#40;like Homebrew, various Linux package managers&#41;. <a href="https://github.com/JuliaLang/juliaup">juliaup</a> provides another flexible way to install Julia and to switch between versions.</p>
+<p><a href="https://julialang.org/downloads/#install_julia">juliaup</a> provides the most flexible way to install Julia and to switch between versions. Alternatively, install the latest stable version via the Julia <a href="https://julialang.org/downloads/#current_stable_release">homepage</a>. Julia devs <a href="https://julialang.org/downloads/#please_do_not_use_the_version_of_julia_shipped_by_unix_package_managers">recommend not to use</a> the Julia versions provided from other sources &#40;like Homebrew, various Linux package managers&#41;. </p>
 <h2 id="learning">Learning</h2>
 <h3 id="resources_curated_by_the_julia_development_team">Resources curated by the Julia development team.</h3>
 <ul>
@@ -249,7 +331,7 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;,push&#61;true&#41;
 </li>
 <li><p>Julia is evolving. New versions in the 1.x range introduce many important additions and non-breaking changes. Many important Julia packages require at least the current long term service &#40;LTS&#41; version 1.6. </p>
 <ul>
-<li><p>Julia version highlights: <a href="https://julialang.org/blog/2020/08/julia-1.5-highlights/">1.5</a>, <a href="https://julialang.org/blog/2021/03/julia-1.6-highlights/">1.6</a>, <a href="https://julialang.org/blog/2021/11/julia-1.7-highlights/">1.7</a>, <a href="https://julialang.org/blog/2022/08/julia-1.8-highlights/">1.8</a> <a href="https://julialang.org/blog/2023/04/julia-1.9-highlights/">1.9</a></p>
+<li><p>Julia version highlights: <a href="https://julialang.org/blog/2020/08/julia-1.5-highlights/">1.5</a>, <a href="https://julialang.org/blog/2021/03/julia-1.6-highlights/">1.6</a>, <a href="https://julialang.org/blog/2021/11/julia-1.7-highlights/">1.7</a>, <a href="https://julialang.org/blog/2022/08/julia-1.8-highlights/">1.8</a> <a href="https://julialang.org/blog/2023/04/julia-1.9-highlights/">1.9</a>, <a href="https://julialang.org/blog/2023/12/julia-1.10-highlights/">1.10</a></p>
 </li>
 <li><p><a href="https://towardsdatascience.com/why-julia-2-0-isnt-coming-anytime-soon-and-why-that-is-a-good-thing-641ae3d2a177">Why Julia 2.0 Isn’t Coming Anytime Soon</a></p>
 </li>
@@ -298,14 +380,16 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;,push&#61;true&#41;
 </ul>
 <h2 id="editing">Editing</h2>
 <ul>
-<li><p><a href="https://github.com/julia-vscode/julia-vscode">Visual Studio Code extension</a></p>
+<li><p><a href="https://www.julia-vscode.org/docs/latest/gettingstarted/">Visual Studio Code extension</a></p>
 </li>
-<li><p><a href="https://github.com/fonsp/Pluto.jl">Pluto notebooks</a>;    How to install Julia and Pluto: <a href="https://www.youtube.com/watch?v&#61;OOjKEgbt8AI">MIT course video</a></p>
+<li><p><a href="https://plutojl.org">Pluto notebooks</a>;    How to install Julia and Pluto: <a href="https://www.youtube.com/watch?v&#61;OOjKEgbt8AI">MIT course video</a></p>
 </li>
 <li><p><a href="https://github.com/JuliaEditorSupport/julia-emacs">Emacs support</a></p>
 </li>
 </ul><hr size="5" noshade><p><strong>Update history</strong></p>
 <ul>
+<li><p>2024-10-02: Julia 1.10, upvote juliaup</p>
+</li>
 <li><p>2023-10-17: Julia as a second language, semester info</p>
 </li>
 </ul>
@@ -346,7 +430,7 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;,push&#61;true&#41;
 
 <item>
   <title>
-    <![CDATA[  Julia: Project Workflow  ]]>
+    <![CDATA[  Julia: Project Workflow Recommendations  ]]>
   </title>
   <link> https://j-fu.github.io/marginalia/julia/project-workflow/index.html </link>
   <guid> https://j-fu.github.io/marginalia/julia/project-workflow/index.html </guid>
@@ -355,7 +439,7 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;,push&#61;true&#41;
   </description>  
   
   <content:encoded>
-    <![CDATA[  <h1 id="julia_project_workflow">Julia: Project Workflow</h1>
+    <![CDATA[  <h1 id="julia_project_workflow_recommendations">Julia: Project Workflow Recommendations</h1>
 <p><div class="franklin-toc"><ol><li>Rationale</li><li>Recommendations<ol><li>Generate the project directory itself as a package</li><li>New packages can evolve from the project code</li><li>Manifest or not ?</li><li>Always start Julia from the package root</li><li>Activate the project environment in notebooks</li><li>Consider using DrWatson.jl</li><li>A sample project tree</li></ol></li><li>Summary</li></ol></div> </p>
 <p>The term &quot;project&quot; in this post corresponds to the term &quot;application&quot; in <a href="https://pkgdocs.julialang.org/v1/glossary/#Glossary">package manager glossary</a></p>
 <h2 id="rationale">Rationale</h2>
@@ -534,7 +618,7 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;,push&#61;true&#41;
 
 <item>
   <title>
-    <![CDATA[  Julia: Basic Workflow  ]]>
+    <![CDATA[  Julia: Basic Workflow Recomendations  ]]>
   </title>
   <link> https://j-fu.github.io/marginalia/julia/basic-workflow/index.html </link>
   <guid> https://j-fu.github.io/marginalia/julia/basic-workflow/index.html </guid>
@@ -543,7 +627,7 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;,push&#61;true&#41;
   </description>  
   
   <content:encoded>
-    <![CDATA[  <h1 id="julia_basic_workflow">Julia: Basic Workflow</h1>
+    <![CDATA[  <h1 id="julia_basic_workflow_recomendations">Julia: Basic Workflow Recomendations</h1>
 <p><div class="franklin-toc"><ol><li>Never leave Julia and  write code in functions</li><li>Use Revise.jl to reload modified code</li><li>Record your project dependencies in reproducible environments<ol><li>Global environment</li><li>Local environments</li><li>Shared &#40;&quot;<code>@</code>&quot;&#41; Environments</li><li>Further info</li></ol></li></ol></div> </p>
 <p>These workflow hints have been developed from my own experience and are essentially an illustration of the <a href="https://docs.julialang.org/en/v1/manual/workflow-tips">workflow tips</a>  found in the Julia documentation. </p>
 <h2 id="never_leave_julia_and_write_code_in_functions">Never leave Julia and  write code in functions</h2>
@@ -595,6 +679,7 @@ julia&gt; MyScript.main&#40;kwarg1&#61;5&#41;</code></pre>
 julia&gt; push&#33;&#40;LOAD_PATH,pwd&#40;&#41;&#41;
 julia&gt; using MyScript
 julia&gt; MyScript.main&#40;kwarg1&#61;5&#41;</code></pre>
+<p><code>LOAD_PATH</code> can also be passed to Julia as an environment variable defined before the invocation of julia.</p>
 <h2 id="use_revisejl_to_reload_modified_code">Use Revise.jl to reload modified code</h2>
 <p>In the previous examples, re-loading the code after modifications required to re-run the include statement. The package <a href="https://github.com/timholy/Revise.jl">Revise.jl</a> exports a function <code>includet</code> which triggers automatic recompilation  if the source code of the script file or of packages used therein has been modified.</p>
 <p>In order to set this up, place the following into the Julia startup file <code>.julia/config/startup.jl</code> in your home directory:</p>
@@ -631,10 +716,11 @@ pkg&gt; add Package1</code></pre>
 <pre><code class="language-julia">&#36; cd MyApp
 &#36; julia --project&#61;.</code></pre>
 <p>and work in the environment. All packages added  to Julia in this case are recorded in <code>MyApp</code> instead of <code>.julia/environments/vx.y/</code>. Packages in the global environment still will be visible to your project.</p>
-<p>The <code>Project.toml</code> file lists the packages added to the environment. In addition, a <code>Manifest.toml</code> file appears which holds the information about the exact versions of all Julia packages used by the project. Both  should be checked into version control along with the source code. If you took care about adding all necessary dependencies to the local environment, after checking out your code, another project collaborator can easily install all dependencies via</p>
+<p>The <code>Project.toml</code> file lists the packages added to the environment. In addition, a <code>Manifest.toml</code> file appears which holds the information about the exact versions of all Julia packages used by the project. <code>Project.toml</code>  should be checked into version control along with the source code. If you took care about adding all necessary dependencies to the local environment, after checking out your code, another project collaborator can easily install all dependencies via</p>
 <pre><code class="language-julia">&#36; cd MyApp
 &#36; julia --project&#61;.
 &#36; pkg&gt; instantiate</code></pre>
+<p>If <code>Manifest.toml</code> is distributed and checked into version control along with <code>Project.toml</code>, <code>instantiate</code> will install the exact same package versions as recorded in the manifest.</p>
 <h3 id="shared_environments">Shared &#40;&quot;<code>@</code>&quot;&#41; Environments</h3>
 <p>Since Julia 1.7 it is possible to easily work with different more or less global environments:</p>
 <pre><code class="language-julia">&#36; julia --project&#61;@myenv</code></pre>
@@ -644,19 +730,21 @@ pkg&gt; add Package1</code></pre>
 <p>Just note that by default, each Pluto notebook will activates it&#39;s own environment.</p>
 <h3 id="further_info">Further info</h3>
 <ul>
-<li><p>See also the corresponding documentation on <a href="https://pkgdocs.julialang.org/v1/environments/">environments</a> and <a href="https://pkgdocs.julialang.org/v1/toml-files/"><code>Project.toml</code> and <code>Manifest.toml</code></a>.</p>
+<li><p><a href="https://modernjuliaworkflows.github.io/">Modern Julia Workflows</a>:  Best practices for Julia development.</p>
+</li>
+<li><p>My <a href="https://www.wias-berlin.de/people/fuhrmann/AdSciComp-WS2223/week3/#reproducibility_infrastructure_of_the_julia_language">talk</a> on the reproducibility infrastructure of the Julia language</p>
+</li>
+<li><p>Documentation on <a href="https://pkgdocs.julialang.org/v1/environments/">environments</a> and <a href="https://pkgdocs.julialang.org/v1/toml-files/"><code>Project.toml</code> and <code>Manifest.toml</code></a>.</p>
 </li>
 <li><p>Pluto notebooks have their own <a href="https://github.com/fonsp/Pluto.jl/wiki/&#37;F0&#37;9F&#37;8E&#37;81-Package-management">built-in package management</a> and by default     contain a <code>Project.toml</code> and a <code>Manifest.toml</code> file to ensure portability.</p>
 </li>
-<li><p>See <a href="https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/">this blogpost</a> by Julius Krumbiegel for another take on Julia environments.</p>
-</li>
-<li><p>See my <a href="https://www.wias-berlin.de/people/fuhrmann/AdSciComp-WS2223/week3/#reproducibility_infrastructure_of_the_julia_language">talk</a> on the reproducibility infrastructure of the Julia language</p>
-</li>
-<li><p><a href="https://modernjuliaworkflows.github.io/">Modern Julia Workflows</a> A series of blog post drafts on best practices for Julia development.</p>
+<li><p><a href="https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/">Blogpost</a> by Julius Krumbiegel for another take on Julia environments.</p>
 </li>
 </ul><hr size="5" noshade><p><strong>Update history</strong></p>
 <ul>
-<li><p>2023-10-17: Link to modern julia workflowa</p>
+<li><p>2024-10-02: Make Manifest check-in optional, upvote  &quot;Modern julia workflows&quot;</p>
+</li>
+<li><p>2023-10-17: Link to modern julia workflows</p>
 </li>
 <li><p>2023-04-24: Smaller improvements</p>
 </li>
