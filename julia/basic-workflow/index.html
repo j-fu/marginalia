@@ -1,4 +1,4 @@
-<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/marginalia/libs/highlight/github.min.css"> <link rel=stylesheet  href="/marginalia/css/franklin.css"> <link rel=stylesheet  href="/marginalia/css/poole_lanyon.css"> <link rel=stylesheet  href="/marginalia/css/adjust.css"> <link rel=icon  href="/marginalia/assets/favicon.png"> <title>Julia: Basic Workflow Recomendations</title> <input type=checkbox  class=sidebar-checkbox  id=sidebar-checkbox > <div class=sidebar  id=sidebar > <div class=sidebar-item > <p>Marginalia</p> </div> <nav class=sidebar-nav > <a class="sidebar-nav-item " href="/marginalia/">Home</a> <a class="sidebar-nav-item " href="/marginalia/julia/">Julia</a> <a class="sidebar-nav-item " href="/marginalia/git/">Git</a> <a class="sidebar-nav-item " href="/marginalia/older-posts/">Older posts</a> </nav> <div class=sidebar-item > <p>&copy; Jürgen Fuhrmann.</p> </div> </div> <!-- Wrap is the content to shift when toggling the sidebar. We wrap the content to avoid any CSS collisions with our real content. --> <div class=wrap > <div class=masthead > <div class=container > <h3 class=masthead-title > <a href="/marginalia/" title=Home >Marginalia</a> </h3> </div> </div> </div> <div class="container content"> <div class=franklin-content ><h1 id=julia_basic_workflow_recomendations ><a href="#julia_basic_workflow_recomendations" class=header-anchor >Julia: Basic Workflow Recomendations</a></h1> <p><div class=franklin-toc ><ol><li><a href="#never_leave_julia_and_write_code_in_functions">Never leave Julia and write code in functions</a><li><a href="#use_revisejl_to_reload_modified_code">Use Revise.jl to reload modified code</a><li><a href="#record_your_project_dependencies_in_reproducible_environments">Record your project dependencies in reproducible environments</a><ol><li><a href="#global_environment">Global environment</a><li><a href="#local_environments">Local environments</a><li><a href="#shared_environments">Shared &#40;&quot;<code>@</code>&quot;&#41; Environments</a><li><a href="#further_info">Further info</a></ol></ol></div> </p> <p>These workflow hints have been developed from my own experience and are essentially an illustration of the <a href="https://docs.julialang.org/en/v1/manual/workflow-tips">workflow tips</a> found in the Julia documentation. </p> <h2 id=never_leave_julia_and_write_code_in_functions ><a href="#never_leave_julia_and_write_code_in_functions" class=header-anchor >Never leave Julia and write code in functions</a></h2> <p>Many available Julia examples and the mindset influenced by Matlab or Python suggest that code is written in scripts where computations are performed in the global context. E.g. a script <code>MyScript.jl</code> would look like:</p> <pre><code class="julia hljs"><span class=hljs-keyword >using</span> Package1
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/marginalia/libs/highlight/github.min.css"> <link rel=stylesheet  href="/marginalia/css/franklin.css"> <link rel=stylesheet  href="/marginalia/css/poole_lanyon.css"> <link rel=stylesheet  href="/marginalia/css/adjust.css"> <link rel=icon  href="/marginalia/assets/favicon.png"> <title>Julia: Basic Workflow Recomendations</title> <input type=checkbox  class=sidebar-checkbox  id=sidebar-checkbox > <div class=sidebar  id=sidebar > <div class=sidebar-item > <p>Marginalia</p> </div> <nav class=sidebar-nav > <a class="sidebar-nav-item " href="/marginalia/">Home</a> <a class="sidebar-nav-item " href="/marginalia/julia/">Julia</a> <a class="sidebar-nav-item " href="/marginalia/git/">Git</a> <a class="sidebar-nav-item " href="/marginalia/older-posts/">Older posts</a> </nav> <div class=sidebar-item > <p>&copy; Jürgen Fuhrmann.</p> </div> </div> <!-- Wrap is the content to shift when toggling the sidebar. We wrap the content to avoid any CSS collisions with our real content. --> <div class=wrap > <div class=masthead > <div class=container > <h3 class=masthead-title > <a href="/marginalia/" title=Home >Marginalia</a> </h3> </div> </div> </div> <div class="container content"> <div class=franklin-content ><h1 id=julia_basic_workflow_recomendations ><a href="#julia_basic_workflow_recomendations" class=header-anchor >Julia: Basic Workflow Recomendations</a></h1> <p><div class=franklin-toc ><ol><li><a href="#never_leave_julia_and_write_code_in_functions">Never leave Julia and write code in functions</a><ol><li><a href="#a_hrefhttpsdocsjulialangorgenv1manualperformance-tipsavoid-global-variablesavoid_untyped_global_variables"><a href="https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-global-variables">Avoid untyped global variables</a> </a><li><a href="#load_code_into_the_repl_via_include">Load code into the REPL via <code>include&#40;&#41;</code></a><li><a href="#think_about_wrapping_code_into_modules">Think about wrapping code into modules</a><li><a href="#load_modules_into_the_repl_via_using">Load modules into the REPL via <code>using</code></a></ol><li><a href="#use_revisejl_to_have_modified_code_reloading_automatically">Use Revise.jl to have modified code reloading automatically</a><ol><li><a href="#load_code_into_the_repl_via_reviseincludet">Load code into the REPL via <code>Revise.includet&#40;&#41;</code></a><li><a href="#loading_modules_into_the_repl_via_using_allows_to_track_all_included_files">Loading modules into the REPL via <code>using</code> allows to track all included files</a></ol><li><a href="#record_project_dependencies_in_reproducible_environments">Record project dependencies in reproducible environments</a><ol><li><a href="#global_environment">Global environment</a><li><a href="#local_environments">Local environments</a><li><a href="#enviroment_stacking">Enviroment stacking</a><li><a href="#shared_environments">Shared &#40;&quot;<code>@</code>&quot;&#41; Environments</a><li><a href="#further_info">Further info</a></ol></ol></div> </p> <p>These workflow hints have been developed from my own experience and are essentially an illustration of the <a href="https://docs.julialang.org/en/v1/manual/workflow-tips">workflow tips</a> found in the Julia documentation. </p> <h2 id=never_leave_julia_and_write_code_in_functions ><a href="#never_leave_julia_and_write_code_in_functions" class=header-anchor >Never leave Julia and write code in functions</a></h2> <p>Many available Julia examples and the mindset influenced by Matlab or Python suggest that code is written in scripts where computations are performed in the global context. E.g. a script <code>MyScript.jl</code> would look like:</p> <pre><code class="julia hljs"><span class=hljs-keyword >using</span> Package1
 <span class=hljs-keyword >using</span> Package2
 
 <span class=hljs-comment ># computations here</span>
@@ -10,28 +10,21 @@
 <li><p>One encounters precompilation time hiatus when running after each modified  version</p>
 
 </ul>
-<p>Suggestions:</p>
-<ul>
-<li><p><a href="https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-global-variables">Avoid  untyped global variables</a> and develop any code in functions. E.g. <code>MyScript.jl</code> could look like:</p>
-
-</ul>
+<h3 id=a_hrefhttpsdocsjulialangorgenv1manualperformance-tipsavoid-global-variablesavoid_untyped_global_variables ><a href="#a_hrefhttpsdocsjulialangorgenv1manualperformance-tipsavoid-global-variablesavoid_untyped_global_variables" class=header-anchor ><a href="https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-global-variables">Avoid  untyped global variables</a> </a></h3>
+<p>Develop any code in functions. E.g. <code>MyScript.jl</code> could look like:</p>
 <pre><code class="julia hljs"><span class=hljs-keyword >using</span> Package1
 <span class=hljs-keyword >using</span> Package2
 
 <span class=hljs-keyword >function</span> main(; kwarg1=<span class=hljs-number >1</span>, kwarg2=<span class=hljs-number >2</span>)
  <span class=hljs-comment ># action here </span>
 <span class=hljs-keyword >end</span></code></pre>
-<ul>
-<li><p>Always invoke the code from within a running julia instance. In this   case you encounter the <a href="https://docs.julialang.org/en/v1/manual/workflow-tips/#REPL-based-workflow">Read-Eval-Print-Loop &#40;REPL&#41;</a> of Julia. You don&#39;t need to leave julia for restarting modified code &#40;except in the case when you re-define a constant or a struct&#41;. Just reload the code by repeating the <code>include</code> statement:</p>
-
-</ul>
+<h3 id=load_code_into_the_repl_via_include ><a href="#load_code_into_the_repl_via_include" class=header-anchor >Load code into the REPL via <code>include&#40;&#41;</code></a></h3>
+<p>Always invoke the code from within a running julia instance. In this   case you encounter the <a href="https://docs.julialang.org/en/v1/manual/workflow-tips/#REPL-based-workflow">Read-Eval-Print-Loop &#40;REPL&#41;</a> of Julia. You don&#39;t need to leave julia for restarting modified code &#40;except in the case when you re-define a constant or a struct&#41;. Just reload the code by repeating the <code>include</code> statement:</p>
 <pre><code class="julia hljs">$ julia
 julia&gt; include(<span class=hljs-string >&quot;MyScript.jl&quot;</span>)
 julia&gt; main(kwarg1=<span class=hljs-number >5</span>)</code></pre>
-<ul>
-<li><p>Think about wrapping code into modules. The previous example can be enhanced by wrapping the code of the script into a module.  This has the advantage that you can load different scripts into the same session without name clashes.</p>
-
-</ul>
+<h3 id=think_about_wrapping_code_into_modules ><a href="#think_about_wrapping_code_into_modules" class=header-anchor >Think about wrapping code into modules</a></h3>
+<p>The previous example can be enhanced by wrapping the code of the script into a module. This has the advantage that you can load different scripts into the same session without name clashes.</p>
 <pre><code class="julia hljs"><span class=hljs-built_in >Module</span> MyScript
 
 <span class=hljs-keyword >using</span> Package1
@@ -45,63 +38,60 @@ julia&gt; main(kwarg1=<span class=hljs-number >5</span>)</code></pre>
 <pre><code class="julia hljs">$ julia
 julia&gt; include(<span class=hljs-string >&quot;MyScript.jl&quot;</span>)
 julia&gt; MyScript.main(kwarg1=<span class=hljs-number >5</span>)</code></pre>
-<ul>
-<li><p>Load code via <code>using</code>. Once you have mastered modules and ensure that the file name corresponds to the module name, you can  load code via <code>using</code>. In order to allow for this, you need to ensure to have the directory containg <code>MyScript.jl</code> &#40;e.g. the current directory <code>pwd&#40;&#41;</code>&#41; on the <a href="https://docs.julialang.org/en/v1/base/constants/#Base.LOAD_PATH"><code>LOAD_PATH</code></a>:</p>
-
-</ul>
+<h3 id=load_modules_into_the_repl_via_using ><a href="#load_modules_into_the_repl_via_using" class=header-anchor >Load modules into the REPL via <code>using</code></a></h3>
+<p>Alternatively, load code via <code>using</code>. Once you have mastered modules and ensured that the file name corresponds to the module name, you can  load code via <code>using</code>. In order to allow for this, you need to ensure to have the directory containing <code>MyScript.jl</code> &#40;e.g. the current directory <code>pwd&#40;&#41;</code>&#41; on the <a href="https://docs.julialang.org/en/v1/base/constants/#Base.LOAD_PATH"><code>LOAD_PATH</code></a>:</p>
 <pre><code class="julia hljs">$ julia
 julia&gt; push!(<span class=hljs-literal >LOAD_PATH</span>,pwd())
 julia&gt; <span class=hljs-keyword >using</span> MyScript
 julia&gt; MyScript.main(kwarg1=<span class=hljs-number >5</span>)</code></pre>
-<p><code>LOAD_PATH</code> can also be passed to Julia as an environment variable defined before the invocation of julia.</p>
-<h2 id=use_revisejl_to_reload_modified_code ><a href="#use_revisejl_to_reload_modified_code" class=header-anchor >Use Revise.jl to reload modified code</a></h2>
+<p><code>LOAD_PATH</code> can also be passed to Julia as an environment variable defined before the invocation of julia. In order to allow this to work, the directory of <code>MyScript.jl</code><em>should not constitute an <a href="/marginalia/julia/basic-workflow/#record_your_project_dependencies_in_reproducible_environments">environment</a></em>, i.e. it should contain neither a <code>Project.toml</code> nor a <code>Manifest.toml</code> file.</p>
+<h2 id=use_revisejl_to_have_modified_code_reloading_automatically ><a href="#use_revisejl_to_have_modified_code_reloading_automatically" class=header-anchor >Use Revise.jl to have modified code reloading automatically</a></h2>
 <p>In the previous examples, re-loading the code after modifications required to re-run the include statement. The package <a href="https://github.com/timholy/Revise.jl">Revise.jl</a> exports a function <code>includet</code> which triggers automatic recompilation  if the source code of the script file or of packages used therein has been modified.</p>
-<p>In order to set this up, place the following into the Julia startup file <code>.julia/config/startup.jl</code> in your home directory:</p>
+<p>In order to set this up, after invoking <code>Pkg.add&#40;&quot;Revise&quot;&#41;</code> once, place the following into the Julia startup file <code>.julia/config/startup.jl</code> in your home directory:</p>
 <pre><code class="julia hljs"><span class=hljs-keyword >using</span> Revise</code></pre>
+<h3 id=load_code_into_the_repl_via_reviseincludet ><a href="#load_code_into_the_repl_via_reviseincludet" class=header-anchor >Load code into the REPL via <code>Revise.includet&#40;&#41;</code></a></h3>
 <p>You would then run:</p>
 <pre><code class="julia hljs">$ julia -i
 julia&gt; includet(<span class=hljs-string >&quot;MyScript.jl&quot;</span>)
 julia&gt; MyScript.main(kwarg1=<span class=hljs-number >5</span>)</code></pre>
 <p>After having modified <code>MyScript.jl</code>, just another  invocation of <code>MyScript.main&#40;&#41;</code>  would see the changes. See also the corresponding hints in the <a href="https://docs.julialang.org/en/v1/manual/workflow-tips/#Revise-based-workflows">Julia documentation</a>.</p>
-<p>Besides of tracking scripts loaded into the REPL via <code>includet</code>, <code>Revise.jl</code> </p>
-<ul>
-<li><p>tracks changes in modules and packages under development loaded into the script via <code>using</code> or <code>import</code>.</p>
-
-<li><p>works in <a href="https://github.com/fonsp/Pluto.jl">Pluto notebooks</a></p>
-
-</ul>
-<h2 id=record_your_project_dependencies_in_reproducible_environments ><a href="#record_your_project_dependencies_in_reproducible_environments" class=header-anchor >Record your project dependencies in reproducible environments</a></h2>
+<h3 id=loading_modules_into_the_repl_via_using_allows_to_track_all_included_files ><a href="#loading_modules_into_the_repl_via_using_allows_to_track_all_included_files" class=header-anchor >Loading modules into the REPL via <code>using</code> allows to track all included files</a></h3>
+<p>If <code>MyScript.jl</code> itself uses <code>include&#40;&#41;</code> to load more code, <code>Revise.jl</code> is unable to track changes in the included code if <code>MyScript.jl</code> has been loaded via <code>includet</code>. This problem however is mitigated by <a href="/marginalia/julia/basic-workflow/#load_code_into_the_repl_via_using">loading <code>MyScript.jl</code> via <code>using</code></a>. This is true as well for modules and packages under development loaded into the script via <code>using</code> or <code>import</code>. In particular, this way, <code>Revise.jl</code> also works in <a href="https://github.com/fonsp/Pluto.jl">Pluto notebooks</a> when the inbuilt package manager has been disabled.</p>
+<h2 id=record_project_dependencies_in_reproducible_environments ><a href="#record_project_dependencies_in_reproducible_environments" class=header-anchor >Record project dependencies in reproducible environments</a></h2>
+<p>In julia, an <a href="https://docs.julialang.org/en/v1/manual/code-loading/#Environments">environment</a> determines which code is loaded via <code>import X</code> and <code>using X</code>. An environment can be described using a <code>Project.toml</code> file in a certain directory. This file contains a list of packages available for loading via <code>import</code> or <code>using</code>.</p>
 <h3 id=global_environment ><a href="#global_environment" class=header-anchor >Global environment</a></h3>
 <p>By default, packages added to the Julia installation are recorded in the default <em>global environment</em>:</p>
 <pre><code class="julia hljs">$ julia
-julia&gt;]
-pkg&gt; add Package1</code></pre>
-<p>This results in  corresponding entries in <code>.julia/environments/vx.y/Project.toml</code>  and <code>.julia/environments/vx.y/Manifest.toml</code>  &#40;where <code>x.y</code> stands for your installed Julia version&#41;. Sharing this global  environment between all your different projects is risky because of possible conflicts in package version requirements. In addition, relying on the global environment makes it hard to share your code with others, as you would have to find a way to communicate the names of the  packages &#40;with versions&#41; which they need to install to run your code in a reproducible way.</p>
+julia&gt; <span class=hljs-keyword >using</span> Pkg
+julia&gt; Pkg.add(<span class=hljs-string >&quot;Package1&quot;</span>)</code></pre>
+<p>This results in  corresponding entries in <code>.julia/environments/vx.y/Project.toml</code>  and <code>.julia/environments/vx.y/Manifest.toml</code>  &#40;where <code>x.y</code> stands for your installed Julia version, e.g. 1.10&#41;. If no other measures are taken, all your julia code will look into this environment in order find the a package to be loaded via <code>using</code> or <code>import</code>.</p>
+<p>Sharing this global  environment between all your different projects is risky because of possible conflicts in package version requirements. In addition, relying on the global environment makes it hard to share your code with others, as you would have to find a way to communicate the names of the  packages &#40;with versions&#41; which they need to install to run your code in a reproducible way.</p>
 <h3 id=local_environments ><a href="#local_environments" class=header-anchor >Local environments</a></h3>
 <p><em>Local environments</em> provide a remedy.</p>
-<p>Assume that an  <em>application</em> is Julia code residing in a given directory <code>MyApp</code>, uses one or several other Julia packages and is not intended to be invoked from other packages or applications. An environment is described by the two files in the <code>MyApp</code> directory: <code>Project.toml</code> and <code>Manifest.toml</code>. Set up an environment in  the project directory in the following way:</p>
+<p>Assume that an  <em>application</em> is Julia code residing in a given directory <code>MyApp</code>, uses one or several other Julia packages and is not intended to be invoked from other packages or applications.  Set up an environment in  the project directory in the following way:</p>
 <pre><code class="julia hljs">$ cd MyApp
-$ julia
-$ pkg&gt; activate .
-$ pkg&gt; add Package1
-$ pkg&gt; add PackageN
+$ julia --project=.
+julia&gt; <span class=hljs-keyword >using</span> Pkg
+julia&gt; Pkg.add(<span class=hljs-string >&quot;Package1&quot;</span>)
+julia&gt; Pkg.add(<span class=hljs-string >&quot;Package2&quot;</span>)
 $ exit()</code></pre>
+<p>This creates an  environment in <code>MyApp</code> directory  described by the two files <code>MyApp/Project.toml</code> and <code>MyApp/Manifest.toml</code>. The <code>Project.toml</code> file lists the packages added to the environment. In addition, the <code>Manifest.toml</code> file a holds the information about the exact versions of all Julia packages used by the project.</p>
 <p>After setting up the environment like this, you can  perform</p>
 <pre><code class="julia hljs">$ cd MyApp
 $ julia --project=.</code></pre>
-<p>and work in the environment. All packages added  to Julia in this case are recorded in <code>MyApp</code> instead of <code>.julia/environments/vx.y/</code>. Packages in the global environment still will be visible to your project.</p>
-<p>The <code>Project.toml</code> file lists the packages added to the environment. In addition, a <code>Manifest.toml</code> file appears which holds the information about the exact versions of all Julia packages used by the project. <code>Project.toml</code>  should be checked into version control along with the source code. If you took care about adding all necessary dependencies to the local environment, after checking out your code, another project collaborator can easily install all dependencies via</p>
+<p>and work in the environment. All packages added  to Julia in this case are recorded in <code>MyApp</code> instead of <code>.julia/environments/vx.y/</code>. </p>
+<p><code>Project.toml</code>  should be checked into version control along with the source code. If you took care about adding all necessary dependencies to the local environment, after checking out your code, another project collaborator can easily install all dependencies via</p>
 <pre><code class="julia hljs">$ cd MyApp
 $ julia --project=.
-$ pkg&gt; instantiate</code></pre>
+$ julia&gt; <span class=hljs-keyword >using</span> Pkg
+$ julia&gt; Pkg.instantiate()</code></pre>
 <p>If <code>Manifest.toml</code> is distributed and checked into version control along with <code>Project.toml</code>, <code>instantiate</code> will install the exact same package versions as recorded in the manifest.</p>
+<h3 id=enviroment_stacking ><a href="#enviroment_stacking" class=header-anchor >Enviroment stacking</a></h3>
+<p>After activating a local environment, packages in the global environment still will be visible to your project. You can use this to keep available utilities your project should not depend upon, but which are useful during development. This could e.g. be <code>BenchmarkTools</code>, <code>JuliaFormatter</code> etc.</p>
 <h3 id=shared_environments ><a href="#shared_environments" class=header-anchor >Shared &#40;&quot;<code>@</code>&quot;&#41; Environments</a></h3>
 <p>Since Julia 1.7 it is possible to easily work with different more or less global environments:</p>
 <pre><code class="julia hljs">$ julia --project=<span class=hljs-meta >@myenv</span></code></pre>
 <p>calls Julia and activates the environment <code>.julia/environments/myenv</code></p>
-<p>This is e.g. useful when working with Pluto. One would start Julia via</p>
-<pre><code class="julia hljs">$ julia --project=<span class=hljs-meta >@pluto</span></code></pre>
-<p>Just note that by default, each Pluto notebook will activates it&#39;s own environment.</p>
 <h3 id=further_info ><a href="#further_info" class=header-anchor >Further info</a></h3>
 <ul>
 <li><p><a href="https://modernjuliaworkflows.github.io/">Modern Julia Workflows</a>:  Best practices for Julia development.</p>
@@ -120,6 +110,8 @@ $ pkg&gt; instantiate</code></pre>
 
 <p><strong>Update history</strong></p>
 <ul>
+<li><p>2024-10-07: Package directories on LOAD_PATH should not contain Project.toml; multiple reformulations</p>
+
 <li><p>2024-10-02: Make Manifest check-in optional, upvote  &quot;Modern julia workflows&quot;</p>
 
 <li><p>2023-10-17: Link to modern julia workflows</p>
@@ -137,7 +129,7 @@ $ pkg&gt; instantiate</code></pre>
 </ul>
 <div class=page-foot >
   <div class=copyright >
-    &copy; Jürgen Fuhrmann. License: <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode"> CC-BY-SA 4.0</a>. Last modified: October 02, 2024. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
+    &copy; Jürgen Fuhrmann. License: <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode"> CC-BY-SA 4.0</a>. Last modified: October 07, 2024. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 Upon finding factual errors, typos etc. <a href=https://github.com/j-fu/marginalia/issues> raise an issue<a>.
 <center>  <a href="/marginalia/feed.xml"> <img src="/marginalia/assets/rss.png" style="width:100px;"></a> </center>
   </div>

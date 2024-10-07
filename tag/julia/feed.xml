@@ -628,7 +628,7 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;,push&#61;true&#41;
   
   <content:encoded>
     <![CDATA[  <h1 id="julia_basic_workflow_recomendations">Julia: Basic Workflow Recomendations</h1>
-<p><div class="franklin-toc"><ol><li>Never leave Julia and  write code in functions</li><li>Use Revise.jl to reload modified code</li><li>Record your project dependencies in reproducible environments<ol><li>Global environment</li><li>Local environments</li><li>Shared &#40;&quot;<code>@</code>&quot;&#41; Environments</li><li>Further info</li></ol></li></ol></div> </p>
+<p><div class="franklin-toc"><ol><li>Never leave Julia and  write code in functions<ol><li><a href="https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-global-variables">Avoid  untyped global variables </a></li><li>Load code into the REPL via <code>include&#40;&#41;</code></li><li>Think about wrapping code into modules</li><li>Load modules into the REPL via <code>using</code></li></ol></li><li>Use Revise.jl to have modified code reloading automatically<ol><li>Load code into the REPL via <code>Revise.includet&#40;&#41;</code></li><li>Loading modules into the REPL via <code>using</code> allows to track all included files</li></ol></li><li>Record project dependencies in reproducible environments<ol><li>Global environment</li><li>Local environments</li><li>Enviroment stacking</li><li>Shared &#40;&quot;<code>@</code>&quot;&#41; Environments</li><li>Further info</li></ol></li></ol></div> </p>
 <p>These workflow hints have been developed from my own experience and are essentially an illustration of the <a href="https://docs.julialang.org/en/v1/manual/workflow-tips">workflow tips</a>  found in the Julia documentation. </p>
 <h2 id="never_leave_julia_and_write_code_in_functions">Never leave Julia and  write code in functions</h2>
 <p>Many available Julia examples and  the mindset influenced by Matlab or Python suggest  that code is written in scripts where  computations are performed in the global context. E.g.  a script <code>MyScript.jl</code> would look like:</p>
@@ -644,26 +644,19 @@ using Package2# computations here
 <li><p>One encounters precompilation time hiatus when running after each modified  version</p>
 </li>
 </ul>
-<p>Suggestions:</p>
-<ul>
-<li><p><a href="https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-global-variables">Avoid  untyped global variables</a> and develop any code in functions. E.g. <code>MyScript.jl</code> could look like:</p>
-</li>
-</ul>
+<h3 id="a_hrefhttpsdocsjulialangorgenv1manualperformance-tipsavoid-global-variablesavoid_untyped_global_variables"><a href="https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-global-variables">Avoid  untyped global variables </a></h3>
+<p>Develop any code in functions. E.g. <code>MyScript.jl</code> could look like:</p>
 <pre><code class="language-julia">using Package1
 using Package2function main&#40;; kwarg1&#61;1, kwarg2&#61;2&#41;
  # action here 
 end</code></pre>
-<ul>
-<li><p>Always invoke the code from within a running julia instance. In this   case you encounter the <a href="https://docs.julialang.org/en/v1/manual/workflow-tips/#REPL-based-workflow">Read-Eval-Print-Loop &#40;REPL&#41;</a> of Julia. You don&#39;t need to leave julia for restarting modified code &#40;except in the case when you re-define a constant or a struct&#41;. Just reload the code by repeating the <code>include</code> statement:</p>
-</li>
-</ul>
+<h3 id="load_code_into_the_repl_via_include">Load code into the REPL via <code>include&#40;&#41;</code></h3>
+<p>Always invoke the code from within a running julia instance. In this   case you encounter the <a href="https://docs.julialang.org/en/v1/manual/workflow-tips/#REPL-based-workflow">Read-Eval-Print-Loop &#40;REPL&#41;</a> of Julia. You don&#39;t need to leave julia for restarting modified code &#40;except in the case when you re-define a constant or a struct&#41;. Just reload the code by repeating the <code>include</code> statement:</p>
 <pre><code class="language-julia">&#36; julia
 julia&gt; include&#40;&quot;MyScript.jl&quot;&#41;
 julia&gt; main&#40;kwarg1&#61;5&#41;</code></pre>
-<ul>
-<li><p>Think about wrapping code into modules. The previous example can be enhanced by wrapping the code of the script into a module.  This has the advantage that you can load different scripts into the same session without name clashes.</p>
-</li>
-</ul>
+<h3 id="think_about_wrapping_code_into_modules">Think about wrapping code into modules</h3>
+<p>The previous example can be enhanced by wrapping the code of the script into a module. This has the advantage that you can load different scripts into the same session without name clashes.</p>
 <pre><code class="language-julia">Module MyScriptusing Package1
 using PackageNfunction main&#40;; kwarg1&#61;1, kwarg2&#61;2&#41;
  # action here 
@@ -671,63 +664,60 @@ endend</code></pre>
 <pre><code class="language-julia">&#36; julia
 julia&gt; include&#40;&quot;MyScript.jl&quot;&#41;
 julia&gt; MyScript.main&#40;kwarg1&#61;5&#41;</code></pre>
-<ul>
-<li><p>Load code via <code>using</code>. Once you have mastered modules and ensure that the file name corresponds to the module name, you can  load code via <code>using</code>. In order to allow for this, you need to ensure to have the directory containg <code>MyScript.jl</code> &#40;e.g. the current directory <code>pwd&#40;&#41;</code>&#41; on the <a href="https://docs.julialang.org/en/v1/base/constants/#Base.LOAD_PATH"><code>LOAD_PATH</code></a>:</p>
-</li>
-</ul>
+<h3 id="load_modules_into_the_repl_via_using">Load modules into the REPL via <code>using</code></h3>
+<p>Alternatively, load code via <code>using</code>. Once you have mastered modules and ensured that the file name corresponds to the module name, you can  load code via <code>using</code>. In order to allow for this, you need to ensure to have the directory containing <code>MyScript.jl</code> &#40;e.g. the current directory <code>pwd&#40;&#41;</code>&#41; on the <a href="https://docs.julialang.org/en/v1/base/constants/#Base.LOAD_PATH"><code>LOAD_PATH</code></a>:</p>
 <pre><code class="language-julia">&#36; julia
 julia&gt; push&#33;&#40;LOAD_PATH,pwd&#40;&#41;&#41;
 julia&gt; using MyScript
 julia&gt; MyScript.main&#40;kwarg1&#61;5&#41;</code></pre>
-<p><code>LOAD_PATH</code> can also be passed to Julia as an environment variable defined before the invocation of julia.</p>
-<h2 id="use_revisejl_to_reload_modified_code">Use Revise.jl to reload modified code</h2>
+<p><code>LOAD_PATH</code> can also be passed to Julia as an environment variable defined before the invocation of julia. In order to allow this to work, the directory of <code>MyScript.jl</code><em>should not constitute an <a href="https://j-fu.github.io/marginalia/julia/basic-workflow/#record_your_project_dependencies_in_reproducible_environments">environment</a></em>, i.e. it should contain neither a <code>Project.toml</code> nor a <code>Manifest.toml</code> file.</p>
+<h2 id="use_revisejl_to_have_modified_code_reloading_automatically">Use Revise.jl to have modified code reloading automatically</h2>
 <p>In the previous examples, re-loading the code after modifications required to re-run the include statement. The package <a href="https://github.com/timholy/Revise.jl">Revise.jl</a> exports a function <code>includet</code> which triggers automatic recompilation  if the source code of the script file or of packages used therein has been modified.</p>
-<p>In order to set this up, place the following into the Julia startup file <code>.julia/config/startup.jl</code> in your home directory:</p>
+<p>In order to set this up, after invoking <code>Pkg.add&#40;&quot;Revise&quot;&#41;</code> once, place the following into the Julia startup file <code>.julia/config/startup.jl</code> in your home directory:</p>
 <pre><code class="language-julia">using Revise</code></pre>
+<h3 id="load_code_into_the_repl_via_reviseincludet">Load code into the REPL via <code>Revise.includet&#40;&#41;</code></h3>
 <p>You would then run:</p>
 <pre><code class="language-julia">&#36; julia -i
 julia&gt; includet&#40;&quot;MyScript.jl&quot;&#41;
 julia&gt; MyScript.main&#40;kwarg1&#61;5&#41;</code></pre>
 <p>After having modified <code>MyScript.jl</code>, just another  invocation of <code>MyScript.main&#40;&#41;</code>  would see the changes. See also the corresponding hints in the <a href="https://docs.julialang.org/en/v1/manual/workflow-tips/#Revise-based-workflows">Julia documentation</a>.</p>
-<p>Besides of tracking scripts loaded into the REPL via <code>includet</code>, <code>Revise.jl</code> </p>
-<ul>
-<li><p>tracks changes in modules and packages under development loaded into the script via <code>using</code> or <code>import</code>.</p>
-</li>
-<li><p>works in <a href="https://github.com/fonsp/Pluto.jl">Pluto notebooks</a></p>
-</li>
-</ul>
-<h2 id="record_your_project_dependencies_in_reproducible_environments">Record your project dependencies in reproducible environments</h2>
+<h3 id="loading_modules_into_the_repl_via_using_allows_to_track_all_included_files">Loading modules into the REPL via <code>using</code> allows to track all included files</h3>
+<p>If <code>MyScript.jl</code> itself uses <code>include&#40;&#41;</code> to load more code, <code>Revise.jl</code> is unable to track changes in the included code if <code>MyScript.jl</code> has been loaded via <code>includet</code>. This problem however is mitigated by <a href="https://j-fu.github.io/marginalia/julia/basic-workflow/#load_code_into_the_repl_via_using">loading <code>MyScript.jl</code> via <code>using</code></a>. This is true as well for modules and packages under development loaded into the script via <code>using</code> or <code>import</code>. In particular, this way, <code>Revise.jl</code> also works in <a href="https://github.com/fonsp/Pluto.jl">Pluto notebooks</a> when the inbuilt package manager has been disabled.</p>
+<h2 id="record_project_dependencies_in_reproducible_environments">Record project dependencies in reproducible environments</h2>
+<p>In julia, an <a href="https://docs.julialang.org/en/v1/manual/code-loading/#Environments">environment</a> determines which code is loaded via <code>import X</code> and <code>using X</code>. An environment can be described using a <code>Project.toml</code> file in a certain directory. This file contains a list of packages available for loading via <code>import</code> or <code>using</code>.</p>
 <h3 id="global_environment">Global environment</h3>
 <p>By default, packages added to the Julia installation are recorded in the default <em>global environment</em>:</p>
 <pre><code class="language-julia">&#36; julia
-julia&gt;&#93;
-pkg&gt; add Package1</code></pre>
-<p>This results in  corresponding entries in <code>.julia/environments/vx.y/Project.toml</code>  and <code>.julia/environments/vx.y/Manifest.toml</code>  &#40;where <code>x.y</code> stands for your installed Julia version&#41;. Sharing this global  environment between all your different projects is risky because of possible conflicts in package version requirements. In addition, relying on the global environment makes it hard to share your code with others, as you would have to find a way to communicate the names of the  packages &#40;with versions&#41; which they need to install to run your code in a reproducible way.</p>
+julia&gt; using Pkg
+julia&gt; Pkg.add&#40;&quot;Package1&quot;&#41;</code></pre>
+<p>This results in  corresponding entries in <code>.julia/environments/vx.y/Project.toml</code>  and <code>.julia/environments/vx.y/Manifest.toml</code>  &#40;where <code>x.y</code> stands for your installed Julia version, e.g. 1.10&#41;. If no other measures are taken, all your julia code will look into this environment in order find the a package to be loaded via <code>using</code> or <code>import</code>.</p>
+<p>Sharing this global  environment between all your different projects is risky because of possible conflicts in package version requirements. In addition, relying on the global environment makes it hard to share your code with others, as you would have to find a way to communicate the names of the  packages &#40;with versions&#41; which they need to install to run your code in a reproducible way.</p>
 <h3 id="local_environments">Local environments</h3>
 <p><em>Local environments</em> provide a remedy.</p>
-<p>Assume that an  <em>application</em> is Julia code residing in a given directory <code>MyApp</code>, uses one or several other Julia packages and is not intended to be invoked from other packages or applications. An environment is described by the two files in the <code>MyApp</code> directory: <code>Project.toml</code> and <code>Manifest.toml</code>. Set up an environment in  the project directory in the following way:</p>
+<p>Assume that an  <em>application</em> is Julia code residing in a given directory <code>MyApp</code>, uses one or several other Julia packages and is not intended to be invoked from other packages or applications.  Set up an environment in  the project directory in the following way:</p>
 <pre><code class="language-julia">&#36; cd MyApp
-&#36; julia
-&#36; pkg&gt; activate .
-&#36; pkg&gt; add Package1
-&#36; pkg&gt; add PackageN
+&#36; julia --project&#61;.
+julia&gt; using Pkg
+julia&gt; Pkg.add&#40;&quot;Package1&quot;&#41;
+julia&gt; Pkg.add&#40;&quot;Package2&quot;&#41;
 &#36; exit&#40;&#41;</code></pre>
+<p>This creates an  environment in <code>MyApp</code> directory  described by the two files <code>MyApp/Project.toml</code> and <code>MyApp/Manifest.toml</code>. The <code>Project.toml</code> file lists the packages added to the environment. In addition, the <code>Manifest.toml</code> file a holds the information about the exact versions of all Julia packages used by the project.</p>
 <p>After setting up the environment like this, you can  perform</p>
 <pre><code class="language-julia">&#36; cd MyApp
 &#36; julia --project&#61;.</code></pre>
-<p>and work in the environment. All packages added  to Julia in this case are recorded in <code>MyApp</code> instead of <code>.julia/environments/vx.y/</code>. Packages in the global environment still will be visible to your project.</p>
-<p>The <code>Project.toml</code> file lists the packages added to the environment. In addition, a <code>Manifest.toml</code> file appears which holds the information about the exact versions of all Julia packages used by the project. <code>Project.toml</code>  should be checked into version control along with the source code. If you took care about adding all necessary dependencies to the local environment, after checking out your code, another project collaborator can easily install all dependencies via</p>
+<p>and work in the environment. All packages added  to Julia in this case are recorded in <code>MyApp</code> instead of <code>.julia/environments/vx.y/</code>. </p>
+<p><code>Project.toml</code>  should be checked into version control along with the source code. If you took care about adding all necessary dependencies to the local environment, after checking out your code, another project collaborator can easily install all dependencies via</p>
 <pre><code class="language-julia">&#36; cd MyApp
 &#36; julia --project&#61;.
-&#36; pkg&gt; instantiate</code></pre>
+&#36; julia&gt; using Pkg
+&#36; julia&gt; Pkg.instantiate&#40;&#41;</code></pre>
 <p>If <code>Manifest.toml</code> is distributed and checked into version control along with <code>Project.toml</code>, <code>instantiate</code> will install the exact same package versions as recorded in the manifest.</p>
+<h3 id="enviroment_stacking">Enviroment stacking</h3>
+<p>After activating a local environment, packages in the global environment still will be visible to your project. You can use this to keep available utilities your project should not depend upon, but which are useful during development. This could e.g. be <code>BenchmarkTools</code>, <code>JuliaFormatter</code> etc.</p>
 <h3 id="shared_environments">Shared &#40;&quot;<code>@</code>&quot;&#41; Environments</h3>
 <p>Since Julia 1.7 it is possible to easily work with different more or less global environments:</p>
 <pre><code class="language-julia">&#36; julia --project&#61;@myenv</code></pre>
 <p>calls Julia and activates the environment <code>.julia/environments/myenv</code></p>
-<p>This is e.g. useful when working with Pluto. One would start Julia via</p>
-<pre><code class="language-julia">&#36; julia --project&#61;@pluto</code></pre>
-<p>Just note that by default, each Pluto notebook will activates it&#39;s own environment.</p>
 <h3 id="further_info">Further info</h3>
 <ul>
 <li><p><a href="https://modernjuliaworkflows.github.io/">Modern Julia Workflows</a>:  Best practices for Julia development.</p>
@@ -742,6 +732,8 @@ pkg&gt; add Package1</code></pre>
 </li>
 </ul><hr size="5" noshade><p><strong>Update history</strong></p>
 <ul>
+<li><p>2024-10-07: Package directories on LOAD_PATH should not contain Project.toml; multiple reformulations</p>
+</li>
 <li><p>2024-10-02: Make Manifest check-in optional, upvote  &quot;Modern julia workflows&quot;</p>
 </li>
 <li><p>2023-10-17: Link to modern julia workflows</p>
