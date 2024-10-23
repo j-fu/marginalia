@@ -138,38 +138,82 @@ julia&gt; Pluto.run&#40;notebook&#61;&quot;notebooks/notebook1.jl&quot;&#41;</co
   
   <content:encoded>
     <![CDATA[  <h1 id="julia_package_workflow">Julia: Package Workflow</h1>
-<p>&#40;Draft&#41;</p>
-<div class="franklin-toc"><ol><li>Intro</li><li>Starting a package<ol><li>Starting a package as part of an application project</li><li>Starting a package repository</li></ol></li><li>Tests</li><li>Continuous Integration</li><li>Providing <ol><li>Using  a package under development</li><li>Registration of a new package or a new version in a local registry</li><li>Without write access to the registry</li><li>With write access to this repository</li><li>Using the General registry</li><li>Naming and versioning</li></ol></li><li>Other useful introductions</li></ol></div>
-<h2 id="intro">Intro</h2>
-<p>This post is work in progress. May be one of the other useful introductions will be more useful at the moment.</p>
-<p>For general terminology, see the <a href="https://pkgdocs.julialang.org/v1/glossary/#Glossary">package manager glossary</a>. According to this, here, we assume that a  <em>package</em> is Julia code which is supposed to be used by other projects, applications or packages.</p>
-<p>When developing Julia packages it is advisable to set the environment variable <a href="https://pkgdocs.julialang.org/v1/api/#Pkg.develop"><code>JULIA_PKG_DEVDIR</code></a> to a reasonable path. All Julia packages under development will reside there, and for a particular package, we refer to its corresponding <code>package_dir</code>  during this post.</p>
+<p>&#40;Draft, work in progress&#41;</p>
+<div class="franklin-toc"><ol><li>Resources</li><li>Starting a package<ol><li>Where do packages under development reside ?</li><li>Starting a package repository</li></ol></li><li>Tests</li><li>Documentation<ol><li>Generation using <a href="https://documenter.juliadocs.org/stable/">Documenter.jl</a></li><li>Local preview using <a href="https://github.com/JuliaDocs/LiveServer.jl">LiveServer.jl</a></li></ol></li><li>Running things on github</li><li>Providing packages to others<ol><li>Using a package under development</li><li>Registration of a new package or a new version in a local registry</li><li>Using the General registry</li></ol></li></ol></div>
+<h2 id="resources">Resources</h2>
+<ul>
+<li><p>Some other useful introductions to package authoring</p>
+<ul>
+<li><p>G. Dalle, J. Smit, A. Hill: <a href="https://modernjuliaworkflows.github.io/">Modern Julia Workflows</a> &#40;2024-09&#41;</p>
+</li>
+<li><p>Jaan Tollander de Balsch:  <a href="https://jaantollander.com/post/how-to-create-software-packages-with-julia-language/">How to Create Software Packages with Julia Language</a> &#40;2021-05&#41;</p>
+</li>
+<li><p>Sören Dobberschütz: <a href="https://sdobber.github.io/juliapackage/">Tips and tricks to register your first Julia package</a> &#40;2021-10&#41;</p>
+</li>
+<li><p>Kim Fung: <a href="https://medium.com/analytics-vidhya/an-introduction-to-continuous-integration-github-actions-for-julia-1a5a1a6e64d6">An Introduction to Continuous Integration &amp; GitHub Actions for Julia</a> &#40;2020-01&#41;</p>
+</li>
+<li><p>Christopher Rackauckas: <a href="https://www.stochasticlifestyle.com/developing-julia-packages/">Developing Julia packages &#40;video&#41;</a> &#40;2019-10&#41;</p>
+</li>
+</ul>
+</li>
+<li><p><a href="https://pkgdocs.julialang.org/v1/glossary/#Glossary">Package manager glossary</a>. According to this, here, we assume that a  <em>package</em> is Julia code which is supposed to be used by other projects, applications or packages.</p>
+</li>
+</ul>
 <h2 id="starting_a_package">Starting a package</h2>
-<p>See also the <a href="https://pkgdocs.julialang.org/v1/creating-packages/">Pkg documentation</a></p>
-<h3 id="starting_a_package_as_part_of_an_application_project">Starting a package as part of an application project</h3>
-<p>Often, packages evolve during the development of larger application, when it becomes clear that some part of it provides some well defined functionality which can be formulated with its own API.  Local packages within an application project allow to start the package development process in such a situation.  For this structure, see <a href="https://j-fu.github.io/marginalia/julia/project-workflow#new_packages_can_evolve_from_the_projec_code">my previous post</a>.</p>
+<h3 id="where_do_packages_under_development_reside">Where do packages under development reside ?</h3>
+<p>When developing Julia packages it is advisable to set the environment variable <a href="https://pkgdocs.julialang.org/v1/api/#Pkg.develop"><code>JULIA_PKG_DEVDIR</code></a> to a path convenient for you. By default &#40;if <a href="https://docs.julialang.org/en/v1/manual/environment-variables/#JULIA_DEPOT_PATH"><code>JULIA_DEPOT_PATH</code></a> was not changed&#41; it is <code>.julia/dev</code>. Julia packages checked out for development via <code>Pkg.develop&#40;&#41;</code>  will reside there, and it is convenient to have all packages under development in this path.</p>
 <h3 id="starting_a_package_repository">Starting a package repository</h3>
-<p>Typically, each Julia package resides in its own git repository &#40;other configurations are <a href="https://discourse.julialang.org/t/usage-of-subdirectories-to-store-multiple-packages-in-a-single-repo/55534">possible</a>&#41;.</p>
-<p>Create an  empty repository <code>NewPackageName.jl</code> on a server with <code>git_url</code></p>
+<p>The <a href="https://pkgdocs.julialang.org/v1/creating-packages/">creating packges</a> chapter of the package manager documentation explains how to create a package with a minimal functional structure. Enabling important aspects of package workflow like  continuous integration, documentation generation or git integration would involve the addition of all of this tooling by hand.</p>
+<p>The package <a href="https://github.com/JuliaCI/PkgTemplates.jl">PkgTemplates.jl</a> provides standard templates for creating Julia packages:</p>
 <pre><code class="language-julia">&#36; cd &#36;JULIA_PKG_DEVDIR
 &#36; julia
-pkg&gt; generate NewPackageName
-julia&gt; exit&#40;&#41;
-cd NewPackageName
-git init
-git add remote origin git_url
-git add .</code></pre>
-<p>Julia packages have a fixed structure which includes</p>
+julia&gt; using PkgTemplates
+julia&gt; t &#61; Template&#40;;
+    user&#61;&quot;UserName&quot;,
+    dir&#61;&quot;.&quot;,
+    julia&#61;v&quot;1.10&quot;,
+    plugins&#61;&#91;
+    Git&#40;; manifest&#61;false, ssh&#61;true&#41;,
+    GitHubActions&#40;&#41;,
+    Codecov&#40;&#41;,
+    Documenter&#123;GitHubActions&#125;&#40;&#41;,
+    &#93;,
+    &#41;julia&gt; t&#40;&quot;MyPkg&quot;&#41;</code></pre>
+<p>This creates a standard Julia package structure enhanced with tooling for CI, documentation, git etc., which is ready to be pushed to a corresponding github repository:</p>
+<pre><code class="language-julia">MyPkg
+├── .git
+│  ...
+├── .github
+│  ├── dependabot.yml
+│  └── workflows
+│     ├── CI.yml
+│     ├── CompatHelper.yml
+│     └── TagBot.yml
+├── .gitignore
+├── docs
+│  ├── make.jl
+│  ├── Manifest.toml
+│  ├── Project.toml
+│  └── src
+│     └── index.md
+├── LICENSE
+├── Manifest.toml
+├── Project.toml
+├── README.md
+├── src
+│  └── MyPkg.jl
+└── test
+   └── runtests.jl</code></pre>
 <ul>
-<li><p><a href="https://pkgdocs.julialang.org/v1/toml-files/#Project.toml"><code>Project.toml</code></a>: description of dependencies. This also provides the package with its own environment during development. Furthermore, it contains the universally unique identifier &#40;UUID&#41; used to identify the package and its name, author and version number.</p>
+<li><p><a href="https://pkgdocs.julialang.org/v1/toml-files/#Project.toml"><code>Project.toml</code></a>: description of dependencies. This also provides the package with its own environment during development. It contains the universally unique identifier &#40;UUID&#41; used to identify the package and its name, author and version number.</p>
 </li>
-<li><p><code>README.md</code>: Short information about the package</p>
+<li><p><code>README.md</code>: Short information about the package. This will occur on the landing page  of the github repository</p>
 </li>
-<li><p><code>LICENSE</code>: License information. Should be one of the <a href="https://opensource.org/licenses">OSI approved</a> open source licenses if the package shall be registered with the Julia General Registry</p>
+<li><p><code>LICENSE</code>: License information. Should be one of the <a href="https://opensource.org/licenses">OSI approved</a> open source license if the package shall be registered with the Julia General Registry</p>
 </li>
 <li><p><code>src</code>: subdirectory containing code</p>
 <ul>
-<li><p><code>src/NewPackageName.jl</code>: Julia source file which must contain a module <code>NewPackageName</code> where all package code resides. It may include further source code files.</p>
+<li><p><code>src/MyPkg.jl</code>: Julia source file which must contain a module <code>NewPackageName</code> where all package code resides. It may include further source code files.</p>
 </li>
 </ul>
 </li>
@@ -177,44 +221,71 @@ git add .</code></pre>
 <ul>
 <li><p><code>test/runtests.jl</code>: script for running tests</p>
 </li>
-<li><p><code>test/Project.toml</code>: environment file containing test only dependencies</p>
+<li><p><code>test/Project.toml</code>: &#40;optional&#41; environment file containing test only dependencies</p>
 </li>
 </ul>
 </li>
-<li><p><code>docs</code>: subdirectory containing documentation </p>
+<li><p><code>docs</code>: subdirectory containing documentation</p>
 <ul>
-<li><p><code>docs/make.jl</code>: script for builidng documentation based on Documenter.jl</p>
+<li><p><code>docs/make.jl</code>: script for building documentation based on Documenter.jl</p>
 </li>
 <li><p><code>docs/Project.toml</code>: environment file containing dependencies for documentation</p>
 </li>
 </ul>
 </li>
-<li><p>Configuration files for Continuous Integration</p>
+<li><p><code>.github</code> Configuration files for Continuous Integration</p>
+<ul>
+<li><p><a href="https://discourse.julialang.org/t/psa-use-dependabot-to-update-github-actions-automatically/96001/2?u&#61;j-fu"><code>.github/dependabot.yml</code></a>: github action which triggers a pull request if a workflow file has a new version</p>
+</li>
+<li><p><code>.github/workflows/CI.yml</code> Control file for running continuous integration tests on github</p>
+</li>
+<li><p><code>.github/workflows/CompatHelper.yml</code>  github action which triggers a pull request if a package dependency has a new breaking version</p>
+</li>
+<li><p><code>.github/workflows/TagBot.yml</code>  github action which automatically creates git tags for newly registered versions of <code>MyPkg</code>.</p>
+</li>
+<li><p>A  <a href="https://pkgdocs.julialang.org/v1/toml-files/#Manifest.toml"><code>Manifest.toml</code></a> file is created as soon as the package environment is instantiated. It contains the full metadata of  all package dependencies. This file <em>should not be tracked by git</em>. Instead, the <code>Project.toml</code> shall contain a <code>&#91;compat&#93;</code> section which inform the package resolver about the compatibility with different versions of dependencies.</p>
 </li>
 </ul>
-<p>A  <a href="https://pkgdocs.julialang.org/v1/toml-files/#Project.toml"><code>Manifest.toml</code></a> file is created as soon as the package environment is instantiated. It contains the full metadata of  all package dependencies. This file <em>should not be tracked by git</em>. Instead, the <code>Project.toml</code> shall contain a <code>&#91;compat&#93;</code> section which inform the package resolver about the compatibility with different versions of dependencies.</p>
-<p>Instead of invoking <code>pkg&gt; generate NewPackageName</code>, a more comprehensive initial package structure can be be created by cloning  <a href="https://github.com/JuliaLang/Example.jl">Example.jl</a> or with <a href="https://github.com/invenia/PkgTemplates.jl">PkgTemplates.jl</a>. These also create the necessary files for controlling automatic CI tests on github/gitlab.</p>
+</li>
+</ul>
 <h2 id="tests">Tests</h2>
 <p>See also the <a href="https://pkgdocs.julialang.org/v1/creating-packages/#Adding-tests-to-the-package">Pkg documentation</a>.</p>
 <p>The files in <code>test</code> provide the environment and the code to run tests of the functions implemented in the package. While it is hard to have 100&#37; test coverage of the package functionality, one should strive to achieve this goal. Besides of the obvious reasons of reproducibility,  peer pressure etc., sufficient test coverage helps to keep a package author sane. Imagine the need to change something in the  package three years after the last serious work on it...</p>
-<p>It is quite possible that tests have more dependencies than the package itself. Therefore Julia packages can have their own test environment in <code>test/Project.toml</code>. The <code>runtests.jl</code> file contains the code for the tests. All code called from the <a href="https://docs.julialang.org/en/v1/stdlib/Test/#Test.@test"><code>@test</code></a> macro is part of the test coverage. A simple file <code>runtests.jl</code> contains e.g.:</p>
+<p>It is quite possible that tests have more dependencies than the package itself. Therefore Julia packages can have their own test environment in <code>test/Project.toml</code>. Alternatively, the test dependencies can be listed in an &quot;&#91;extras&#93;&quot; section of <code>MyPkg/Project.toml</code>. The <code>test/runtests.jl</code> file contains the code for the tests. All code called from the <a href="https://docs.julialang.org/en/v1/stdlib/Test/#Test.@test"><code>@test</code></a> macro is part of the test coverage. A simple file <code>runtests.jl</code> contains e.g.:</p>
 <pre><code class="language-julia">using Test@test 1&#43;1 &#61;&#61; 2</code></pre>
 <p>Tests code can be called in different ways. In the package root environment:</p>
 <pre><code class="language-julia">julia&gt; Pkg.test&#40;&#41;</code></pre>
 <p>or from the <code>Pkg</code> prompt:</p>
 <pre><code class="language-julia">&#93; test</code></pre>
-<p>The seame test can be invoked also in any environment with the package added: </p>
-<pre><code class="language-julia">julia&gt; Pkg.test&#40;&quot;MyPackageName&quot;&#41;</code></pre>
+<p>The seame test can be invoked also in any environment with the package added:</p>
+<pre><code class="language-julia">julia&gt; Pkg.test&#40;&quot;MyPkg&quot;&#41;</code></pre>
 <p>or</p>
-<pre><code class="language-julia">&#93; test MyPackageName</code></pre>
-<h2 id="continuous_integration">Continuous Integration</h2>
-<p>Your package tests sucessfully run on your linux laptop. But how can you be sure that they also run on Mac and Windows ? And, you want to show off with a good test coverage helping to build up trust in your work.</p>
-<p>The solution ?  Run your tests on different systems via <a href="https://github.com/features/actions">github actions</a> and <a href="https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/adding-a-workflow-status-badge">show off</a> the result.</p>
-<p>In order to achieve this, it is sufficient to add a file</p>
-<pre><code class="language-julia">.github/workflows/ci.yml</code></pre>
-<p>Alternatively, this can be done on <a href="https://discourse.julialang.org/t/julia-and-gitlab-self-hosted-a-state-of-the-art/86685">gitlab</a> as well.</p>
-<h2 id="providing">Providing </h2>
-<h3 id="using_a_package_under_development">Using  a package under development</h3>
+<pre><code class="language-julia">&#93; test MyPkg</code></pre>
+<h2 id="documentation">Documentation</h2>
+<h3 id="generation_using_a_hrefhttpsdocumenterjuliadocsorgstabledocumenterjl">Generation using <a href="https://documenter.juliadocs.org/stable/">Documenter.jl</a></h3>
+<p>Documenter collects the docstrings of functions of a package and builds a documentation website. If <code>MyPkg</code> contains code with docstrings like</p>
+<pre><code class="language-julia">&quot;&quot;&quot;
+    mult&#40;x,y&#41;Calculates the product of &#96;x&#96; and &#96;y&#96;
+&quot;&quot;&quot;
+function mult&#40;x,y&#41;
+    return x*y
+end</code></pre>
+<p>In a documentation markdown file this can be referred to in a &quot;<a href="https://documenter.juliadocs.org/stable/man/syntax/#@docs-block">@docs block</a>&quot;.</p>
+<p>Documentation is built using the script <code>docs/make.jl</code> which needs to be started in the environmet defined in <code>docs</code>:</p>
+<pre><code class="language-julia">&#36; julia --project&#61;docs
+julia&gt; include&#40;&quot;docs/make.jl&quot;&#41;</code></pre>
+<h3 id="local_preview_using_a_hrefhttpsgithubcomjuliadocsliveserverjlliveserverjl">Local preview using <a href="https://github.com/JuliaDocs/LiveServer.jl">LiveServer.jl</a></h3>
+<p>By default, locally built documentation is created in the <code>docs/build</code> subdirectory. Preview can be performed using a local webserver pointing to this directory.</p>
+<p><a href="https://github.com/JuliaDocs/LiveServer.jl">LiveServer.jl</a> provides one:</p>
+<pre><code class="language-julia">julia&gt; using LiveServer
+julia&gt; serve&#40;dir&#61;&quot;docs/build&quot;, port&#61;8001&#41;</code></pre>
+<p>This starts a web browser pointing to <code>http://localhost:8100</code>, allowing to navigate documentations locally.</p>
+<h2 id="running_things_on_github">Running things on github</h2>
+<p>For public repositories, github provides unlimited access to <a href="https://docs.github.com/en/actions/writing-workflows/quickstart">Github actions</a>. This means that the scripts under <code>.github/workflows</code> are active and triggered at the events described therein. Among others, the <code>CI.yml</code> triggers running of tests and documentation at every push to the main branch.</p>
+<p>The script tries to deploy the documentation to a separate branch which publishes the documentation under <code>https://github.io/UserName/MyPkg</code>. For this purpose, github actions need to authenticate theselves with the repository. For this purpose, a <code>DOCUMENTER_KEY</code> ssh key needs to be stored in the repository. The setup is described in the <a href="https://documenter.juliadocs.org/stable/lib/public/#DocumenterTools.genkeys">Documenter.jl documentation</a>.</p>
+<p>Alternatively, this can be done for <a href="https://discourse.julialang.org/t/julia-and-gitlab-self-hosted-a-state-of-the-art/86685">gitlab</a> as well.</p>
+<h2 id="providing_packages_to_others">Providing packages to others</h2>
+<h3 id="using_a_package_under_development">Using a package under development</h3>
 <p>While the package is unregistered you can add it to the environment of a project:</p>
 <pre><code class="language-julia">&#36; cd project_dir
 &#36; julia --project&#61;@.
@@ -223,66 +294,40 @@ pkg&gt; add git_url</code></pre>
 <pre><code class="language-julia">pkg&gt; dev git_url</code></pre>
 <p>instead, a full clone is created in <code>&#36;JULIA_PKG_DEVDIR</code> and used. If the corresponding subdirectory in <code>JULIA_PKG_DEVDIR</code> does not exist, it will be checked out from <code>git_url</code>. The same would happen with registered packages added by name.</p>
 <h3 id="registration_of_a_new_package_or_a_new_version_in_a_local_registry">Registration of a new package or a new version in a local registry</h3>
-<p>We assume to speak about <code>MyRegistry</code> as an example, but generally this is true for all registries. </p>
-<h3 id="without_write_access_to_the_registry">Without write access to the registry</h3>
-<p>Send an  email to  one of  the admins  containing the  git url  of the corresponding repository singnaling the advance of a new version.  The <code>Project.toml</code> file already should contain the new version number.</p>
-<h3 id="with_write_access_to_this_repository">With write access to this repository</h3>
-<p>Add the <a href="https://github.com/GunnarFarneback/LocalRegistry.jl">LocalRegistry.jl</a> package to your environment</p>
-<pre><code class="language-julia">pkg&gt;  add LocalRegistry</code></pre>
-<p>For a new package <code>X.jl</code> or a new version thereof, first obtain a clone, either by checking it out via its url, or by adding it to the environment, getting into develop mode and updating it:</p>
-<pre><code class="language-julia">pkg&gt; add X
-pkg&gt; develop X
-pkg&gt; update X # not clear if really necessary</code></pre>
-<p>Then, you will be able to register a new version based on the updated version number in <code>Project.toml</code>:</p>
-<pre><code class="language-julia">julia&gt; using X
+<p>A registry is a git repository containing package information which allows to find the package source code given the package name. By default, julia packages are found in the General registry, wich is also installed by default. However, it is possible to have multiple registries, and to maintain your own registry.</p>
+<p>The <a href="https://github.com/GunnarFarneback/LocalRegistry.jl">LocalRegistry.jl</a> allows for an easy workflow.</p>
+<p>We assume to speak about <code>MyRegistry</code> as an example, but generally this is true for all registries. Assuming write access to the repository containing <code>MyRegistry</code>, the process is the following:</p>
+<p>Registring a new version of MyPkg goes as simple as follows:</p>
+<pre><code class="language-julia">MyPkg&#36; julia --project
+julia&gt; using MyPkg
 julia&gt; using LocalRegistry
-julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;,push&#61;true&#41;</code></pre>
-<p>This assumes that the remote origin of the local clone in <code>.julia/registries/MyRegistry</code> has been modified to <code>git@github.com:me/MyRegistry</code>. The <code>push&#61;true</code> can be omitted, in this case, <code>LocalRegistry.Register</code> results in a commit to the local copy which you can push later.</p>
+julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;, push&#61;true&#41;</code></pre>
 <p>After this, do not forget to create a tag in your repository marking the version <code>x.y.z</code> of the package:</p>
 <pre><code class="language-julia">&#36; git tag vx.y.z</code></pre>
+<p>If users want to access <code>MyPkg</code> via this registry, they first need to add the registry to their julia installation:</p>
+<pre><code class="language-julia">julia&gt; Pkg.Registry.add&#40;&quot;https://github.com/UserName/MyRegistry&quot;&#41;</code></pre>
+<p>After that, they can add the package as usual:</p>
+<pre><code class="language-julia">julia&gt; Pkg.add&#40;&quot;MyPackage&quot;&#41;</code></pre>
 <h3 id="using_the_general_registry">Using the General registry</h3>
-<p>Registring packages in the general registry assumes full compliance to a number of rules:</p>
+<p>Registering and updating packages in the general registry is automatically handeled by the <a href="https://github.com/JuliaRegistries/Registrator.jl">JuliaRegistrator</a> github app.</p>
+<p>It assumes compliance to a number of <a href="https://juliaregistries.github.io/RegistryCI.jl/stable/guidelines/">heuristic rules</a> concerning package names, Project.toml content etc.</p>
+<p>If these are followed, just comment the most recent commit of your package with</p>
+<pre><code class="language-julia">@JuliaRegistrator register</code></pre>
+<p>and the process starts. JuliaRegistrator checks compliance to the rules, and finally merges the updated information into the General registry</p>
 <ul>
-<li><p>Package is deployed with automatic testing on github &#40;at least this is the current practice&#41; with <a href="https://juliadocs.github.io/Documenter.jl/stable/man/hosting/index.html">travis, deploydocs etc. enabled</a></p>
+<li><p>after 3 days for a new package</p>
 </li>
-<li><p>Don&#39;t forget compat info for  julia and all packages  in Project.toml</p>
+<li><p>after \(\approx\) 20 min for a new version</p>
 </li>
-<li><p>Proper versioning sequence</p>
-</li>
-<li><p>Must wait 3 days for merge for  new package</p>
-</li>
-<li><p>Must wait \(\approx\) 1 hour for new version</p>
-</li>
-</ul>
-<p>All of this is automatically handeled by the <a href="https://github.com/JuliaRegistries/Registrator.jl">JuliaRegistrator</a></p><div class="img-small">
+</ul><div class="img-small">
 <img src="https://raw.githubusercontent.com/JuliaRegistries/Registrator.jl/master/graphics/logo.png">
 </div><p>It needs to be installed as a github app in for the package repository.</p>
-<h3 id="naming_and_versioning">Naming and versioning</h3>
-<ul>
-<li><p>Registration in the general registry starts with version 0.1.0, all deviations from this will create extra work upon registration in the general registry.</p>
-</li>
-<li><p>Start registration Registering with JuliaEgistrator</p>
-</li>
-<li><p>Either name a &quot;budding package&quot; &#40;e.g. Ants.jl&#41; accordingly: AntsPrototype.jl, Ants0.jl </p>
-</li>
-</ul>
-<h2 id="other_useful_introductions">Other useful introductions</h2>
-<ul>
-<li><p><a href="https://jaantollander.com/post/how-to-create-software-packages-with-julia-language/">Jaan Tollander de Balsch: How to Create Software Packages with Julia Language</a></p>
-</li>
-<li><p><a href="https://sdobber.github.io/juliapackage/">Sören Dobberschütz: Tips and tricks to register your first Julia package</a></p>
-</li>
-<li><p><a href="https://medium.com/analytics-vidhya/an-introduction-to-continuous-integration-github-actions-for-julia-1a5a1a6e64d6">Kim Fung: An Introduction to Continuous Integration &amp; GitHub Actions for Julia</a></p>
-</li>
-<li><p><a href="https://medium.com/coffee-in-a-klein-bottle/developing-your-julia-package-682c1d309507">DSB: Developing your Julia package</a></p>
-</li>
-<li><p><a href="https://www.stochasticlifestyle.com/developing-julia-packages/">Christopher Rackauckas: Developing Julia packages &#40;video&#41;</a></p>
-</li>
-</ul>
 <p>
 <hr size="5" noshade>
  <strong>Update history</strong></p>
 <ul>
+<li><p>2024-10-23: Fundamental update</p>
+</li>
 <li><p>2023-04-24: Draft updated &#43; made public</p>
 </li>
 <li><p>2022-12-06: First draft</p>
