@@ -1,0 +1,123 @@
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/marginalia/libs/highlight/github.min.css"> <link rel=stylesheet  href="/marginalia/css/franklin.css"> <link rel=stylesheet  href="/marginalia/css/poole_lanyon.css"> <link rel=stylesheet  href="/marginalia/css/adjust.css"> <link rel=icon  href="/marginalia/assets/favicon.png"> <title>Secure Shell ssh - the Swiss Army Knife of Remote Access</title> <input type=checkbox  class=sidebar-checkbox  id=sidebar-checkbox > <div class=sidebar  id=sidebar > <div class=sidebar-item > <p>Marginalia</p> </div> <nav class=sidebar-nav > <a class="sidebar-nav-item " href="/marginalia/">Home</a> <a class="sidebar-nav-item " href="/marginalia/julia/">Julia</a> <a class="sidebar-nav-item " href="/marginalia/git/">Git</a> <a class="sidebar-nav-item " href="/marginalia/older-posts/">Older posts</a> </nav> <div class=sidebar-item > <p>&copy; Jürgen Fuhrmann.</p> </div> </div> <!-- Wrap is the content to shift when toggling the sidebar. We wrap the content to avoid any CSS collisions with our real content. --> <div class=wrap > <div class=masthead > <div class=container > <h3 class=masthead-title > <a href="/marginalia/" title=Home >Marginalia</a> </h3> </div> </div> </div> <div class="container content"> <div class=franklin-content ><h1 id=secure_shell_ssh_-_the_swiss_army_knife_of_remote_access ><a href="#secure_shell_ssh_-_the_swiss_army_knife_of_remote_access" class=header-anchor >Secure Shell ssh - the Swiss Army Knife of Remote Access</a></h1> <div class=franklin-toc ><ol><li><a href="#resources">Resources</a><li><a href="#usage_patterns">Usage patterns</a><ol><li><a href="#encrypted_remote_access_with_password_authentication">Encrypted remote access with password authentication</a><li><a href="#copying_data">Copying data</a><li><a href="#executing_commands_on_the_remote_host">Executing commands on the remote host</a><li><a href="#public_key_authentication">Public key authentication</a><li><a href="#password-less_login_identity_management_by_ssh-agent">Password-less login: identity management by ssh-agent</a></ol><li><a href="#other_uses_of_ssh_keys_gitlab_github">Other uses of ssh keys: gitlab, github</a><li><a href="#ssh_tunnel">ssh tunnel</a></ol></div> <p>Survival in the wild is no problem if you carry your Swiss Army Knife. So is survival in the internet – provided you know ssh.</p> <center> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Cybertool_mg_0709.jpg/1024px-Cybertool_mg_0709.jpg" style="width: 400px; text-align: center;"/> Cybertool knife by Victorinox &copy; <a href="https://commons.wikimedia.org/wiki/File:Cybertool_mg_0709.jpg"> Rama </a> </center> <h2 id=resources ><a href="#resources" class=header-anchor >Resources</a></h2> <ul> <li><p><a href="http://www.cheat-sheets.org/saved-copy/OpenSSH_quickref.pdf">Cheat Sheet</a></p> <li><p><a href="http://en.wikipedia.org/wiki/Secure_Shell">Wikipedia Entry</a></p> <li><p>Man pages &#40;OpenSSH on Debian Linux; mostly works for all Linux &#43; MacOSX&#41;: <a href="https://manpages.debian.org/bullseye/openssh-client/ssh.1.en.html">ssh</a>, <a href="https://manpages.debian.org/bullseye/openssh-client/scp.1.en.html">scp</a>, <a href="https://manpages.debian.org/bullseye/openssh-client/ssh-agent.1.en.html">ssh-agent</a>, <a href="https://manpages.debian.org/bullseye/openssh-client/ssh-keygen.1.en.html">ssh-keygen</a>, <a href="https://manpages.debian.org/bullseye/openssh-client/ssh_config.5.en.html">ssh_config</a></p> <li><p>ssh on Microsoft Windows: <a href="http://www.putty.org/">putty</a>, <a href="http://winscp.net">WinSCP</a></p> <li><p>ssh on <a href="https://play.google.com/store/apps/details?id&#61;com.sonelli.juicessh">Android</a>, <a href="https://itunes.apple.com/de/app/serverauditor-ssh-shell-console/id549039908">iOS</a></p> </ul> <h2 id=usage_patterns ><a href="#usage_patterns" class=header-anchor >Usage patterns</a></h2> <p><strong>S</strong>ecure <strong>sh</strong>ell is a tool for encrypted remote access to computers connected to the internet.</p> <h3 id=encrypted_remote_access_with_password_authentication ><a href="#encrypted_remote_access_with_password_authentication" class=header-anchor >Encrypted remote access with password authentication</a></h3> <p>Assume your your sysadmin told you &quot;Just use ssh to gate in order to log in to the institute&quot;. Then your institute which has the internet domain <code>institute.com</code> probably has a host <code>gate.institute.com</code>. Then this should work:</p> <pre><code class="plaintext hljs">mylaptop$ ssh user@gate.institute.com
+user@gate.institute.com&#x27;s password: 
+Last login: Thu Dec 11 17:46:16 2014 from dslb-188-103-172-167.188.103.pools.vodafone-ip.de</code></pre> <p>As a result you will see the shell prompt of the remote system.</p> <p>If this is the first connection from the computer you are working on to the institute, you will be asked if you really trust the identity &#40;which you probably do at this point - if you don&#39;t, you can e.g. phone the sysadmin and ask her to read the fingerprint for comparison&#41;:</p> <pre><code class="plaintext hljs">mylaptop$ ssh user@gate.institute.com
+The authenticity of host &#x27;gate.institute.com (180.95.11.140)&#x27; 
+can&#x27;t be established.
+RSA1 key fingerprint is ce:e0:70:ea:7c:d4:e1:99:09:61:bd:0b:28:46:08:6b.
+Are you sure you want to continue connecting (yes/no)?</code></pre> <p>After answering <code>yes</code>, you get</p> <pre><code class="plaintext hljs">Warning: Permanently added &#x27;gate.institute.de,180.95.11.140&#x27; 
+(RSA1) to the list of known hosts.</code></pre> <p>Similarly, this authentication check may be issued after a re-install of the remote system. If nothing of this is the case, this might be a warning sign for a man-in-the middle attack.</p> <p>After setting up this communication channel, all communication will be encrypted using a temporary symmetric session key which is automatically negotiated after authentication.</p> <center> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Symmetric_key_encryption.svg/1048px-Symmetric_key_encryption.svg.png" style="width: 400px;"> Symmetric key encryption. (public domain) </center> <h3 id=copying_data ><a href="#copying_data" class=header-anchor >Copying data</a></h3> <p>Along with the secure shell suite comes the command <code>scp</code> which allows you to copy data between computers. Fetching a file from the remote host using an absolute path goes like that:</p> <pre><code class="plaintext hljs">scp user@gate.institute.com:/home/user/daten.dat daten.dat .</code></pre>
+<p>Fetching a file  from your home directory on the remote host goes like</p>
+<pre><code class="plaintext hljs">scp user@gate.institute.com:daten.dat .</code></pre>
+<p>Likewise, you can copy data from your computer to the remote host:</p>
+<pre><code class="plaintext hljs">scp daten.dat user@gate.institute.com:/home/user/daten.dat
+scp daten.dat user@gate.institute.com:</code></pre>
+<p>Of course, every time you will be asked for your password...</p>
+<h3 id=executing_commands_on_the_remote_host ><a href="#executing_commands_on_the_remote_host" class=header-anchor >Executing commands on the remote host</a></h3>
+<p>As an example,</p>
+<pre><code class="plaintext hljs">ssh user@gate.institute.com ls</code></pre>
+<p>executes the command ls on the remote host. For interactive commands, you should use the <code>-t</code> switch:</p>
+<pre><code class="plaintext hljs">ssh -t user@gate.institute.com  emacs -nw</code></pre>
+<p>If it is an X11 program, you can get encrypted transport to X11 windows by adding <code>-X</code> to  the command line:</p>
+<pre><code class="plaintext hljs">ssh -X user@gate.institute.com  emacs</code></pre>
+<p>Of course, every time you will be asked for your password...</p>
+<h3 id=public_key_authentication ><a href="#public_key_authentication" class=header-anchor >Public key authentication</a></h3>
+<p>Now, we want to get rid of these annoying password requests. This can be done by providing  the remote host with an &quot;public ssh key&quot;. </p>
+<p>In order to prepare this, you need to generate a private-public key pair. The secure shell suite provides the command <code>ssh-keygen</code> which does this job:</p>
+<pre><code class="plaintext hljs">mylaptop$ ssh-keygen
+Generating public/private rsa1 key pair.
+Enter file in which to save the key (/home/user/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):*************** 
+Enter same passphrase again:***************
+Your identification has been saved in /home/user/.ssh/id_rsa
+Your public key has been saved in /home/user/.ssh/id_rsa.pub
+The key fingerprint is:
+5c:23:da:14:00:c6:6f:3f:6e:2d:69:26:e2:9c:60:b0 user@nmnb2</code></pre>
+<p>The private key is protected by the passphrase and marks your identity if  activated.   <em>Both private  key  and  passphrase should  be  kept safe. They are not meant to be given to others.</em></p>
+<p>The public key is  used to check this identity. You  give it to anyone &#40;computer or person&#41; whom you want to enable to do this check.</p>
+<p>In particular, you can add this public  key to the contents of the file <code>.ssh/authorized_keys</code>  in  your home  directory  on  the remote  host &#40;e.g. <code>gate.institute.com</code>&#41;.  To do this, use <code>scp</code> to copy the key and <code>ssh</code> to log in to the remote and to edit the file. In the result, the contents of that file will look like</p>
+<pre><code class="plaintext hljs">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCvyyza7e8tFrBhNMRd/3w+XL9PIeSNTUC+PcHOQI7kcfk4oTDnfysTkPleM3fM+r588sDRWKa7eivLoZ7NCF3EgMd0HUUVHjWbWZgF7KXylu4dcsDMvANH5BlgWysFqxzaTzy8CX8E03NYSkn5kqzgtnkIm+Z/QzLd4mq48oG9Ns3uPlhU4Wf2XGEqV/6EtLvHgAG/PtUP1kofO74oit2d8BH3fkU0UCMBlZqVCAoefFnR4qg3c18McK3dGhM741dpopeD3E+zaJ55AS9nIZFdbkOZNsrQR+FbzmwkqQDwQ060De5XijqdU3VD64xxHeQeFtgHG/LqAOCaUTzVtKzx fuhrmann@jfzbook.wias-berlin.de</code></pre>
+<p>Be  sure, that  the  whole  subdirectory <code>.ssh</code>  is  readable only  by yourself. To ensure this, issue</p>
+<pre><code class="plaintext hljs">chmod -R go-rwx .ssh</code></pre>
+<p>from the home directory on the remote host.</p>
+<p>Then you can login using</p>
+<pre><code class="plaintext hljs">mylaptop$ ssh -i .ssh/id_rsa gate.institute.com
+Enter passphrase for RSA key &#x27;user@nmnb2&#x27;:</code></pre>
+<p>So, now  you authenticate  with the passphrase  instead of  the remote password.</p>
+<p>You can  store as  many public keys  in <code>.ssh/authorized_keys</code>  as you like, thus giving access to your  account to other identities of yours &#40;e.g. form  other computers&#41;  or to other  people &#40;wich  you should&#39;nt do&#41;.  Just add the line by line.   Be careful not to break the keys by accidental insertion of a line break. Each key uses exactly one line.</p>
+<p>Behind this implemenatation lies the idea of <a href="https://en.wikipedia.org/wiki/Public-key_cryptography">public-key  cryptography</a>.</p>
+
+
+<center>
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Public_key_encryption.svg/1048px-Public_key_encryption.svg.png"
+style="width: 400px;">
+
+Public-private cryptography (public domain)
+</center>
+
+<p>Nice...  but still I have to activate my key every time I want to use it...</p>
+<h3 id=password-less_login_identity_management_by_ssh-agent ><a href="#password-less_login_identity_management_by_ssh-agent" class=header-anchor >Password-less login: identity management by ssh-agent</a></h3>
+<p>Communicating with <code>ssh-agent</code>, the command <code>ssh-add</code>  activates your <em>private  key</em>  for  automatic  use  by <code>ssh</code>  after  verifying  your passphrase:</p>
+<pre><code class="plaintext hljs">mylaptop$ ssh-add
+Need passphrase for .ssh/id_rsa
+Enter passphrase for user@nmnb2 
+Identity added: .ssh/id_rsa (user@nmnb2)</code></pre>
+<p>The identity is then activated throughout your desktop session. Now try to issue</p>
+<pre><code class="plaintext hljs">ssh user@gate.institute.com</code></pre>
+<p>If  everything  works, you  will  be  logged  in without  password  or passphrase request.   The <code>ssh-agent</code> provides the  activated identity to the remote host, which uses the public key to check for the match.</p>
+<p>As long  as you keep  your passphrase and  your private key  safe, the connection is  encrypted and the procedure  is as safe as  you can get using  current  technology  &#40;provided all  participating  systems  are regularly updated&#41;.   You can increase security  by specifying higher key lengths and more sophisticated cipher schemes when generating your key pair,  and by specifying  a more  advanced cipher for  the session keys using the <code>-c</code> flag of ssh.</p>
+<p>Modern  desktop  systems  automatically   start  the <code>ssh-agent</code>,  so probably you do not have to care  about this. In times long passed you would have done this yourself by issuing e.g. one of</p>
+<pre><code class="plaintext hljs">$ ssh-agent xterm
+$ ssh-agent bash
+$ ssh-agent twm</code></pre>
+<h2 id=other_uses_of_ssh_keys_gitlab_github ><a href="#other_uses_of_ssh_keys_gitlab_github" class=header-anchor >Other uses of ssh keys: gitlab, github</a></h2>
+<p>There are more annoying cases where one is asked for a password, e.g. when authenticating with gitlab and github. Both allow to use ssh keys for authentication. After authentication via the web UI, one can add the public key used for ssh authentication to a gitlab server under</p>
+<pre><code class="plaintext hljs">https://gitlab.institute.com/-/user_settings/ssh_keys</code></pre>
+<p>Same for github, here the url is </p>
+<pre><code class="plaintext hljs">https://github.com/settings/keys</code></pre>
+<h2 id=ssh_tunnel ><a href="#ssh_tunnel" class=header-anchor >ssh tunnel</a></h2>
+<p>For security reasons, ssh access to an institution from outside may be restricted to a single host. In order to log in to one of the other computers, one needs first to log in to this ssh access server, only from there, the desired system can be reached.</p>
+<p>Let us assume, that  the host <code>gate.institute.com</code> is the system which allows ssh login from outside  and <code>sees</code> <code>myhost</code>. The login process then can look like:</p>
+<pre><code class="plaintext hljs">mylaptop$ ssh gate.institute.com
+Last login: Wed Nov 13 21:46:35 2024 from i59f7af27.versanet.de
+user@gate$ ssh myserver
+Last login: Wed Nov 13 21:47:20 2024 from gate.institute.com
+user@myserver$</code></pre>
+<p>Alternatively, you can log in  from your laptop <code>mylaptop</code> to <code>gate.institute.com</code> using the command</p>
+<pre><code class="plaintext hljs">mylaptop$ ssh gate.institute.com  -L 9000:myserver:22</code></pre>
+<p>This forwards port 22 &#40;ssh&#41; of <code>myserver</code> to port 9000 of <code>mylaptop</code> which can be accessed as <code>localhost</code>. So now you can log in to <code>myserver</code> via</p>
+<pre><code class="plaintext hljs">mylaptop$ ssh localhost -p9000
+Last login: Wed Nov 13 21:47:20 2024 from gate.institute.com
+user@myserver$</code></pre>
+<p>Ahhh ports... Every computer,  when connected to the internet has an &quot;IP address&quot; wich is this  kind of number: 192.168.111.3 &#40;for IPv4&#41; and <code>fe80::dcc2:3e53:c099:8cde</code> &#40;for IPv6&#41;. Connections to a computer can be established in parallel by different services &#40;e.g. ssh, http, smtp, imap&#41;, and each of these services can be accessed via a specific &quot;port&quot;. </p>
+<p>One can automatically establish this kind of tunneling for each log in to <code>gate.institute.com</code>. Just add the following lines to your <code>~/.ssh/config</code> file</p>
+<pre><code class="plaintext hljs">LocalForward 9000 myserver:22
+
+Host smyserver
+   Hostname localhost
+   Port 9000
+   HostKeyAlias smyserver</code></pre>
+<p>The you can login</p>
+<pre><code class="plaintext hljs">mylaptop$ ssh gate.institute.com
+gate$</code></pre>
+<p>and in another window</p>
+<pre><code class="plaintext hljs">mylaptop$ ssh smyserver
+myserver$</code></pre>
+<div class=page-foot >
+  <div class=copyright >
+    &copy; Jürgen Fuhrmann. License: <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode"> CC-BY-SA 4.0</a>. Last modified: November 13, 2024. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
+Upon finding factual errors, typos etc. <a href=https://github.com/j-fu/marginalia/issues> raise an issue<a>.
+<center>  <a href="/marginalia/feed.xml"> <img src="/marginalia/assets/rss.png" style="width:100px;"></a> </center>
+  </div>
+</div>
+
+
+</div>
+      </div>  
+    </div> 
+    
+    
+        
+
+
+    
+    <label for=sidebar-checkbox  class=sidebar-toggle ></label>
