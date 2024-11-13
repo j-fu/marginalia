@@ -4,7 +4,7 @@
 
 # Posts
   - [Julia](julia)
-  - [Git](git)
+  - [Git, ssh & Co](git)
   - [Older posts](older-posts)
 
 # Where to find me 

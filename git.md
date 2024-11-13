@@ -1,10 +1,11 @@
 @def title = "Marginalia -- Git"
 @def tags = ["git"]
 
-# Git
+# Git, ssh  & Co
 
 
 
 
 
-- [Basics](basics)
+- [Git basics](basics)
+- [Secure shell (ssh) basics](ssh-basics)
