@@ -1,5 +1,6 @@
 @def tags = ["ssh"]
 @def lang = "plaintext"
+@def author = "Jürgen Fuhrmann, Patrick Jaap"
 
 # Secure Shell ssh - the Swiss Army Knife of Remote Access
 
@@ -338,3 +339,4 @@ and in another window
 mylaptop$ ssh smyserver
 myserver$
 ```
+
