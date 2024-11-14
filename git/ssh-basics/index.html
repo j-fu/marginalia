@@ -34,8 +34,9 @@ The key fingerprint is:
 5c:23:da:14:00:c6:6f:3f:6e:2d:69:26:e2:9c:60:b0 user@nmnb2</code></pre>
 <p>The private key is protected by the passphrase and marks your identity if  activated.   <em>Both private  key  and  passphrase should  be  kept safe. They are not meant to be given to others.</em></p>
 <p>The public key is  used to check this identity. You  give it to anyone &#40;computer or person&#41; whom you want to enable to do this check.</p>
-<p>In particular, you can add this public  key to the contents of the file <code>.ssh/authorized_keys</code>  in  your home  directory  on  the remote  host &#40;e.g. <code>gate.institute.com</code>&#41;.  To do this, use <code>scp</code> to copy the key and <code>ssh</code> to log in to the remote and to edit the file. In the result, the contents of that file will look like</p>
-<pre><code class="plaintext hljs">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCvyyza7e8tFrBhNMRd/3w+XL9PIeSNTUC+PcHOQI7kcfk4oTDnfysTkPleM3fM+r588sDRWKa7eivLoZ7NCF3EgMd0HUUVHjWbWZgF7KXylu4dcsDMvANH5BlgWysFqxzaTzy8CX8E03NYSkn5kqzgtnkIm+Z/QzLd4mq48oG9Ns3uPlhU4Wf2XGEqV/6EtLvHgAG/PtUP1kofO74oit2d8BH3fkU0UCMBlZqVCAoefFnR4qg3c18McK3dGhM741dpopeD3E+zaJ55AS9nIZFdbkOZNsrQR+FbzmwkqQDwQ060De5XijqdU3VD64xxHeQeFtgHG/LqAOCaUTzVtKzx fuhrmann@jfzbook.wias-berlin.de</code></pre>
+<p>In particular, you can add this public  key to the contents of the file <code>.ssh/authorized_keys</code>  in  your home  directory  on  the remote  host &#40;e.g. <code>gate.institute.com</code>&#41;.  To do this, use the tool <code>ssh-copy-id</code> to copy your public key to the list of authorized keys on the server. The particular call is</p>
+<pre><code class="plaintext hljs">ssh-copy-id -i ~/.ssh/id_rsa.pub user@gate.institute.com</code></pre>
+<p>for the public key <code>id_rsa.pub</code>.</p>
 <p>Be  sure, that  the  whole  subdirectory <code>.ssh</code>  is  readable only  by yourself. To ensure this, issue</p>
 <pre><code class="plaintext hljs">chmod -R go-rwx .ssh</code></pre>
 <p>from the home directory on the remote host.</p>
@@ -104,7 +105,7 @@ gate$</code></pre>
 myserver$</code></pre>
 <div class=page-foot >
   <div class=copyright >
-    &copy; Jürgen Fuhrmann. License: <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode"> CC-BY-SA 4.0</a>. Last modified: November 13, 2024. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
+    &copy; Jürgen Fuhrmann. License: <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode"> CC-BY-SA 4.0</a>. Last modified: November 14, 2024. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 Upon finding factual errors, typos etc. <a href=https://github.com/j-fu/marginalia/issues> raise an issue<a>.
 <center>  <a href="/marginalia/feed.xml"> <img src="/marginalia/assets/rss.png" style="width:100px;"></a> </center>
   </div>
