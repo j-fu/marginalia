@@ -168,13 +168,13 @@ The public key is  used to check this identity. You  give it to anyone
 
 In particular, you can add this public  key to the contents of the file
 `.ssh/authorized_keys`  in  your home  directory  on  the remote  host
-(e.g. `gate.institute.com`).  To do this, use `scp` to copy the key and
-`ssh` to log in to the remote and to edit the file. In the result, the contents
-of that file will look like
-
+(e.g. `gate.institute.com`).  To do this, use the tool `ssh-copy-id` to
+copy your public key to the list of authorized keys on the server. The
+particular call is
 ```
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCvyyza7e8tFrBhNMRd/3w+XL9PIeSNTUC+PcHOQI7kcfk4oTDnfysTkPleM3fM+r588sDRWKa7eivLoZ7NCF3EgMd0HUUVHjWbWZgF7KXylu4dcsDMvANH5BlgWysFqxzaTzy8CX8E03NYSkn5kqzgtnkIm+Z/QzLd4mq48oG9Ns3uPlhU4Wf2XGEqV/6EtLvHgAG/PtUP1kofO74oit2d8BH3fkU0UCMBlZqVCAoefFnR4qg3c18McK3dGhM741dpopeD3E+zaJ55AS9nIZFdbkOZNsrQR+FbzmwkqQDwQ060De5XijqdU3VD64xxHeQeFtgHG/LqAOCaUTzVtKzx fuhrmann@jfzbook.wias-berlin.de
+ssh-copy-id -i ~/.ssh/id_rsa.pub user@gate.institute.com 
 ```
+for the public key `id_rsa.pub`.
 
 Be  sure, that  the  whole  subdirectory `.ssh`  is  readable only  by
 yourself. To ensure this, issue
