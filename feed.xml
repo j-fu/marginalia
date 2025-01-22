@@ -33,13 +33,13 @@
   
   <content:encoded>
     <![CDATA[  <h1 id="julia_project_workflow_howto">Julia: Project Workflow Howto</h1>
-<p>This post complements the <a href="https://j-fu.github.io/marginalia/julia/project-workflow">project workflow recommendations</a>. It tries to explain in a more introductory and rather assertive way how to work  on collaborative projects &#40;not packages&#41; in Julia. It is also meant to be an introduction for  collaborators with whome I share a Julia project following these conventions.</p>
-<p><div class="franklin-toc"><ol><li>The project files</li><li>Installation and updating of dependent packages</li><li>Running code<ol><li>Scripts</li><li>Notebooks</li></ol></li></ol></div> </p>
+<p>This post complements the <a href="https://j-fu.github.io/marginalia/julia/project-workflow">project workflow recommendations</a>. It tries to explain in a more introductory and rather assertive way how to work  on collaborative projects &#40;not packages&#41; in Julia which follow the convention described in the <a href="https://j-fu.github.io/marginalia/julia/project-workflow">project workflow recommendations</a>.</p>
+<p>The most important feature of the approach described consists in the idea that each project has its own package environment, as described in   <a href="https://j-fu.github.io/marginalia/julia/basic-workflow/#record_project_dependencies_in_reproducible_environments">&quot;Basic Workflow&quot;</a>. This allows to prevent package compatibility clashes between different projects. <div class="franklin-toc"><ol><li>The project files</li><li>Installation and updating of dependent packages</li><li>Running code<ol><li>Scripts</li><li>Notebooks</li></ol></li></ol></div> </p>
 <h2 id="the_project_files">The project files</h2>
 <p>After checking out the project the first time, you will see it populated with a number of files and subdirectories.</p>
 <p>The essential role of files a typical Julia project file tree is as follows:</p>
 <ul>
-<li><p><code>Project.toml</code>: This file describes the project on a high level, including the packages it depends on and their compatibility constraints as <a href="https://j-fu.github.io/marginalia/julia/basic-workflow/#record_your_project_dependencies_in_reproducible_environments">described in &quot;Basic Workflow&quot;</a>.</p>
+<li><p><code>Project.toml</code>: This file describes the project on a high level, including the packages it depends on and their compatibility constraints as described in <a href="https://j-fu.github.io/marginalia/julia/basic-workflow/#record_your_project_dependencies_in_reproducible_environments">&quot;Basic Workflow&quot;</a>.</p>
 </li>
 <li><p><code>LICENSE</code>: License of the project.</p>
 </li>
@@ -76,8 +76,8 @@ julia&gt; Pkg.update&#40;&#41;</code></pre>
 <pre><code class="language-julia">&#36; julia --project&#61;.
 julia&gt; using Revise
 julia&gt; includet&#40;&quot;scripts/script1.jl&quot;&#41;</code></pre>
-<p>See <a href="https://j-fu.github.io/marginalia/julia/basic-workflow/#use_revisejl_to_reload_modified_code">here</a> for an explanation of <code>Revise</code></p>
-<p>With some precompilation hiatus, it is possible to just run</p>
+<p>See <a href="https://j-fu.github.io/marginalia/julia/basic-workflow/#use_revisejl_to_reload_modified_code">here</a> for an explanation of <code>Revise</code>.</p>
+<p>With some precompilation hiatus, it is also possible to just run</p>
 <pre><code class="language-julia">julia scripts/script1.jl</code></pre>
 <h3 id="notebooks">Notebooks</h3>
 <p>To run the Pluto notebook <code>notebooks/notebook1.jl</code>, <a href="https://plutojl.org">install Pluto</a> in your global environment and perform</p>
@@ -88,6 +88,8 @@ julia&gt; Pluto.run&#40;notebook&#61;&quot;notebooks/notebook1.jl&quot;&#41;</co
 <hr size="5" noshade>
  <strong>Update history</strong></p>
 <ul>
+<li><p>2025-22-01: Updated some wording</p>
+</li>
 <li><p>2024-10-02: Initial version </p>
 </li>
 </ul>
@@ -489,6 +491,7 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;, push&#61;true&#41
 <li><p>The whole project directory <em>still</em> shall be shareable with collaborators in a reproducible way.</p>
 </li>
 </ul>
+<p>Morevover, it is important to prevent package compatibility clashes between different projects. Therefore, perhaps, the most important feature of the approach described consists in the idea that each project has its own package environment, as described in <a href="https://j-fu.github.io/marginalia/julia/basic-workflow/#record_project_dependencies_in_reproducible_environments">&quot;Basic Workflow&quot;</a>.</p>
 <h2 id="recommendations">Recommendations</h2>
 <p>The following recommendations are partially inspired by B. Kaminski&#39;s post on  <a href="https://bkamins.github.io/julialang/2020/05/18/project-workflow.html">project workflow</a> and  the  <a href="https://github.com/JuliaDynamics/DrWatson.jl">DrWatson.jl</a> package by G. Datseris.</p>
 <h3 id="generate_the_project_directory_itself_as_a_package">Generate the project directory itself as a package</h3>
