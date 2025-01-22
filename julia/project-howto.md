@@ -5,15 +5,18 @@
 # Julia: Project Workflow Howto
 
 This post complements the [project workflow recommendations](/julia/project-workflow).
-It tries to explain in a more introductory and rather assertive way how to work  on collaborative projects (not packages) in Julia. It is also meant to be an introduction for  collaborators with whome I share a Julia project following these conventions.
+It tries to explain in a more introductory and rather assertive way how to work  on collaborative projects (not packages) in Julia which follow the convention described in the [project workflow recommendations](/julia/project-workflow).
 
+The most important feature of the approach described consists in the idea that each project has its own package
+environment, as described in 
+ ["Basic Workflow"](/julia/basic-workflow/#record_project_dependencies_in_reproducible_environments). This allows to prevent package compatibility clashes between different projects.
 \toc 
 
 ## The project files
 After checking out the project the first time, you will see it populated with a number of files and subdirectories.
 
 The essential role of files a typical Julia project file tree is as follows:
-- `Project.toml`: This file describes the project on a high level, including the packages it depends on and their compatibility constraints as [described in "Basic Workflow"](/julia/basic-workflow/#record_your_project_dependencies_in_reproducible_environments).
+- `Project.toml`: This file describes the project on a high level, including the packages it depends on and their compatibility constraints as described in ["Basic Workflow"](/julia/basic-workflow/#record_your_project_dependencies_in_reproducible_environments).
 - `LICENSE`: License of the project.
 - `README.md`: A general description of the project
 - `src`: Subdirectory for project specific source code shared between scripts and notebooks of the project
@@ -55,9 +58,9 @@ $ julia --project=.
 julia> using Revise
 julia> includet("scripts/script1.jl")
 ```
-See [here](/julia/basic-workflow/#use_revisejl_to_reload_modified_code) for an explanation of `Revise`
+See [here](/julia/basic-workflow/#use_revisejl_to_reload_modified_code) for an explanation of `Revise`.
 
-With some precompilation hiatus, it is possible to just run
+With some precompilation hiatus, it is also possible to just run
 ```
 julia scripts/script1.jl
 ```
@@ -75,4 +78,5 @@ julia> Pluto.run(notebook="notebooks/notebook1.jl")
 <hr size="5" noshade>
 ~~~
 __Update history__
+- 2025-22-01: Updated some wording
 - 2024-10-02: Initial version 

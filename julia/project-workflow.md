@@ -17,8 +17,10 @@ For a larger project, structuring of the project code is essential for many reas
 - You want to have unit testing available in the project.
 - The whole project directory _still_ shall be shareable with collaborators in a reproducible way.
 
-## Recommendations
+Morevover, it is important to prevent package compatibility clashes between different projects. Therefore, perhaps, the most important feature of the approach described consists in the idea that each project has its own package
+environment, as described in ["Basic Workflow"](/julia/basic-workflow/#record_project_dependencies_in_reproducible_environments).
 
+## Recommendations
 The following recommendations are partially inspired by B. Kaminski's post on  [project workflow](https://bkamins.github.io/julialang/2020/05/18/project-workflow.html) and  the  [DrWatson.jl](https://github.com/JuliaDynamics/DrWatson.jl) package by G. Datseris.
 
 
