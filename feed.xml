@@ -572,6 +572,7 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;, push&#61;true&#41
 <p>You can download the Julia script <a href="https://j-fu.github.io/marginalia/assets/genproject.jl">genproject.jl</a> and generate this structure a subdirectory on your computer via</p>
 <pre><code class="language-julia">julia --compile&#61;min genproject.jl name_of_your_project</code></pre>
 <p>Feel free to adapt the generated directory tree to your needs and don&#39;t forget to make a git repository out of it as early as possible.</p>
+<p><a href="https://j-fu.github.io/marginalia/assets/project-skeleton.zip">project-skeleton.zip</a></p>
 <h2 id="summary">Summary</h2>
 <ul>
 <li><p>Script functionality should be developed in functions, avoiding global variables</p>
