@@ -95,6 +95,8 @@ julia --compile=min genproject.jl name_of_your_project
 ```
 Feel free to adapt the generated directory tree to your needs and don't forget to make a git repository out of it as early as possible.
 
+[project-skeleton.zip](/assets/project-skeleton.zip)
+
 ## Summary
 
 - Script functionality should be developed in functions, avoiding global variables
