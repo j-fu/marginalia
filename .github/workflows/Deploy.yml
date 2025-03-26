@@ -12,7 +12,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         persist-credentials: false
-    - run: cd _assets && zip -r  project-skeleton.zip project_skeleton
+    - run: cd _assets && zip -r  project-skeleton.zip project-skeleton
     # NOTE: Python is necessary for the pre-rendering (minification) step
     - name: Install python
       uses: actions/setup-python@v2
