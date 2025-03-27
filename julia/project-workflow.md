@@ -25,17 +25,11 @@ The following recommendations are partially inspired by B. Kaminski's post on  [
 
 
 ### Generate the project directory itself as a package
-Name this e.g. `MyProject`. Use[`Pkg.generate`](https://pkgdocs.julialang.org/v1/creating-packages/) or [PkgTemplates.jl](https://github.com/invenia/PkgTemplates.jl). Unlinke a published Julia package, this  _project-package_ will remain not be registered in a Julia package registry, its code will be shared directly via git repository urls.  Developing the project in such a project-package has the following advantages:
+Name this e.g. `MyProject`. Use[`Pkg.generate`](https://pkgdocs.julialang.org/v1/creating-packages/) or [PkgTemplates.jl](https://github.com/invenia/PkgTemplates.jl). Unlike a published Julia package, this  _project-package_ will remain not be registered in a Julia package registry, its code will be shared directly via git repository urls.  Developing the project in such a project-package has the following advantages:
    - Straightforward way to share  the code in the `src` folder among different project scripts and notebooks based on one shared environment via `using MyProject`.
    - Straightforward availability of Julia's  test and documentation functionality for the project.
    - Reproducibility due to dependencies recorded in the project environment (files `Project.toml` and `Manifest.toml`).
 
-### New packages can evolve from the project code
-For this purpose, optionally you can have a folder `packages` which contains other sub-packages which potentially can evolve into standalone, even registered packages. As [relative paths are recorded in Manifest.toml](https://github.com/JuliaLang/Pkg.jl/issues/1214), these are made available within the  project via `Pkg.develop(path="packages/MySubPackage")`.
-Starting wit Julia 1.11, `Project.toml` can have a [`[sources]` section](https://pkgdocs.julialang.org/dev/toml-files/#The-[sources]-section) which can contain a relative path for a subpackage.
-Either way, using this approach, the  whole project  tree including sub-packages  will stay relocateable.
-   - This allows for easy start of low key package development. At a later stage, `MySubPackage` could be registered as a Julia package while still residing in the project tree, or even removed from the project tree without affecting  scripts depending on it -- once registered, the package can be added to the project environment via `Pkg.add` instead of `Pkg.develop`, or just removed from the `[sources]` section.
-   
 ### Manifest or not ?
 Should the `Manifest.toml` be checked into the project repository or not ? The answer is - your mileage may vary.
 
@@ -56,46 +50,70 @@ Pro not checking in the manifest file:
 - When working with the project, always run julia from the package root with the package environment activated: `julia --project=.` 
 
 
-### Activate the project environment in notebooks
-Project specific Pluto notebooks would reside in a  `notebooks` subdirectory  and call  `Pkg.activate(joinpath(@__DIR__,".."))` in their respective Pkg cell to activate the `MyProject` environment.  As a consequence, Pluto's in-built package manager will be disabled and the project specific notebooks will share the `MyProject` environment and _cannot be shared independent from the `MyProject` tree_ (If independent sharing is desired, common project code can be collected into a package residing in `packages` and registered in a registry; registering `MyProject` itself as a package is not recommended.  -- More about this in another post).
+### Activate the project environment in notebooks and scripts
+Project specific scripts and Pluto notebooks would reside in a  subdirectory  and call  `Pkg.activate(joinpath(@__DIR__,".."))`  to activate the `MyProject` environment.  As a consequence, in the notebooks Pluto's in-built package manager will be disabled and the project specific notebooks will share the `MyProject` environment and _cannot be shared independent from the `MyProject` tree_ (If independent sharing is desired, common project code can be collected into a package residing in `packages` and registered in a registry; registering `MyProject` itself as a package is not recommended.  -- More about this in another post).
 
 ### Consider using DrWatson.jl
 You may use [DrWatson.jl](https://github.com/JuliaDynamics/DrWatson.jl) for managing subdirectory access, simulation results and version tagging. By explicitely activating the project environment at the start of Julia or in the notebook Pkg cell, you can avoid  `@quickactivate` and  avoid putting `using DrWatson` into script files and notebooks for the sole purpose of activating the common environment. See also [this discussion](https://github.com/JuliaDynamics/DrWatson.jl/issues/261).
 
 
 ### A sample project tree
+
 A sample project tree could e.g. look like this
 ```
-MyProject
+MyProject/
+├── src
+│   └── MyProject.jl
+├── docs
+│   ├── make.jl
+│   ├── Project.toml
+│   └── src
+│       └── index.md
 ├── LICENSE
-├── Manifest.toml
 ├── notebooks
-│   └── demo-notebook.jl
-├── packages
-│   └── MySubPackage
-│       ├── Manifest.toml
-│       ├── Project.toml
-│       ├── src
-│       │   └── MySubPackage.jl
-│       └── test
-│           └── runtests.jl
-├── papers
+│   └── demo-notebook.jl
 ├── Project.toml
 ├── README.md
 ├── scripts
-│   └── demo-script.jl
-├── src
-│   └── MyProject.jl
+│   └── demo-script.jl
+├── papers
+├── etc
+│   ├── runpluto.jl
+│   └── instantiate.jl
 └── test
     └── runtests.jl
 ```
-You can download the Julia script [genproject.jl](/assets/genproject.jl) and generate this structure a subdirectory on your computer via
+The essential role of these files is as follows:
+- `Project.toml`: The project file describes the project on a high level. It lists packages used by the prokject together with version compatibility constraints  [(see documentation)](https://pkgdocs.julialang.org/v1/toml-files/#Project-and-Manifest)
+- `LICENSE`: License of the project. By default it is the MIT license
+- `README.md`: This file
+- `src`: Subdirectory for project specific code as part of the MyProject package representing the project.
+- `test`: Unit tests for project code in `src`. Could include something from `scripts`, `notebooks`.
+- `scripts`, `notebooks`: "Frontend" code for creating project results
+- `papers`: "Wer schreibt, der bleibt" - besides of coding, you probably should publish your results...
+- `docs`: Sources for the documentation created with `Documenter.jl`
+- `etc`: Service code
+
+Using [PkgSkeleton.jl](https://github.com/tpapp/PkgSkeleton.jl), you can generate these files:
+Download and unpack the corresponding project skeleton [project-skeleton.zip](/assets/project-skeleton.zip).
+Then invoke
 ```
-julia --compile=min genproject.jl name_of_your_project
+julia> using PkgSkeleton
+julia> PkgSkeleton.generate("MyProject"; templates=["project-skeleton"])
 ```
+
 Feel free to adapt the generated directory tree to your needs and don't forget to make a git repository out of it as early as possible.
 
-[project-skeleton.zip](/assets/project-skeleton.zip)
+
+
+
+### New packages can evolve from the project code
+For this purpose, optionally you can have a folder `packages` which contains other sub-packages which potentially can evolve into standalone, even registered packages. As [relative paths are recorded in Manifest.toml](https://github.com/JuliaLang/Pkg.jl/issues/1214), these are made available within the  project via `Pkg.develop(path="packages/MySubPackage")`.
+Starting wit Julia 1.11, `Project.toml` can have a [`[sources]` section](https://pkgdocs.julialang.org/dev/toml-files/#The-[sources]-section) which can contain a relative path for a subpackage.
+Either way, using this approach, the  whole project  tree including sub-packages  will stay relocateable.
+   - This allows for easy start of low key package development. At a later stage, `MySubPackage` could be registered as a Julia package while still residing in the project tree, or even removed from the project tree without affecting  scripts depending on it -- once registered, the package can be added to the project environment via `Pkg.add` instead of `Pkg.develop`, or just removed from the `[sources]` section.
+   
+
 
 ## Summary
 
@@ -119,6 +137,7 @@ By taking advantage of Julia's best-in-class package management facilities, the 
 <hr size="5" noshade>
 ~~~
 __Update history__
+- 2025-03-29: Switch ot PkgSkeleton for the template
 - 2024-07-31: Julia 1.11
 - 2023-04-24: Intermediate headers
 - 2022-02-09: RSS
