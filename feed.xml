@@ -475,7 +475,7 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;, push&#61;true&#41
   
   <content:encoded>
     <![CDATA[  <h1 id="julia_project_workflow_recommendations">Julia: Project Workflow Recommendations</h1>
-<p><div class="franklin-toc"><ol><li>Rationale</li><li>Recommendations<ol><li>Generate the project directory itself as a package</li><li>New packages can evolve from the project code</li><li>Manifest or not ?</li><li>Always start Julia from the package root</li><li>Activate the project environment in notebooks</li><li>Consider using DrWatson.jl</li><li>A sample project tree</li></ol></li><li>Summary</li></ol></div> </p>
+<p><div class="franklin-toc"><ol><li>Rationale</li><li>Recommendations<ol><li>Generate the project directory itself as a package</li><li>Manifest or not ?</li><li>Always start Julia from the package root</li><li>Activate the project environment in notebooks and scripts</li><li>Consider using DrWatson.jl</li><li>A sample project tree</li><li>New packages can evolve from the project code</li></ol></li><li>Summary</li></ol></div> </p>
 <p>The term &quot;project&quot; in this post corresponds to the term &quot;application&quot; in <a href="https://pkgdocs.julialang.org/v1/glossary/#Glossary">package manager glossary</a></p>
 <h2 id="rationale">Rationale</h2>
 <p>Some ideas on basic julia workflow  are given  <a href="https://j-fu.github.io/marginalia/julia/basic-workflow">here</a>. For a larger project, structuring of the project code is essential for many reasons, some of them are:</p>
@@ -495,19 +495,13 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;, push&#61;true&#41
 <h2 id="recommendations">Recommendations</h2>
 <p>The following recommendations are partially inspired by B. Kaminski&#39;s post on  <a href="https://bkamins.github.io/julialang/2020/05/18/project-workflow.html">project workflow</a> and  the  <a href="https://github.com/JuliaDynamics/DrWatson.jl">DrWatson.jl</a> package by G. Datseris.</p>
 <h3 id="generate_the_project_directory_itself_as_a_package">Generate the project directory itself as a package</h3>
-<p>Name this e.g. <code>MyProject</code>. Use<a href="https://pkgdocs.julialang.org/v1/creating-packages/"><code>Pkg.generate</code></a> or <a href="https://github.com/invenia/PkgTemplates.jl">PkgTemplates.jl</a>. Unlinke a published Julia package, this  <em>project-package</em> will remain not be registered in a Julia package registry, its code will be shared directly via git repository urls.  Developing the project in such a project-package has the following advantages:</p>
+<p>Name this e.g. <code>MyProject</code>. Use<a href="https://pkgdocs.julialang.org/v1/creating-packages/"><code>Pkg.generate</code></a> or <a href="https://github.com/invenia/PkgTemplates.jl">PkgTemplates.jl</a>. Unlike a published Julia package, this  <em>project-package</em> will remain not be registered in a Julia package registry, its code will be shared directly via git repository urls.  Developing the project in such a project-package has the following advantages:</p>
 <ul>
 <li><p>Straightforward way to share  the code in the <code>src</code> folder among different project scripts and notebooks based on one shared environment via <code>using MyProject</code>.</p>
 </li>
 <li><p>Straightforward availability of Julia&#39;s  test and documentation functionality for the project.</p>
 </li>
 <li><p>Reproducibility due to dependencies recorded in the project environment &#40;files <code>Project.toml</code> and <code>Manifest.toml</code>&#41;.</p>
-</li>
-</ul>
-<h3 id="new_packages_can_evolve_from_the_project_code">New packages can evolve from the project code</h3>
-<p>For this purpose, optionally you can have a folder <code>packages</code> which contains other sub-packages which potentially can evolve into standalone, even registered packages. As <a href="https://github.com/JuliaLang/Pkg.jl/issues/1214">relative paths are recorded in Manifest.toml</a>, these are made available within the  project via <code>Pkg.develop&#40;path&#61;&quot;packages/MySubPackage&quot;&#41;</code>. Starting wit Julia 1.11, <code>Project.toml</code> can have a <a href="https://pkgdocs.julialang.org/dev/toml-files/#The-&#91;sources&#93;-section"><code>&#91;sources&#93;</code> section</a> which can contain a relative path for a subpackage. Either way, using this approach, the  whole project  tree including sub-packages  will stay relocateable.</p>
-<ul>
-<li><p>This allows for easy start of low key package development. At a later stage, <code>MySubPackage</code> could be registered as a Julia package while still residing in the project tree, or even removed from the project tree without affecting  scripts depending on it – once registered, the package can be added to the project environment via <code>Pkg.add</code> instead of <code>Pkg.develop</code>, or just removed from the <code>&#91;sources&#93;</code> section.</p>
 </li>
 </ul>
 <h3 id="manifest_or_not">Manifest or not ?</h3>
@@ -541,38 +535,64 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;, push&#61;true&#41
 <li><p>When working with the project, always run julia from the package root with the package environment activated: <code>julia --project&#61;.</code> </p>
 </li>
 </ul>
-<h3 id="activate_the_project_environment_in_notebooks">Activate the project environment in notebooks</h3>
-<p>Project specific Pluto notebooks would reside in a <code>notebooks</code> subdirectory  and call <code>Pkg.activate&#40;joinpath&#40;@__DIR__,&quot;..&quot;&#41;&#41;</code> in their respective Pkg cell to activate the <code>MyProject</code> environment.  As a consequence, Pluto&#39;s in-built package manager will be disabled and the project specific notebooks will share the <code>MyProject</code> environment and <em>cannot be shared independent from the <code>MyProject</code> tree</em> &#40;If independent sharing is desired, common project code can be collected into a package residing in <code>packages</code> and registered in a registry; registering <code>MyProject</code> itself as a package is not recommended.  – More about this in another post&#41;.</p>
+<h3 id="activate_the_project_environment_in_notebooks_and_scripts">Activate the project environment in notebooks and scripts</h3>
+<p>Project specific scripts and Pluto notebooks would reside in a  subdirectory  and call <code>Pkg.activate&#40;joinpath&#40;@__DIR__,&quot;..&quot;&#41;&#41;</code>  to activate the <code>MyProject</code> environment.  As a consequence, in the notebooks Pluto&#39;s in-built package manager will be disabled and the project specific notebooks will share the <code>MyProject</code> environment and <em>cannot be shared independent from the <code>MyProject</code> tree</em> &#40;If independent sharing is desired, common project code can be collected into a package residing in <code>packages</code> and registered in a registry; registering <code>MyProject</code> itself as a package is not recommended.  – More about this in another post&#41;.</p>
 <h3 id="consider_using_drwatsonjl">Consider using DrWatson.jl</h3>
 <p>You may use <a href="https://github.com/JuliaDynamics/DrWatson.jl">DrWatson.jl</a> for managing subdirectory access, simulation results and version tagging. By explicitely activating the project environment at the start of Julia or in the notebook Pkg cell, you can avoid <code>@quickactivate</code> and  avoid putting <code>using DrWatson</code> into script files and notebooks for the sole purpose of activating the common environment. See also <a href="https://github.com/JuliaDynamics/DrWatson.jl/issues/261">this discussion</a>.</p>
 <h3 id="a_sample_project_tree">A sample project tree</h3>
 <p>A sample project tree could e.g. look like this</p>
-<pre><code class="language-julia">MyProject
+<pre><code class="language-julia">MyProject/
+├── src
+│   └── MyProject.jl
+├── docs
+│   ├── make.jl
+│   ├── Project.toml
+│   └── src
+│       └── index.md
 ├── LICENSE
-├── Manifest.toml
 ├── notebooks
-│   └── demo-notebook.jl
-├── packages
-│   └── MySubPackage
-│       ├── Manifest.toml
-│       ├── Project.toml
-│       ├── src
-│       │   └── MySubPackage.jl
-│       └── test
-│           └── runtests.jl
-├── papers
+│   └── demo-notebook.jl
 ├── Project.toml
 ├── README.md
 ├── scripts
-│   └── demo-script.jl
-├── src
-│   └── MyProject.jl
+│   └── demo-script.jl
+├── papers
+├── etc
+│   ├── runpluto.jl
+│   └── instantiate.jl
 └── test
     └── runtests.jl</code></pre>
-<p>You can download the Julia script <a href="https://j-fu.github.io/marginalia/assets/genproject.jl">genproject.jl</a> and generate this structure a subdirectory on your computer via</p>
-<pre><code class="language-julia">julia --compile&#61;min genproject.jl name_of_your_project</code></pre>
+<p>The essential role of these files is as follows:</p>
+<ul>
+<li><p><code>Project.toml</code>: The project file describes the project on a high level. It lists packages used by the prokject together with version compatibility constraints  <a href="https://pkgdocs.julialang.org/v1/toml-files/#Project-and-Manifest">&#40;see documentation&#41;</a></p>
+</li>
+<li><p><code>LICENSE</code>: License of the project. By default it is the MIT license</p>
+</li>
+<li><p><code>README.md</code>: This file</p>
+</li>
+<li><p><code>src</code>: Subdirectory for project specific code as part of the MyProject package representing the project.</p>
+</li>
+<li><p><code>test</code>: Unit tests for project code in <code>src</code>. Could include something from <code>scripts</code>, <code>notebooks</code>.</p>
+</li>
+<li><p><code>scripts</code>, <code>notebooks</code>: &quot;Frontend&quot; code for creating project results</p>
+</li>
+<li><p><code>papers</code>: &quot;Wer schreibt, der bleibt&quot; - besides of coding, you probably should publish your results...</p>
+</li>
+<li><p><code>docs</code>: Sources for the documentation created with <code>Documenter.jl</code></p>
+</li>
+<li><p><code>etc</code>: Service code</p>
+</li>
+</ul>
+<p>Using <a href="https://github.com/tpapp/PkgSkeleton.jl">PkgSkeleton.jl</a>, you can generate these files: Download and unpack the corresponding project skeleton <a href="https://j-fu.github.io/marginalia/assets/project-skeleton.zip">project-skeleton.zip</a>. Then invoke</p>
+<pre><code class="language-julia">julia&gt; using PkgSkeleton
+julia&gt; PkgSkeleton.generate&#40;&quot;MyProject&quot;; templates&#61;&#91;&quot;project-skeleton&quot;&#93;&#41;</code></pre>
 <p>Feel free to adapt the generated directory tree to your needs and don&#39;t forget to make a git repository out of it as early as possible.</p>
-<p><a href="https://j-fu.github.io/marginalia/assets/project-skeleton.zip">project-skeleton.zip</a></p>
+<h3 id="new_packages_can_evolve_from_the_project_code">New packages can evolve from the project code</h3>
+<p>For this purpose, optionally you can have a folder <code>packages</code> which contains other sub-packages which potentially can evolve into standalone, even registered packages. As <a href="https://github.com/JuliaLang/Pkg.jl/issues/1214">relative paths are recorded in Manifest.toml</a>, these are made available within the  project via <code>Pkg.develop&#40;path&#61;&quot;packages/MySubPackage&quot;&#41;</code>. Starting wit Julia 1.11, <code>Project.toml</code> can have a <a href="https://pkgdocs.julialang.org/dev/toml-files/#The-&#91;sources&#93;-section"><code>&#91;sources&#93;</code> section</a> which can contain a relative path for a subpackage. Either way, using this approach, the  whole project  tree including sub-packages  will stay relocateable.</p>
+<ul>
+<li><p>This allows for easy start of low key package development. At a later stage, <code>MySubPackage</code> could be registered as a Julia package while still residing in the project tree, or even removed from the project tree without affecting  scripts depending on it – once registered, the package can be added to the project environment via <code>Pkg.add</code> instead of <code>Pkg.develop</code>, or just removed from the <code>&#91;sources&#93;</code> section.</p>
+</li>
+</ul>
 <h2 id="summary">Summary</h2>
 <ul>
 <li><p>Script functionality should be developed in functions, avoiding global variables</p>
@@ -607,6 +627,8 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;, push&#61;true&#41
 <hr size="5" noshade>
  <strong>Update history</strong></p>
 <ul>
+<li><p>2025-03-29: Switch ot PkgSkeleton for the template</p>
+</li>
 <li><p>2024-07-31: Julia 1.11</p>
 </li>
 <li><p>2023-04-24: Intermediate headers</p>
