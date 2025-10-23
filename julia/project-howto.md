@@ -31,10 +31,10 @@ After checking out the code with git, at first it is necessary to instantiate th
 ```
 $ julia --project=.
 julia> using Pkg
-julia> Pkg.instantiate()
+julia> Pkg.resolve()
 ```
 This uses the Julia package manager to automatically download and precompile all Julia packages listed as dependencies in  `Project.toml`. 
-It also will create a `Manifest.toml` file which records recursively all dependenencies with their exact versions.
+It also will create a `Manifest.toml` file which records recursively all dependencies with their exact versions.
 
 Likewise, after updating some code from the git repository, it is possible to update the project environment:
 
@@ -56,7 +56,7 @@ To run script `scripts/script1.jl`, perform from the project root:
 ```
 $ julia --project=.
 julia> using Revise
-julia> includet("scripts/script1.jl")
+julia> includet("scripts/demo-script.jl")
 ```
 See [here](/julia/basic-workflow/#use_revisejl_to_reload_modified_code) for an explanation of `Revise`.
 
@@ -66,7 +66,7 @@ julia scripts/script1.jl
 ```
 
 ### Notebooks
-To run the Pluto notebook `notebooks/notebook1.jl`, [install Pluto](https://plutojl.org) in your global environment and perform
+To run the Pluto notebook `notebooks/demo-notebook.jl`, [install Pluto](https://plutojl.org) in your global environment and perform
 
 ```
 $ julia 
