@@ -62,8 +62,8 @@
 <p>After checking out the code with git, at first it is necessary to instantiate the project environment. Go to the project root directory and invoke</p>
 <pre><code class="language-julia">&#36; julia --project&#61;.
 julia&gt; using Pkg
-julia&gt; Pkg.instantiate&#40;&#41;</code></pre>
-<p>This uses the Julia package manager to automatically download and precompile all Julia packages listed as dependencies in <code>Project.toml</code>.  It also will create a <code>Manifest.toml</code> file which records recursively all dependenencies with their exact versions.</p>
+julia&gt; Pkg.resolve&#40;&#41;</code></pre>
+<p>This uses the Julia package manager to automatically download and precompile all Julia packages listed as dependencies in <code>Project.toml</code>.  It also will create a <code>Manifest.toml</code> file which records recursively all dependencies with their exact versions.</p>
 <p>Likewise, after updating some code from the git repository, it is possible to update the project environment:</p>
 <pre><code class="language-julia">&#36; julia --project&#61;.
 julia&gt; using Pkg
@@ -75,12 +75,12 @@ julia&gt; Pkg.update&#40;&#41;</code></pre>
 <p>To run script <code>scripts/script1.jl</code>, perform from the project root:</p>
 <pre><code class="language-julia">&#36; julia --project&#61;.
 julia&gt; using Revise
-julia&gt; includet&#40;&quot;scripts/script1.jl&quot;&#41;</code></pre>
+julia&gt; includet&#40;&quot;scripts/demo-script.jl&quot;&#41;</code></pre>
 <p>See <a href="https://j-fu.github.io/marginalia/julia/basic-workflow/#use_revisejl_to_reload_modified_code">here</a> for an explanation of <code>Revise</code>.</p>
 <p>With some precompilation hiatus, it is also possible to just run</p>
 <pre><code class="language-julia">julia scripts/script1.jl</code></pre>
 <h3 id="notebooks">Notebooks</h3>
-<p>To run the Pluto notebook <code>notebooks/notebook1.jl</code>, <a href="https://plutojl.org">install Pluto</a> in your global environment and perform</p>
+<p>To run the Pluto notebook <code>notebooks/demo-notebook.jl</code>, <a href="https://plutojl.org">install Pluto</a> in your global environment and perform</p>
 <pre><code class="language-julia">&#36; julia 
 julia&gt; using Pluto
 julia&gt; Pluto.run&#40;notebook&#61;&quot;notebooks/notebook1.jl&quot;&#41;</code></pre>
