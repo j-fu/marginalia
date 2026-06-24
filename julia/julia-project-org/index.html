@@ -1,0 +1,452 @@
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/marginalia/libs/highlight/github.min.css"> <link rel=stylesheet  href="/marginalia/css/franklin.css"> <link rel=stylesheet  href="/marginalia/css/poole_lanyon.css"> <link rel=stylesheet  href="/marginalia/css/adjust.css"> <link rel=icon  href="/marginalia/assets/favicon.png"> <title>Getting Started</title> <input type=checkbox  class=sidebar-checkbox  id=sidebar-checkbox > <div class=sidebar  id=sidebar > <div class=sidebar-item > <p>Marginalia</p> </div> <nav class=sidebar-nav > <a class="sidebar-nav-item " href="/marginalia/">Home</a> <a class="sidebar-nav-item " href="/marginalia/julia/">Julia</a> <a class="sidebar-nav-item " href="/marginalia/git/">Git</a> <a class="sidebar-nav-item " href="/marginalia/older-posts/">Older posts</a> </nav> <div class=sidebar-item > <p>&copy; Jürgen Fuhrmann.</p> </div> </div> <!-- Wrap is the content to shift when toggling the sidebar. We wrap the content to avoid any CSS collisions with our real content. --> <div class=wrap > <div class=masthead > <div class=container > <h3 class=masthead-title > <a href="/marginalia/" title=Home >Marginalia</a> </h3> </div> </div> </div> <div class="container content"> <div class=franklin-content ><p><hr /> title: &quot;Organizing Julia Research Software Projects&quot; author: &quot;J. Fuhrmann&quot; date: 2026-06-25 subtitle: | Slides assembled with the assistance of Claude &#40;Anthropic&#41; from material by J. Fuhrmann at <a href="https://j-fu.github.io/marginalia/julia/">https://j-fu.github.io/marginalia/julia/</a>. theme: metropolis fontsize: 10pt aspectratio: 169 colorlinks: true –-</p> <h1 id=getting_started ><a href="#getting_started" class=header-anchor >Getting Started</a></h1> <h2 id=why_julia_for_research_software ><a href="#why_julia_for_research_software" class=header-anchor >Why Julia for Research Software?</a></h2> <ul> <li><p><strong>Performance</strong>: JIT-compiled, near-C speed without manual optimization</p> <li><p><strong>Expressiveness</strong>: High-level syntax, close to mathematical notation</p> <li><p><strong>Package ecosystem</strong>: 10000&#43; registered packages; best-in-class package manager</p> <li><p><strong>Reproducibility</strong>: Built-in environment management via <code>Project.toml</code> and <code>Manifest.toml</code></p> <li><p><strong>Interactivity</strong>: REPL, Pluto notebooks, Jupyter support</p> </ul> <p>Julia is evolving — current LTS version: <strong>1.10</strong>, current stable: <strong>1.12</strong></p> <h2 id=installing_julia_juliaup ><a href="#installing_julia_juliaup" class=header-anchor >Installing Julia: <code>juliaup</code></a></h2> <p>Use <strong>juliaup</strong> — the recommended installer and version manager</p> <pre><code class="bash hljs"><span class=hljs-comment ># Linux / macOS</span>
+curl -fsSL https://install.julialang.org | sh
+
+<span class=hljs-comment ># Windows (PowerShell)</span>
+winget install julia -s msstore</code></pre> <ul> <li><p>Installs Julia and keeps it up to date</p> <li><p>Manages multiple Julia versions side by side</p> <li><p><strong>Avoid</strong> OS package managers &#40;Homebrew, apt, ...&#41; — versions are often outdated</p> </ul> <p>See: <a href="https://julialang.org/downloads">https://julialang.org/downloads</a></p> <h2 id=managing_julia_versions_with_juliaup ><a href="#managing_julia_versions_with_juliaup" class=header-anchor >Managing Julia Versions with <code>juliaup</code></a></h2> <pre><code class="bash hljs">juliaup status          <span class=hljs-comment ># list installed versions</span>
+juliaup add 1.11        <span class=hljs-comment ># install a specific version</span>
+juliaup default 1.11    <span class=hljs-comment ># set default version</span>
+juliaup update          <span class=hljs-comment ># update all installed versions</span>
+julia +1.10 myscript.jl <span class=hljs-comment ># run with a specific version</span></code></pre> <p><code>juliaup</code> is analogous to <code>rustup</code> &#40;Rust&#41; or <code>pyenv</code> &#40;Python&#41;</p> <h2 id=editors_and_the_repl ><a href="#editors_and_the_repl" class=header-anchor >Editors and the REPL</a></h2> <p><strong>Visual Studio Code</strong> with the Julia extension is the recommended editor</p> <ul> <li><p>Integrated REPL, inline output, debugger, profiler</p> <li><p><a href="https://www.julia-vscode.org">https://www.julia-vscode.org</a></p> </ul> <p><strong>Other editors</strong>: Emacs &#40;<code>julia-emacs</code>&#41;, Zed, Vim/Neovim</p> <p><strong>The REPL</strong> is Julia&#39;s interactive shell — keep it running while you work</p> <pre><code class="julia hljs">$ julia
+julia&gt;          <span class=hljs-comment ># normal mode</span>
+]               <span class=hljs-comment ># package manager (Pkg) mode</span>
+;               <span class=hljs-comment ># shell mode</span>
+?               <span class=hljs-comment ># help mode</span></code></pre> <h1 id=working_with_julia_code ><a href="#working_with_julia_code" class=header-anchor >Working with Julia Code</a></h1> <h2 id=write_code_in_functions_not_scripts ><a href="#write_code_in_functions_not_scripts" class=header-anchor >Write Code in Functions, Not Scripts</a></h2> <p>Running scripts in global scope is a common pitfall:</p> <pre><code class="julia hljs"><span class=hljs-comment ># BAD: MyScript.jl in global scope</span>
+<span class=hljs-keyword >using</span> Plots
+x = <span class=hljs-number >0</span>:<span class=hljs-number >0.1</span>:<span class=hljs-number >2</span><span class=hljs-literal >π</span>          <span class=hljs-comment ># untyped global variable</span>
+y = sin.(x)            <span class=hljs-comment ># no JIT optimization possible</span>
+plot(x, y)</code></pre> <p><strong>Problems:</strong> No JIT optimization, precompilation overhead on every run</p> <pre><code class="julia hljs"><span class=hljs-comment ># GOOD: wrap in a function</span>
+<span class=hljs-keyword >function</span> main(; n=<span class=hljs-number >100</span>)
+    x = range(<span class=hljs-number >0</span>, <span class=hljs-number >2</span><span class=hljs-literal >π</span>; length=n)
+    plot(x, sin.(x))
+<span class=hljs-keyword >end</span></code></pre> <p>See: <a href="https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-global-variables">Julia performance tips — avoid global variables</a></p> <h2 id=work_from_the_repl_with_include ><a href="#work_from_the_repl_with_include" class=header-anchor >Work from the REPL with <code>include&#40;&#41;</code></a></h2> <p>Start Julia once and reload code without restarting:</p> <pre><code class="bash hljs">$ julia --project=.</code></pre>
+<pre><code class="julia hljs">julia&gt; include(<span class=hljs-string >&quot;scripts/myscript.jl&quot;</span>)
+julia&gt; main(n=<span class=hljs-number >200</span>)
+
+<span class=hljs-comment ># after editing myscript.jl:</span>
+julia&gt; include(<span class=hljs-string >&quot;scripts/myscript.jl&quot;</span>)   <span class=hljs-comment ># reload</span>
+julia&gt; main(n=<span class=hljs-number >200</span>)</code></pre>
+<p>With Julia &lt; v1.12, when <strong>redefining a <code>struct</code> or a constant</strong>, restart is needed.</p>
+<h2 id=automatic_reloading_with_revisejl ><a href="#automatic_reloading_with_revisejl" class=header-anchor >Automatic Reloading with <code>Revise.jl</code></a></h2>
+<p><a href="https://github.com/timholy/Revise.jl">Revise.jl</a> watches source files and recompiles changes automatically.</p>
+<p><strong>One-time setup</strong> — add to <code>~/.julia/config/startup.jl</code>:</p>
+<pre><code class="julia hljs"><span class=hljs-keyword >using</span> Revise</code></pre>
+<p>Then use <code>includet</code> &#40;tracked include&#41; instead of <code>include</code>:</p>
+<pre><code class="julia hljs">julia&gt; includet(<span class=hljs-string >&quot;scripts/myscript.jl&quot;</span>)
+julia&gt; main()           <span class=hljs-comment ># uses the current version</span>
+<span class=hljs-comment ># edit myscript.jl ...</span>
+julia&gt; main()           <span class=hljs-comment ># automatically sees changes!</span></code></pre>
+<p>For packages loaded via <code>using</code>, Revise tracks all included files automatically.</p>
+<h2 id=wrap_scripts_in_modules ><a href="#wrap_scripts_in_modules" class=header-anchor >Wrap Scripts in Modules</a></h2>
+<p>Avoid name clashes when loading multiple scripts in one session:</p>
+<pre><code class="julia hljs"><span class=hljs-comment ># scripts/myscript.jl</span>
+<span class=hljs-keyword >module</span> MyScript
+<span class=hljs-keyword >using</span> Plots
+
+<span class=hljs-keyword >function</span> main(; n=<span class=hljs-number >100</span>)
+    x = range(<span class=hljs-number >0</span>, <span class=hljs-number >2</span><span class=hljs-literal >π</span>; length=n)
+    plot(x, sin.(x))
+<span class=hljs-keyword >end</span>
+
+<span class=hljs-keyword >end</span> <span class=hljs-comment ># module</span></code></pre>
+<pre><code class="julia hljs">julia&gt; includet(<span class=hljs-string >&quot;scripts/myscript.jl&quot;</span>)
+julia&gt; MyScript.main(n=<span class=hljs-number >200</span>)</code></pre>
+<h1 id=environments_and_reproducibility ><a href="#environments_and_reproducibility" class=header-anchor >Environments and Reproducibility</a></h1>
+<h2 id=what_is_a_julia_environment ><a href="#what_is_a_julia_environment" class=header-anchor >What Is a Julia Environment?</a></h2>
+<p>An <strong>environment</strong> defines which packages are available for <code>using</code> / <code>import</code>.</p>
+<p>It is described by two files in a directory:</p>
+<table><tr><th align=right >File<th align=right >Purpose<tr><td align=right ><code>Project.toml</code><td align=right >Direct dependencies &#43; version constraints<tr><td align=right ><code>Manifest.toml</code><td align=right >Full dependency tree with exact versions</table>
+<p>Julia resolves <code>using Package</code> by searching the active environment&#40;s&#41;.</p>
+<h2 id=the_global_environment ><a href="#the_global_environment" class=header-anchor >The Global Environment</a></h2>
+<p>Default location: <code>~/.julia/environments/v1.x/</code></p>
+<pre><code class="julia hljs">julia&gt; <span class=hljs-keyword >using</span> Pkg
+julia&gt; Pkg.add(<span class=hljs-string >&quot;Plots&quot;</span>)   <span class=hljs-comment ># installs into global env</span></code></pre>
+<p><strong>Problem with a shared global environment:</strong></p>
+<ul>
+<li><p>Package version conflicts between projects</p>
+
+<li><p>Hard to share: collaborators must manually figure out what to install</p>
+
+<li><p>No reproducibility guarantee</p>
+
+</ul>
+<blockquote>
+<p>Use the global environment only for personal development tools &#40;e.g. <code>Revise</code>, <code>BenchmarkTools</code>, <code>JuliaFormatter</code>&#41;</p>
+</blockquote>
+<h2 id=local_project_environments ><a href="#local_project_environments" class=header-anchor >Local Project Environments</a></h2>
+<p>Each project gets its <strong>own</strong> environment:</p>
+<pre><code class="bash hljs">$ <span class=hljs-built_in >cd</span> MyProject
+$ julia --project=.</code></pre>
+<pre><code class="julia hljs">julia&gt; <span class=hljs-keyword >using</span> Pkg
+julia&gt; Pkg.add(<span class=hljs-string >&quot;DifferentialEquations&quot;</span>)
+julia&gt; Pkg.add(<span class=hljs-string >&quot;Plots&quot;</span>)</code></pre>
+<p>This creates <code>MyProject/Project.toml</code> and <code>MyProject/Manifest.toml</code>.</p>
+<p>All package installs stay local to <code>MyProject</code> — no conflicts with other projects.</p>
+<h2 id=projecttoml_what_it_contains ><a href="#projecttoml_what_it_contains" class=header-anchor ><code>Project.toml</code>: What It Contains</a></h2>
+<pre><code class="toml hljs"><span class=hljs-attr >name</span> = <span class=hljs-string >&quot;MyProject&quot;</span>
+<span class=hljs-attr >uuid</span> = <span class=hljs-string >&quot;8f4d0f85-...&quot;</span>
+<span class=hljs-attr >version</span> = <span class=hljs-string >&quot;0.1.0&quot;</span>
+
+<span class=hljs-section >[deps]</span>
+<span class=hljs-attr >DifferentialEquations</span> = <span class=hljs-string >&quot;0c46a032-...&quot;</span>
+<span class=hljs-attr >Plots</span> = <span class=hljs-string >&quot;91a5bcdd-...&quot;</span>
+
+<span class=hljs-section >[compat]</span>
+<span class=hljs-attr >julia</span> = <span class=hljs-string >&quot;1.10&quot;</span>
+<span class=hljs-attr >DifferentialEquations</span> = <span class=hljs-string >&quot;7&quot;</span>
+<span class=hljs-attr >Plots</span> = <span class=hljs-string >&quot;1&quot;</span></code></pre>
+<ul>
+<li><p>Lists direct dependencies with UUIDs</p>
+
+<li><p><code>&#91;compat&#93;</code> constrains acceptable versions</p>
+
+<li><p><strong>Should be committed to version control</strong></p>
+
+</ul>
+<h2 id=manifesttoml_reproducibility ><a href="#manifesttoml_reproducibility" class=header-anchor ><code>Manifest.toml</code>: Reproducibility</a></h2>
+<pre><code class="toml hljs"><span class=hljs-attr >julia_version</span> = <span class=hljs-string >&quot;1.11.0&quot;</span>
+<span class=hljs-attr >manifest_format</span> = <span class=hljs-string >&quot;2.0&quot;</span>
+
+<span class=hljs-section >[[deps.DifferentialEquations]]</span>
+<span class=hljs-attr >deps</span> = [<span class=hljs-string >&quot;BoundaryValueDiffEq&quot;</span>, <span class=hljs-string >&quot;...]
+git-tree-sha1 = &quot;</span>abc123...<span class=hljs-string >&quot;
+version = &quot;</span><span class=hljs-number >7.13</span>.<span class=hljs-number >0</span><span class=hljs-string >&quot;
+# ... hundreds more entries ...</span></code></pre>
+<ul>
+<li><p>Records <strong>exact versions</strong> of every dependency &#40;direct and transitive&#41;</p>
+
+<li><p>Enables bit-for-bit reproducible environments</p>
+
+<li><p><strong>Committing it</strong> → anyone can reproduce the exact environment</p>
+
+<li><p><strong>Not committing it</strong> → collaborators get latest compatible versions</p>
+
+</ul>
+<h2 id=key_package_manager_commands ><a href="#key_package_manager_commands" class=header-anchor >Key Package Manager Commands</a></h2>
+<pre><code class="julia hljs">julia&gt; <span class=hljs-keyword >using</span> Pkg
+
+Pkg.activate(<span class=hljs-string >&quot;.&quot;</span>)          <span class=hljs-comment ># activate local environment</span>
+Pkg.add(<span class=hljs-string >&quot;SomePackage&quot;</span>)     <span class=hljs-comment ># add a dependency</span>
+Pkg.rm(<span class=hljs-string >&quot;SomePackage&quot;</span>)      <span class=hljs-comment ># remove a dependency</span>
+Pkg.update()               <span class=hljs-comment ># update all packages</span>
+Pkg.status()               <span class=hljs-comment ># list installed packages</span>
+Pkg.instantiate()          <span class=hljs-comment ># install all deps from Project.toml</span>
+Pkg.resolve()              <span class=hljs-comment ># re-resolve and update Manifest.toml</span></code></pre>
+<p>Shortcut: press <code>&#93;</code> in the REPL to enter <strong>Pkg mode</strong>:</p>
+<pre><code class="julia hljs">(MyProject) pkg&gt; add Plots
+(MyProject) pkg&gt; status</code></pre>
+<h2 id=environment_stacking ><a href="#environment_stacking" class=header-anchor >Environment Stacking</a></h2>
+<p>Activating a local environment <strong>does not hide</strong> the global one:</p>
+<pre><code class="julia hljs">Active environments (search order):
+  <span class=hljs-number >1.</span> MyProject/  (<span class=hljs-keyword >local</span>)   ← project dependencies
+  <span class=hljs-number >2.</span> ~/.julia/environments/v1<span class=hljs-number >.11</span>/  (<span class=hljs-keyword >global</span>)  ← dev tools</code></pre>
+<ul>
+<li><p>Project dependencies go in the <strong>local</strong> environment</p>
+
+<li><p>Development tools &#40;<code>Revise</code>, <code>BenchmarkTools</code>&#41; stay in the <strong>global</strong> environment</p>
+
+<li><p>Clean separation: tools don&#39;t pollute the reproducible project environment</p>
+
+</ul>
+<h1 id=research_projects_vs_packages ><a href="#research_projects_vs_packages" class=header-anchor >Research Projects vs. Packages</a></h1>
+<h2 id=packages_vs_research_projects ><a href="#packages_vs_research_projects" class=header-anchor >Packages vs. Research Projects</a></h2>
+<table><tr><th align=left ><th align=left ><strong>Package</strong><th align=left ><strong>Research Project</strong><tr><td align=left >Purpose<td align=left >Reusable library for others<td align=left >Produce specific results/paper<tr><td align=left >Users<td align=left >External users, many versions<td align=left >Small team, evolves with the work<tr><td align=left >Data<td align=left >No data<td align=left >Central: raw data, results, figures<tr><td align=left >Workflow<td align=left >Stable API, tests, docs<td align=left >Exploratory, trial-and-error<tr><td align=left >Sharing<td align=left >Registered in a registry<td align=left >Shared via git URL<tr><td align=left >Notebooks/scripts<td align=left >Optional<td align=left >Core deliverables</table>
+<p>A research project in Julia corresponds to an <strong>application</strong> in the Pkg glossary.</p>
+<h2 id=challenges_of_research_software ><a href="#challenges_of_research_software" class=header-anchor >Challenges of Research Software</a></h2>
+<p>Research software tends to be:</p>
+<ul>
+<li><p><strong>Exploratory</strong>: requirements change as understanding grows</p>
+
+<li><p><strong>Collaborative</strong>: shared between group members, possibly with different Julia versions</p>
+
+<li><p><strong>Long-lived</strong>: may need to reproduce results years later</p>
+
+<li><p><strong>Mixed</strong>: code &#43; data &#43; notebooks &#43; paper drafts in one place</p>
+
+<li><p><strong>Underdocumented</strong>: under time pressure, tests and docs are often skipped</p>
+
+</ul>
+<p>These challenges make <strong>good organization even more important</strong>, not less.</p>
+<h2 id=why_organize_a_research_project_like_a_package ><a href="#why_organize_a_research_project_like_a_package" class=header-anchor >Why Organize a Research Project Like a Package?</a></h2>
+<p>Structuring a research project as a &#40;non-registered&#41; package gives you:</p>
+<ul>
+<li><p><strong>Shared environment</strong> &#40;<code>Project.toml</code>&#41; — one <code>Pkg.instantiate&#40;&#41;</code> sets up everything</p>
+
+<li><p><strong>Shared source code</strong> in <code>src/</code> — import project utilities with <code>using MyProject</code></p>
+
+<li><p><strong>Unit testing</strong> via <code>test/runtests.jl</code> — catch regressions early</p>
+
+<li><p><strong>Documentation</strong> with Documenter.jl — explain your methods</p>
+
+<li><p><strong>Version control ready</strong> — standard layout, easy to push to git</p>
+
+</ul>
+<p>This is sustainable research software with minimal overhead.</p>
+<h1 id=structuring_the_project ><a href="#structuring_the_project" class=header-anchor >Structuring the Project</a></h1>
+<h2 id=recommended_project_layout ><a href="#recommended_project_layout" class=header-anchor >Recommended Project Layout</a></h2>
+<pre><code class="julia hljs">MyProject/
+├── Project.toml        ← environment + package definition
+├── Manifest.toml       ← (optionally committed) exact versions
+├── README.md
+├── LICENSE
+├── src/
+│   └── MyProject.jl    ← shared project code (a Julia <span class=hljs-keyword >module</span>)
+├── scripts/
+│   └── simulation.jl   ← scripts that produce results
+├── notebooks/
+│   └── analysis.jl     ← Pluto notebooks
+├── test/
+│   └── runtests.jl     ← unit tests
+├── docs/               ← Documenter.jl sources
+└── papers/             ← manuscripts</code></pre>
+<h2 id=scripts_no_activation_needed ><a href="#scripts_no_activation_needed" class=header-anchor >Scripts: No Activation Needed</a></h2>
+<p>Start Julia from the project root — the environment is active for all scripts:</p>
+<pre><code class="bash hljs">$ <span class=hljs-built_in >cd</span> MyProject
+$ julia --project=.</code></pre>
+<p>Scripts need no explicit activation code:</p>
+<pre><code class="julia hljs"><span class=hljs-comment ># scripts/simulation.jl</span>
+<span class=hljs-keyword >using</span> MyProject          <span class=hljs-comment ># shared project code from src/</span>
+<span class=hljs-keyword >using</span> Plots, DifferentialEquations
+
+<span class=hljs-keyword >function</span> main()
+    <span class=hljs-comment ># ...</span>
+<span class=hljs-keyword >end</span></code></pre>
+<pre><code class="julia hljs">julia&gt; includet(<span class=hljs-string >&quot;scripts/simulation.jl&quot;</span>)
+julia&gt; main()</code></pre>
+<h2 id=pluto_notebooks_disabling_the_built-in_package_manager ><a href="#pluto_notebooks_disabling_the_built-in_package_manager" class=header-anchor >Pluto Notebooks: Disabling the Built-in Package Manager</a></h2>
+<p>Pluto has its own built-in package manager — great for standalone notebooks, but it must be <strong>disabled</strong> to share the project environment.</p>
+<p>Add a Pkg cell at the top of the notebook:</p>
+<pre><code class="julia hljs"><span class=hljs-comment ># Pkg cell — triggers Pluto to hand over package management</span>
+<span class=hljs-keyword >using</span> Pkg
+Pkg.activate(joinpath(<span class=hljs-meta >@__DIR__</span>, <span class=hljs-string >&quot;..&quot;</span>))   <span class=hljs-comment ># activate MyProject environment</span></code></pre>
+<p><strong>Advantages of Pluto for research projects:</strong></p>
+<ul>
+<li><p>Reactive: cells re-run automatically on change</p>
+
+<li><p>Notebooks are plain <code>.jl</code> files — diff-friendly in git</p>
+
+<li><p>HTML/PDF export built in</p>
+
+<li><p><code>Revise.jl</code> works normally once the built-in manager is disabled</p>
+
+</ul>
+<h2 id=sub-packages_inside_a_project ><a href="#sub-packages_inside_a_project" class=header-anchor >Sub-packages Inside a Project</a></h2>
+<p>Code that grows can become a standalone package inside <code>packages/</code>:</p>
+<pre><code class="julia hljs">MyProject/
+└── packages/
+    └── MySubPackage/
+        ├── Project.toml
+        └── src/
+            └── MySubPackage.jl</code></pre>
+<p>Add it as a development dependency:</p>
+<pre><code class="julia hljs">pkg&gt; dev packages/MySubPackage</code></pre>
+<p>Later, <code>MySubPackage</code> can be extracted and registered independently — scripts depending on it don&#39;t need to change.</p>
+<h2 id=to_commit_manifesttoml_or_not ><a href="#to_commit_manifesttoml_or_not" class=header-anchor >To Commit <code>Manifest.toml</code> or Not?</a></h2>
+<p><strong>Commit it</strong> when:</p>
+<ul>
+<li><p>Strong reproducibility is required &#40;paper submission, archiving&#41;</p>
+
+<li><p>Working with a fixed Julia version in the team</p>
+
+<li><p>Subpackages in relative paths &#40;Julia &lt; 1.11&#41;</p>
+
+</ul>
+<p><strong>Don&#39;t commit it</strong> when:</p>
+<ul>
+<li><p>Team members use different Julia versions</p>
+
+<li><p>You want to track that the project works with a range of dependency versions</p>
+
+<li><p>Using <code>&#91;compat&#93;</code> in <code>Project.toml</code> for version management</p>
+
+</ul>
+<p>Starting with Julia 1.11: per-version manifests &#40;<code>Manifest-v1.11.toml</code>&#41; make committing more practical for multi-version teams.</p>
+<h1 id=drwatsonjl ><a href="#drwatsonjl" class=header-anchor >DrWatson.jl</a></h1>
+<h2 id=drwatsonjl_what_and_why ><a href="#drwatsonjl_what_and_why" class=header-anchor >DrWatson.jl: What and Why?</a></h2>
+<p><a href="https://github.com/JuliaDynamics/DrWatson.jl">DrWatson.jl</a> is a scientific project assistant that helps with:</p>
+<ul>
+<li><p><strong>Project-relative paths</strong> — no more hardcoded absolute paths</p>
+
+<li><p><strong>Standardized file naming</strong> — encode simulation parameters in file names</p>
+
+<li><p><strong>Simulation management</strong> — avoid rerunning finished simulations</p>
+
+<li><p><strong>Tagging</strong> — record git commit hash with saved results</p>
+
+</ul>
+<pre><code class="julia hljs">pkg&gt; add DrWatson</code></pre>
+<p>Designed to work with the project-as-package layout described here.</p>
+<h2 id=drwatsonjl_path_helpers ><a href="#drwatsonjl_path_helpers" class=header-anchor >DrWatson.jl: Path Helpers</a></h2>
+<p>Forget about <code>joinpath&#40;dirname&#40;@__FILE__&#41;, &quot;..&quot;, &quot;data&quot;&#41;</code>:</p>
+<pre><code class="julia hljs"><span class=hljs-comment ># start Julia with: julia --project=.</span>
+<span class=hljs-keyword >using</span> DrWatson
+
+datadir()          <span class=hljs-comment ># → MyProject/data/</span>
+plotsdir()         <span class=hljs-comment ># → MyProject/plots/</span>
+srcdir()           <span class=hljs-comment ># → MyProject/src/</span>
+scriptsdir()       <span class=hljs-comment ># → MyProject/scripts/</span>
+papersdir()        <span class=hljs-comment ># → MyProject/papers/</span>
+
+<span class=hljs-comment ># Subdirectories:</span>
+datadir(<span class=hljs-string >&quot;sims&quot;</span>, <span class=hljs-string >&quot;run01&quot;</span>)  <span class=hljs-comment ># → MyProject/data/sims/run01/</span></code></pre>
+<p>Works from any script or notebook regardless of where it is in the tree.</p>
+<h2 id=drwatsonjl_reproducible_file_names ><a href="#drwatsonjl_reproducible_file_names" class=header-anchor >DrWatson.jl: Reproducible File Names</a></h2>
+<p>Encode simulation parameters in file names automatically:</p>
+<pre><code class="julia hljs">params = <span class=hljs-built_in >Dict</span>(<span class=hljs-string >&quot;N&quot;</span> =&gt; <span class=hljs-number >100</span>, <span class=hljs-string >&quot;dt&quot;</span> =&gt; <span class=hljs-number >0.01</span>, <span class=hljs-string >&quot;method&quot;</span> =&gt; <span class=hljs-string >&quot;rk4&quot;</span>)
+
+savename(params)
+<span class=hljs-comment ># → &quot;N=100_dt=0.01_method=rk4&quot;</span>
+
+savename(params; suffix=<span class=hljs-string >&quot;jld2&quot;</span>)
+<span class=hljs-comment ># → &quot;N=100_dt=0.01_method=rk4.jld2&quot;</span>
+
+<span class=hljs-comment ># Save results:</span>
+<span class=hljs-meta >@tagsave</span>(datadir(<span class=hljs-string >&quot;sims&quot;</span>, savename(params, suffix=<span class=hljs-string >&quot;jld2&quot;</span>)), results)</code></pre>
+<p><code>@tagsave</code> adds git commit information to the saved data automatically.</p>
+<h2 id=drwatsonjl_avoid_redundant_computations ><a href="#drwatsonjl_avoid_redundant_computations" class=header-anchor >DrWatson.jl: Avoid Redundant Computations</a></h2>
+<pre><code class="julia hljs"><span class=hljs-keyword >function</span> run_simulation(params)
+    <span class=hljs-comment ># expensive computation...</span>
+    <span class=hljs-keyword >return</span> results
+<span class=hljs-keyword >end</span>
+
+<span class=hljs-comment ># Run only if output file does not exist yet:</span>
+results, path = produce_or_load(run_simulation, params, datadir(<span class=hljs-string >&quot;sims&quot;</span>))</code></pre>
+<p><code>produce_or_load</code> checks for an existing output file matching the parameters. If found, it loads the result; otherwise it runs the function and saves.</p>
+<p>Ideal for parameter sweeps and long-running simulations.</p>
+<h1 id=hands-on_julia-project-skeleton ><a href="#hands-on_julia-project-skeleton" class=header-anchor >Hands-On: julia-project-skeleton</a></h1>
+<h2 id=julia-project-skeleton ><a href="#julia-project-skeleton" class=header-anchor >julia-project-skeleton</a></h2>
+<p>A ready-to-use template that implements all recommendations:</p>
+<p><a href="https://github.com/j-fu/julia-project-skeleton">https://github.com/j-fu/julia-project-skeleton</a></p>
+<p>Download and unpack <a href="https://github.com/j-fu/julia-project-skeleton/archive/refs/tags/v2.0.0.zip">julia-project-skeleton-2.0.0.zip</a> from the releases page, then use the path to the unpacked directory as the template argument.</p>
+<p>Generate an initial project version  using <a href="https://github.com/tpapp/PkgSkeleton.jl">PkgSkeleton.jl</a>:</p>
+<pre><code class="julia hljs">$ julia
+julia&gt; <span class=hljs-keyword >using</span> Pkg
+julia&gt; Pkg.add(<span class=hljs-string >&quot;PkgSkeleton&quot;</span>)
+julia&gt; <span class=hljs-keyword >using</span> PkgSkeleton
+julia&gt; PkgSkeleton.generate(<span class=hljs-string >&quot;MyProject&quot;</span>;
+           templates=[<span class=hljs-string >&quot;julia-project-skeleton-2.0.0&quot;</span>])</code></pre>
+<h2 id=setting_up_a_new_project_step_by_step ><a href="#setting_up_a_new_project_step_by_step" class=header-anchor >Setting Up a New Project: Step by Step</a></h2>
+<p>Generate the skeleton &#40;see previous slide&#41;, then install dependencies:</p>
+<pre><code class="bash hljs">$ <span class=hljs-built_in >cd</span> MyProject
+$ julia --project
+julia&gt; using Pkg; Pkg.instantiate()</code></pre>
+<p>Then adapt it to your needs:</p>
+<ul>
+<li><p>Replace demo files with your own scripts and notebooks</p>
+
+<li><p>Update <code>&#91;deps&#93;</code> in <code>Project.toml</code> as needed &#40;<code>pkg&gt; add ...</code>&#41;</p>
+
+<li><p>Update <code>authors</code>, <code>name</code>, and <code>version</code> in <code>Project.toml</code></p>
+
+<li><p>Push to git early — and commit often</p>
+
+</ul>
+<h2 id=running_code_in_the_skeleton ><a href="#running_code_in_the_skeleton" class=header-anchor >Running Code in the Skeleton</a></h2>
+<p>The skeleton ships ready-to-run demos:</p>
+<pre><code class="bash hljs"><span class=hljs-comment ># REPL workflow with live reloading:</span>
+$ julia --project
+julia&gt; using Revise
+julia&gt; includet(<span class=hljs-string >&quot;scripts/DemoREPL.jl&quot;</span>)
+julia&gt; DemoREPL.main(dim=3)
+
+<span class=hljs-comment ># run a CLI script directly:</span>
+$ julia --project scripts/demo-cli.jl
+
+<span class=hljs-comment ># run the demo Pluto notebook (Pluto need not be installed globally):</span>
+$ julia --project etc/runpluto.jl notebooks/demo-notebook.jl</code></pre>
+<h2 id=onboarding_a_collaborator ><a href="#onboarding_a_collaborator" class=header-anchor >Onboarding a Collaborator</a></h2>
+<pre><code class="bash hljs"><span class=hljs-comment ># Clone the repository</span>
+$ git <span class=hljs-built_in >clone</span> https://github.com/you/MyProject
+$ <span class=hljs-built_in >cd</span> MyProject
+
+<span class=hljs-comment ># Instantiate — downloads and precompiles all dependencies</span>
+$ julia --project
+julia&gt; using Pkg; Pkg.instantiate()
+
+<span class=hljs-comment ># Run a CLI script</span>
+$ julia --project scripts/demo-cli.jl
+
+<span class=hljs-comment ># or use the REPL with live reloading</span>
+julia&gt; using Revise
+julia&gt; includet(<span class=hljs-string >&quot;scripts/DemoREPL.jl&quot;</span>)
+julia&gt; DemoREPL.main(dim=3)</code></pre>
+<p>No manual package installation, no version hunting — just <code>instantiate</code>.</p>
+<h1 id=summary ><a href="#summary" class=header-anchor >Summary</a></h1>
+<h2 id=summary_key_recommendations ><a href="#summary_key_recommendations" class=header-anchor >Summary: Key Recommendations</a></h2>
+<ol>
+<li><p><strong>Install Julia via <code>juliaup</code></strong> — easy version management</p>
+
+<li><p><strong>Write code in functions</strong> — enable JIT optimization</p>
+
+<li><p><strong>Stay in the REPL</strong> — use <code>include&#40;&#41;</code> / <code>Revise.jl</code> instead of re-running</p>
+
+<li><p><strong>Use a local environment per project</strong> — <code>julia --project&#61;.</code></p>
+
+<li><p><strong>Commit <code>Project.toml</code></strong> always; commit <code>Manifest.toml</code> when strong reproducibility is needed</p>
+
+<li><p><strong>Structure the project as a package</strong> — shared env, shared <code>src/</code>, tests, docs</p>
+
+<li><p><strong>Use DrWatson.jl</strong> — path helpers, reproducible file naming, simulation management</p>
+
+<li><p><strong>Use <code>julia-project-skeleton</code></strong> — get the layout right from the start</p>
+
+</ol>
+<h2 id=sustainable_research_software ><a href="#sustainable_research_software" class=header-anchor >Sustainable Research Software</a></h2>
+<p>By following these practices, a Julia research project achieves all five criteria for sustainable research software &#40;A. Zeller&#41;:</p>
+<table><tr><th align=right >Criterion<th align=right >How<tr><td align=right >Have a repo<td align=right >git from day one<tr><td align=right >Anyone can build<td align=right ><code>Pkg.instantiate&#40;&#41;</code><tr><td align=right >Have tests<td align=right ><code>test/runtests.jl</code><tr><td align=right >Open for extensions<td align=right >modular <code>src/</code> &#43; sub-packages<tr><td align=right >Have examples<td align=right ><code>scripts/</code> &#43; <code>notebooks/</code></table>
+<p>Julia&#39;s package management infrastructure makes this largely automatic.</p>
+<h2 id=outlook_newer_developments_julia_111 ><a href="#outlook_newer_developments_julia_111" class=header-anchor >Outlook: Newer Developments &#40;Julia ≥ 1.11&#41;</a></h2>
+<p>Topics for a follow-up talk:</p>
+<ul>
+<li><p><strong><code>&#91;sources&#93;</code> in <code>Project.toml</code></strong> — declare in-tree sub-packages by relative path; sub-package discovery no longer requires committing <code>Manifest.toml</code></p>
+
+<li><p><strong>Workspaces</strong> &#40;Pkg&#41; — manage a set of related packages with a shared environment; natural fit for multi-package research projects</p>
+
+<li><p><strong><code>@main</code> entry point</strong> — designate a <code>main&#40;args&#41;</code> function as the CLI entry point; cleaner scripts without boilerplate</p>
+
+<li><p><strong>LocalRegistry.jl</strong> — host a private registry for your team or institution; share registered packages without publishing to General</p>
+
+<li><p><strong>Sub-packages as registered packages</strong> — register while keeping code in the project tree; switch from <code>pkg&gt; dev</code> to <code>pkg&gt; add</code> when ready</p>
+
+</ul>
+<h2 id=references_and_further_reading ><a href="#references_and_further_reading" class=header-anchor >References and Further Reading</a></h2>
+<ul>
+<li><p><strong>Julia documentation</strong>: <a href="https://docs.julialang.org">https://docs.julialang.org</a></p>
+
+<li><p><strong>Pkg documentation</strong> &#40;environments, <code>Project.toml</code>, <code>Manifest.toml</code>&#41;: <a href="https://pkgdocs.julialang.org">https://pkgdocs.julialang.org</a></p>
+
+<li><p><strong>Modern Julia Workflows</strong> &#40;G. Dalle, J. Smit, A. Hill, 2024&#41;: <a href="https://modernjuliaworkflows.github.io">https://modernjuliaworkflows.github.io</a></p>
+
+<li><p><strong>DrWatson.jl</strong>: <a href="https://github.com/JuliaDynamics/DrWatson.jl">https://github.com/JuliaDynamics/DrWatson.jl</a></p>
+
+<li><p><strong>PkgTemplates.jl</strong>: <a href="https://github.com/JuliaCI/PkgTemplates.jl">https://github.com/JuliaCI/PkgTemplates.jl</a></p>
+
+<li><p><strong>julia-project-skeleton</strong>: <a href="https://github.com/j-fu/julia-project-skeleton">https://github.com/j-fu/julia-project-skeleton</a></p>
+
+<li><p><strong>Basic Workflow</strong>: <a href="https://j-fu.github.io/marginalia/julia/basic-workflow">https://j-fu.github.io/marginalia/julia/basic-workflow</a></p>
+
+<li><p><strong>Project Workflow</strong>: <a href="https://j-fu.github.io/marginalia/julia/project-workflow">https://j-fu.github.io/marginalia/julia/project-workflow</a></p>
+
+<li><p><strong>Project Howto</strong>: <a href="https://j-fu.github.io/marginalia/julia/project-howto">https://j-fu.github.io/marginalia/julia/project-howto</a></p>
+
+<li><p><strong>Markdown source</strong>: <a href="https://raw.githubusercontent.com/j-fu/marginalia/refs/heads/main/julia/julia-project-org.md">https://raw.githubusercontent.com/j-fu/marginalia/refs/heads/main/julia/julia-project-org.md</a></p>
+
+</ul>
+<div class=page-foot >
+  <div class=copyright >
+    &copy; Jürgen Fuhrmann. License: <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode"> CC-BY-SA 4.0</a>. Last modified: June 24, 2026. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
+Upon finding factual errors, typos etc. <a href=https://github.com/j-fu/marginalia/issues> raise an issue<a>.
+<center>  <a href="/marginalia/feed.xml"> <img src="/marginalia/assets/rss.png" style="width:100px;"></a> </center>
+  </div>
+</div>
+
+
+</div>
+      </div>  
+    </div> 
+    
+    
+        
+
+
+    
+    <label for=sidebar-checkbox  class=sidebar-toggle ></label>
