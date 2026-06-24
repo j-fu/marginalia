@@ -380,7 +380,7 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;, push&#61;true&#41
 </li>
 <li><p>Julia is evolving. New versions in the 1.x range introduce many important additions and non-breaking changes. Many important Julia packages require at least the current long term service &#40;LTS&#41; version 1.10. </p>
 <ul>
-<li><p>Julia version highlights: <a href="https://julialang.org/blog/2020/08/julia-1.5-highlights/">1.5</a>, <a href="https://julialang.org/blog/2021/03/julia-1.6-highlights/">1.6</a>, <a href="https://julialang.org/blog/2021/11/julia-1.7-highlights/">1.7</a>, <a href="https://julialang.org/blog/2022/08/julia-1.8-highlights/">1.8</a>, <a href="https://julialang.org/blog/2023/04/julia-1.9-highlights/">1.9</a>, <a href="https://julialang.org/blog/2023/12/julia-1.10-highlights/">1.10</a>, <a href="https://julialang.org/blog/2024/10/julia-1.11-highlights/">1.11</a></p>
+<li><p>Julia version highlights: <a href="https://julialang.org/blog/2020/08/julia-1.5-highlights/">1.5</a>, <a href="https://julialang.org/blog/2021/03/julia-1.6-highlights/">1.6</a>, <a href="https://julialang.org/blog/2021/11/julia-1.7-highlights/">1.7</a>, <a href="https://julialang.org/blog/2022/08/julia-1.8-highlights/">1.8</a>, <a href="https://julialang.org/blog/2023/04/julia-1.9-highlights/">1.9</a>, <a href="https://julialang.org/blog/2023/12/julia-1.10-highlights/">1.10</a>, <a href="https://julialang.org/blog/2024/10/julia-1.11-highlights/">1.11</a>, <a href="https://julialang.org/blog/2024/10/julia-1.12-highlights/">1.12</a></p>
 </li>
 <li><p><a href="https://towardsdatascience.com/why-julia-2-0-isnt-coming-anytime-soon-and-why-that-is-a-good-thing-641ae3d2a177">Why Julia 2.0 Isn’t Coming Anytime Soon</a></p>
 </li>
@@ -400,6 +400,8 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;, push&#61;true&#41
 <li><p><a href="https://www.youtube.com/c/juliafortalentedamateurs/videos">Julia for Talented Amateurs</a>: Collection of video tutorials for many different aspects of Julia</p>
 </li>
 <li><p><a href="https://en.wikibooks.org/wiki/Introducing_Julia">WikiBook</a></p>
+</li>
+<li><p><a href="https://www.springerprofessional.de/algorithms-with-julia/23817532">Algorithms with Julia</a> by Clemens Heitzinger</p>
 </li>
 </ul>
 <h2 id="introductory_material_from_my_tu_berlin_courses_and_other_talks_videos_pluto_notebooks">Introductory material from my TU Berlin courses  and other talks &#40;videos &#43; Pluto notebooks&#41;</h2>
@@ -421,6 +423,8 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;, push&#61;true&#41
 </li>
 </ul><hr size="5" noshade><p><strong>Update history</strong></p>
 <ul>
+<li><p>2026-06-24: Julia 1.12, Heitzinger book</p>
+</li>
 <li><p>2025-01-21: Julia 1.11, update some links, streamline reference to my courses</p>
 </li>
 <li><p>2024-10-02: Julia 1.10, upvote juliaup</p>
@@ -583,9 +587,9 @@ julia&gt; LocalRegistry.register&#40;X,&quot;MyRegistry&quot;, push&#61;true&#41
 <li><p><code>etc</code>: Service code</p>
 </li>
 </ul>
-<p>Using <a href="https://github.com/tpapp/PkgSkeleton.jl">PkgSkeleton.jl</a>, you can generate these files: Download and unpack the corresponding project skeleton <a href="https://j-fu.github.io/marginalia/assets/project-skeleton.zip">project-skeleton.zip</a>. Then invoke</p>
+<p>Using <a href="https://github.com/tpapp/PkgSkeleton.jl">PkgSkeleton.jl</a>, you can generate these files: Download and unpack the corresponding project skeleton <a href="https://github.com/j-fu/julia-project-skeleton/archive/refs/tags/v2.0.0.zip">julia-project-skeleton-2.0.0.zip</a>. Then invoke</p>
 <pre><code class="language-julia">julia&gt; using PkgSkeleton
-julia&gt; PkgSkeleton.generate&#40;&quot;MyProject&quot;; templates&#61;&#91;&quot;project-skeleton&quot;&#93;&#41;</code></pre>
+julia&gt; PkgSkeleton.generate&#40;&quot;MyProject&quot;; templates&#61;&#91;&quot;julia-project-skeleton-2.0.0&quot;&#93;&#41;</code></pre>
 <p>Feel free to adapt the generated directory tree to your needs and don&#39;t forget to make a git repository out of it as early as possible.</p>
 <h3 id="new_packages_can_evolve_from_the_project_code">New packages can evolve from the project code</h3>
 <p>For this purpose, optionally you can have a folder <code>packages</code> which contains other sub-packages which potentially can evolve into standalone, even registered packages. As <a href="https://github.com/JuliaLang/Pkg.jl/issues/1214">relative paths are recorded in Manifest.toml</a>, these are made available within the  project via <code>Pkg.develop&#40;path&#61;&quot;packages/MySubPackage&quot;&#41;</code>. Starting wit Julia 1.11, <code>Project.toml</code> can have a <a href="https://pkgdocs.julialang.org/dev/toml-files/#The-&#91;sources&#93;-section"><code>&#91;sources&#93;</code> section</a> which can contain a relative path for a subpackage. Either way, using this approach, the  whole project  tree including sub-packages  will stay relocateable.</p>
@@ -627,7 +631,9 @@ julia&gt; PkgSkeleton.generate&#40;&quot;MyProject&quot;; templates&#61;&#91;&qu
 <hr size="5" noshade>
  <strong>Update history</strong></p>
 <ul>
-<li><p>2025-03-29: Switch ot PkgSkeleton for the template</p>
+<li><p>2026-06-24: Update skeleton template link</p>
+</li>
+<li><p>2025-03-29: Switch to PkgSkeleton for the template</p>
 </li>
 <li><p>2024-07-31: Julia 1.11</p>
 </li>
