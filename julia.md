@@ -7,7 +7,7 @@
   - [Introductory material](intro-material)
   - [Basic workflow recommendations](basic-workflow)
   - [Project workflow howto](project-howto)
-  - [Organizing Julia Research Software Projects ([Slides](https://raw.githubusercontent.com/j-fu/marginalia/refs/heads/main/_assets/julia-project-org.pdf))](julia-project-org)
+  - [Organizing Julia Research Software Projects ([Slides](https://github.com/j-fu/marginalia/blob/main/_assets/julia-project-org.pdf))](julia-project-org)
 - Advanced/drafts
   - [General project workflow recommendations](project-workflow)
   - [Package workflow (draft with some useful links)](package-workflow)
