@@ -21,7 +21,7 @@ This is a collection of online references pointing at introductory material for 
   - [Curated learning resources](https://julialang.org/learning/)
   - [Books](https://julialang.org/learning/books/)
   - Julia is evolving. New versions in the 1.x range introduce many important additions and non-breaking changes. Many important Julia packages require at least the current long term service (LTS) version 1.10. 
-    - Julia version highlights: [1.5](https://julialang.org/blog/2020/08/julia-1.5-highlights/), [1.6](https://julialang.org/blog/2021/03/julia-1.6-highlights/), [1.7](https://julialang.org/blog/2021/11/julia-1.7-highlights/), [1.8](https://julialang.org/blog/2022/08/julia-1.8-highlights/), [1.9](https://julialang.org/blog/2023/04/julia-1.9-highlights/), [1.10](https://julialang.org/blog/2023/12/julia-1.10-highlights/), [1.11](https://julialang.org/blog/2024/10/julia-1.11-highlights/)
+    - Julia version highlights: [1.5](https://julialang.org/blog/2020/08/julia-1.5-highlights/), [1.6](https://julialang.org/blog/2021/03/julia-1.6-highlights/), [1.7](https://julialang.org/blog/2021/11/julia-1.7-highlights/), [1.8](https://julialang.org/blog/2022/08/julia-1.8-highlights/), [1.9](https://julialang.org/blog/2023/04/julia-1.9-highlights/), [1.10](https://julialang.org/blog/2023/12/julia-1.10-highlights/), [1.11](https://julialang.org/blog/2024/10/julia-1.11-highlights/), [1.12](https://julialang.org/blog/2024/10/julia-1.12-highlights/)
     
     - [Why Julia 2.0 Isn’t Coming Anytime Soon](https://towardsdatascience.com/why-julia-2-0-isnt-coming-anytime-soon-and-why-that-is-a-good-thing-641ae3d2a177)
 ### More learning resources 
@@ -31,6 +31,7 @@ This is a collection of online references pointing at introductory material for 
   - [QuantEcon](https://julia.quantecon.org/index_toc.html) tutorial with focus on economics and statistics
   - [Julia for Talented Amateurs](https://www.youtube.com/c/juliafortalentedamateurs/videos): Collection of video tutorials for many different aspects of Julia
   - [WikiBook](https://en.wikibooks.org/wiki/Introducing_Julia)
+  - [Algorithms with Julia](https://www.springerprofessional.de/algorithms-with-julia/23817532) by Clemens Heitzinger
 
 ## Introductory material from my TU Berlin courses  and other talks (videos + Pluto notebooks)
 - [My teaching homepage](https://www.wias-berlin.de/people/fuhrmann/teaching/). Generally, the material from the first couple of weeks can serve as an introduction to Julia. Material is provided in form of Pluto notebooks (versions rendered html and pdf are linked as well). While video recordings may have been "recycled" from previous years, the notebook Julia files linked are updated to the corresponding current stable Julia version at the moment of the start of the semester.
@@ -47,6 +48,7 @@ This is a collection of online references pointing at introductory material for 
 ~~~
 
 __Update history__
+- 2026-06-24: Julia 1.12, Heitzinger book
 - 2025-01-21: Julia 1.11, update some links, streamline reference to my courses
 - 2024-10-02: Julia 1.10, upvote juliaup
 - 2023-10-17: Julia as a second language, semester info

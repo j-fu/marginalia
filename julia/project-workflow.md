@@ -95,11 +95,11 @@ The essential role of these files is as follows:
 - `etc`: Service code
 
 Using [PkgSkeleton.jl](https://github.com/tpapp/PkgSkeleton.jl), you can generate these files:
-Download and unpack the corresponding project skeleton [project-skeleton.zip](/assets/project-skeleton.zip).
+Download and unpack the corresponding project skeleton [julia-project-skeleton-2.0.0.zip](https://github.com/j-fu/julia-project-skeleton/archive/refs/tags/v2.0.0.zip).
 Then invoke
 ```
 julia> using PkgSkeleton
-julia> PkgSkeleton.generate("MyProject"; templates=["project-skeleton"])
+julia> PkgSkeleton.generate("MyProject"; templates=["julia-project-skeleton-2.0.0"])
 ```
 
 Feel free to adapt the generated directory tree to your needs and don't forget to make a git repository out of it as early as possible.
@@ -137,7 +137,8 @@ By taking advantage of Julia's best-in-class package management facilities, the 
 <hr size="5" noshade>
 ~~~
 __Update history__
-- 2025-03-29: Switch ot PkgSkeleton for the template
+- 2026-06-24: Update skeleton template link
+- 2025-03-29: Switch to PkgSkeleton for the template
 - 2024-07-31: Julia 1.11
 - 2023-04-24: Intermediate headers
 - 2022-02-09: RSS
